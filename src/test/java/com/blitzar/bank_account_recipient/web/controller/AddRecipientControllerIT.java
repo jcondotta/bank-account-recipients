@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddRecipientControllerTest implements MongoDBTestContainer {
+public class AddRecipientControllerIT implements MongoDBTestContainer {
 
     @Inject
     private RecipientRepository recipientRepository;

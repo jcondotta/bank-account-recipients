@@ -185,16 +185,16 @@
                 <version>3.0.0-M8</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/*ControllerTest*</exclude>
-                        <exclude>**/*LambdaTest*</exclude>
                         <exclude>**/*IT</exclude>
                     </excludes>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
