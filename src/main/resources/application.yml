@@ -1,0 +1,23 @@
+micronaut:
+  application:
+    name: bank-account-recipient
+  server:
+    port: 8086
+
+
+db:
+  host: ${MONGODB_HOST}
+  port: ${MONGODB_PORT}
+
+mongodb:
+  uri: mongodb://${MONGODB_HOST}:${MONGODB_PORT}/recipients
+  package-names:
+    - 'com.blitzar.bank_account_recipient.domain'
+
+#  mongosh "mongodb://admin:sB6mbtzNHmCQI4eN4yLo@127.0.0.1"
+
+jackson:
+  mapper:
+    accept-case-insensitive-enums: true
+    accept-single-value-as-array: true
+
