@@ -5,11 +5,14 @@ import io.micronaut.serde.annotation.Serdeable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 @Introspected
 @Serdeable
 public record RecipientsDTO(Collection<RecipientDTO> recipients) {
-    public RecipientsDTO {
-        recipients = new ArrayList<>();
+
+    @Override
+    public Collection<RecipientDTO> recipients() {
+        return Objects.nonNull(recipients) ? recipients : new ArrayList<>();
     }
 }
