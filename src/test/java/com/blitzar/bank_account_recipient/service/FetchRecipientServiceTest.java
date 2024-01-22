@@ -3,6 +3,7 @@ package com.blitzar.bank_account_recipient.service;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
+import io.micronaut.data.model.Sort;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GetRecipientServiceTest {
+class FetchRecipientServiceTest {
 
     private FetchRecipientService fetchRecipientService;
 
@@ -37,10 +39,10 @@ class GetRecipientServiceTest {
 
     @Test
     public void givenExistentRecipients_whenGetRecipientByBankAccountId_thenReturnRecipients(){
-        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId);
+        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId, LocalDateTime.now());
         recipient.setId(recipientId);
 
-        when(recipientRepositoryMock.find(bankAccountId)).thenReturn(List.of(recipient));
+        when(recipientRepositoryMock.find(bankAccountId, Sort.of(Sort.Order.desc("dateCreated")))).thenReturn(List.of(recipient));
 
         RecipientsDTO recipientsDTO = fetchRecipientService.findRecipients(bankAccountId);
         assertThat(recipientsDTO.recipients()).hasSize(1);
@@ -58,7 +60,7 @@ class GetRecipientServiceTest {
     @Test
     public void givenNonExistentRecipients_whenGetRecipientByBankAccountId_thenReturnEmptyList(){
         var nonExistentBankAccountId = NumberUtils.INTEGER_MINUS_ONE.longValue();
-        when(recipientRepositoryMock.find(nonExistentBankAccountId)).thenReturn(Collections.EMPTY_LIST);
+        when(recipientRepositoryMock.find(nonExistentBankAccountId, Sort.of(Sort.Order.desc("dateCreated")))).thenReturn(Collections.EMPTY_LIST);
 
         RecipientsDTO recipientsDTO = fetchRecipientService.findRecipients(nonExistentBankAccountId);
 

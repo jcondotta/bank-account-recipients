@@ -21,6 +21,9 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -32,6 +35,9 @@ public class UpdateRecipientControllerIT implements MongoDBTestContainer {
 
     @Inject
     private RecipientRepository recipientRepository;
+
+    @Inject
+    private Clock testFixedInstantUTC;
 
     private RequestSpecification requestSpecification;
 
@@ -51,7 +57,8 @@ public class UpdateRecipientControllerIT implements MongoDBTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
-        currentRecipient = recipientRepository.save(new Recipient(currentRecipientName, currentRecipientIBAN, bankAccountId));
+        currentRecipient = new Recipient(currentRecipientName, currentRecipientIBAN, bankAccountId, LocalDateTime.now(testFixedInstantUTC));
+        currentRecipient = recipientRepository.save(currentRecipient);
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
                 .basePath(RecipientAPIConstants.DELETE_API_V1_MAPPING);

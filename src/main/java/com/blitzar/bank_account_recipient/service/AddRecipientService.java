@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
 
 @Singleton
 public class AddRecipientService {
@@ -35,7 +36,7 @@ public class AddRecipientService {
             throw new ConstraintViolationException(constraintViolations);
         }
 
-        var recipient = new Recipient(addRecipientRequest.name(), addRecipientRequest.iban(), bankAccountId);
+        var recipient = new Recipient(addRecipientRequest.name(), addRecipientRequest.iban(), bankAccountId, LocalDateTime.now(currentInstant));
         return recipientRepository.save(recipient);
     }
 }

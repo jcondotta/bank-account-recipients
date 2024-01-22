@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -27,6 +30,10 @@ public class DeleteRecipientControllerIT implements MongoDBTestContainer {
 
     @Inject
     private RecipientRepository recipientRepository;
+
+    @Inject
+    private Clock testFixedInstantUTC;
+
     private RequestSpecification requestSpecification;
 
     private String recipientName = "Jefferson Condotta";
@@ -47,7 +54,7 @@ public class DeleteRecipientControllerIT implements MongoDBTestContainer {
 
     @Test
     public void givenExistentRecipient_whenDeleteRecipient_thenReturnNoContent(){
-        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId);
+        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId, LocalDateTime.now(testFixedInstantUTC));
         recipientRepository.save(recipient);
 
         given()
@@ -64,7 +71,7 @@ public class DeleteRecipientControllerIT implements MongoDBTestContainer {
 
     @Test
     public void givenNonExistentRecipient_whenDeleteRecipient_thenReturnNotFound(){
-        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId);
+        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId, LocalDateTime.now(testFixedInstantUTC));
         recipientRepository.save(recipient);
 
         given()

@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -30,6 +32,9 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
 
     @Inject
     private RecipientRepository recipientRepository;
+
+    @Inject
+    private Clock testFixedInstantUTC;
 
     private RequestSpecification requestSpecification;
 
@@ -58,9 +63,9 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
 
     @Test
     public void givenExistentRecipients_whenFetchRecipientsByBankAccountId_thenReturnOk(){
-        var recipient1BankAccount1 = recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId1));
-        var recipient2BankAccount1 = recipientRepository.save(new Recipient(recipientName2, recipientIBAN2, bankAccountId1));
-        recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId2));
+        var recipient1BankAccount1 = recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId1, LocalDateTime.now(testFixedInstantUTC)));
+        var recipient2BankAccount1 = recipientRepository.save(new Recipient(recipientName2, recipientIBAN2, bankAccountId1, LocalDateTime.now(testFixedInstantUTC)));
+        recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId2, LocalDateTime.now(testFixedInstantUTC)));
 
         var expectedRecipients = List.of(recipient1BankAccount1, recipient2BankAccount1);
 
@@ -86,14 +91,15 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
                     () -> assertThat(recipientDTO.recipientId()).isEqualTo(expectedRecipient.getId()),
                     () -> assertThat(recipientDTO.name()).isEqualTo(expectedRecipient.getName()),
                     () -> assertThat(recipientDTO.iban()).isEqualTo(expectedRecipient.getIban()),
-                    () -> assertThat(recipientDTO.bankAccountId()).isEqualTo(expectedRecipient.getBankAccountId())
+                    () -> assertThat(recipientDTO.bankAccountId()).isEqualTo(expectedRecipient.getBankAccountId()),
+                    () -> assertThat(recipientDTO.dateCreated()).isEqualTo(LocalDateTime.now(testFixedInstantUTC))
             );
         });
     }
 
     @Test
     public void givenNonExistentRecipients_whenFetchRecipientsByBankAccountId_thenReturnOk(){
-        recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId1));
+        recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId1, LocalDateTime.now(testFixedInstantUTC)));
 
         var recipientsDTO = given()
             .spec(requestSpecification)

@@ -1,0 +1,4 @@
+mongodb:
+  uri: mongodb://127.0.0.1:27017/recipients
+  package-names:
+    - 'com.blitzar.bank_account_recipient.domain'

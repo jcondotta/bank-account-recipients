@@ -4,6 +4,7 @@ import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
+import io.micronaut.data.model.Sort;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -26,7 +27,8 @@ public class FetchRecipientService {
     public RecipientsDTO findRecipients(Long bankAccountId){
         logger.info("Fetching recipients from bank account id: {}", bankAccountId);
 
-        var recipients = StreamSupport.stream(recipientRepository.find(bankAccountId).spliterator(), false)
+        var recipients = StreamSupport.stream(recipientRepository.find(bankAccountId, Sort.of(Sort.Order.desc("dateCreated")))
+                .spliterator(), false)
                 .map(recipient -> new RecipientDTO(recipient))
                 .toList();
 

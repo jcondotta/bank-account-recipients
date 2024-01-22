@@ -20,6 +20,9 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -31,6 +34,9 @@ public class AddRecipientControllerIT implements MongoDBTestContainer {
 
     @Inject
     private RecipientRepository recipientRepository;
+
+    @Inject
+    private Clock testFixedInstantUTC;
 
     private RequestSpecification requestSpecification;
 
@@ -72,7 +78,8 @@ public class AddRecipientControllerIT implements MongoDBTestContainer {
                 () -> assertThat(recipient.getId()).isEqualTo(responseRecipientId),
                 () -> assertThat(recipient.getName()).isEqualTo(addRecipientRequest.name()),
                 () -> assertThat(recipient.getIban()).isEqualTo(addRecipientRequest.iban()),
-                () -> assertThat(recipient.getBankAccountId()).isEqualTo(bankAccountId)
+                () -> assertThat(recipient.getBankAccountId()).isEqualTo(bankAccountId),
+                () -> assertThat(recipient.getDateCreated()).isEqualTo(LocalDateTime.now(testFixedInstantUTC))
         );
     }
 
