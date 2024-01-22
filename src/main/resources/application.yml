@@ -13,7 +13,6 @@ mongodb:
   package-names:
     - 'com.blitzar.bank_account_recipient.domain'
 
-#  mongosh "mongodb://admin:sB6mbtzNHmCQI4eN4yLo@127.0.0.1"
 
 jackson:
   mapper:
