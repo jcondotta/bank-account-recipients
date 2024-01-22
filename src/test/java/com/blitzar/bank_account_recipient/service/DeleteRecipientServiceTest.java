@@ -3,7 +3,6 @@ package com.blitzar.bank_account_recipient.service;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
 import com.blitzar.bank_account_recipient.repository.RecipientRepository;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
