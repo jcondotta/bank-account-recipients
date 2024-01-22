@@ -1,5 +1,6 @@
 package com.blitzar.bank_account_recipient.service;
 
+import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
@@ -37,12 +38,7 @@ class AddRecipientServiceTest {
     @Mock
     private RecipientRepository recipientRepository;
 
-    private static final Validator VALIDATOR =
-            Validation.byDefaultProvider()
-                    .configure()
-                    .messageInterpolator(new ParameterMessageInterpolator())
-                    .buildValidatorFactory()
-                    .getValidator();
+    private static final Validator VALIDATOR = TestValidatorBuilder.getValidator();
 
     @BeforeEach
     public void beforeEach(){
