@@ -29,6 +29,8 @@ public class UpdateRecipientService {
     }
 
     public void updateRecipient(@NotNull Long bankAccountId, @NotBlank String recipientId, @NotNull UpdateRecipientRequest updateRecipientRequest){
+        logger.info("Attempting to update a recipient to bank account id: {}", bankAccountId);
+
         var recipient = recipientRepository.find(bankAccountId, recipientId)
                 .orElseThrow(() -> new ResourceNotFoundException("No recipient has been found with id: " + recipientId + " related to bank account: " + bankAccountId));
 

@@ -1,6 +1,5 @@
 package com.blitzar.bank_account_recipient.domain;
 
-import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;

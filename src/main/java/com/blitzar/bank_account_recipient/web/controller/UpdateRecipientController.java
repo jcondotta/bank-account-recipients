@@ -6,10 +6,9 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.validation.Validated;
-import jakarta.validation.Valid;
 
 @Validated
-@Controller(RecipientAPIConstants.DELETE_API_V1_MAPPING)
+@Controller(RecipientAPIConstants.GET_RECIPIENT_API_V1_MAPPING)
 public class UpdateRecipientController {
 
     private final UpdateRecipientService updateRecipientService;

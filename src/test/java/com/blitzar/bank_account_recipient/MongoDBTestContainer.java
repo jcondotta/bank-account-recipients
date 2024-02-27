@@ -13,10 +13,11 @@ import java.util.stream.Stream;
 @Testcontainers
 public interface MongoDBTestContainer extends TestPropertyProvider {
 
-    String mongodbImageName = "mongo:7";
+    String MONGODB_IMAGE_NAME = "mongo:7";
+    int MONGODB_EXPOSED_PORT = 27017;
 
-    MongoDBContainer MONGODB_CONTAINER = new MongoDBContainer(mongodbImageName)
-            .withExposedPorts(27017)
+    MongoDBContainer MONGODB_CONTAINER = new MongoDBContainer(MONGODB_IMAGE_NAME)
+            .withExposedPorts(MONGODB_EXPOSED_PORT)
             .withReuse(true);
 
     @Override
@@ -29,9 +30,7 @@ public interface MongoDBTestContainer extends TestPropertyProvider {
     }
 
     default Map<String, String> getMongoDBProperties() {
-        return Map.of(
-                "MONGODB_HOST", MONGODB_CONTAINER.getHost(),
-                "MONGODB_PORT", MONGODB_CONTAINER.getMappedPort(27017).toString());
+        return Map.of("mongodb.uri", MONGODB_CONTAINER.getReplicaSetUrl());
     }
 }
 

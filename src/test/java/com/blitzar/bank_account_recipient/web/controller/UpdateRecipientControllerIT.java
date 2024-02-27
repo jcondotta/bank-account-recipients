@@ -5,7 +5,6 @@ import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgument
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
 import com.blitzar.bank_account_recipient.repository.RecipientRepository;
-import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import com.blitzar.bank_account_recipient.service.request.UpdateRecipientRequest;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -61,7 +60,7 @@ public class UpdateRecipientControllerIT implements MongoDBTestContainer {
         currentRecipient = recipientRepository.save(currentRecipient);
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.DELETE_API_V1_MAPPING);
+                .basePath(RecipientAPIConstants.GET_RECIPIENT_API_V1_MAPPING);
     }
 
     @Test

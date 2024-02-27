@@ -4,15 +4,10 @@ micronaut:
   server:
     port: 8086
 
-db:
-  host: ${MONGODB_HOST}
-  port: ${MONGODB_PORT}
-
 mongodb:
-  uri: mongodb://${MONGODB_HOST}:${MONGODB_PORT}/recipients
+  uri: mongodb://127.0.0.1:27017/recipients
   package-names:
     - 'com.blitzar.bank_account_recipient.domain'
-
 
 jackson:
   mapper:

@@ -49,7 +49,7 @@ public class DeleteRecipientControllerIT implements MongoDBTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.DELETE_API_V1_MAPPING);
+                .basePath(RecipientAPIConstants.GET_RECIPIENT_API_V1_MAPPING);
     }
 
     @Test

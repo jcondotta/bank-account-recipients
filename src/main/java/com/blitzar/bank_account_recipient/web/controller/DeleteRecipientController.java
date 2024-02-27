@@ -9,7 +9,7 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.validation.Validated;
 
 @Validated
-@Controller(RecipientAPIConstants.DELETE_API_V1_MAPPING)
+@Controller(RecipientAPIConstants.GET_RECIPIENT_API_V1_MAPPING)
 public class DeleteRecipientController {
     private final DeleteRecipientService deleteRecipientService;
 
