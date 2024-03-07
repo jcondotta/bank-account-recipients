@@ -1,46 +1,48 @@
 package com.blitzar.bank_account_recipient.domain;
 
-import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 import java.time.LocalDateTime;
 
-@MappedEntity
+@Serdeable
+@DynamoDbBean
 public class Recipient {
 
-    @Id
-    @GeneratedValue
-    private String id;
-
-    private String name;
-    private String iban;
     private Long bankAccountId;
 
-    private LocalDateTime dateCreated;
+    private String name;
 
-    public Recipient() {
-    }
+    private String iban;
 
-    public Recipient(String name, String iban, Long bankAccountId, LocalDateTime dateCreated) {
+    private LocalDateTime createdAt;
+
+    public Recipient() { }
+
+    public Recipient(Long bankAccountId, String name, String iban, LocalDateTime createdAt) {
+        this.bankAccountId = bankAccountId;
         this.name = name;
         this.iban = iban;
+        this.createdAt = createdAt;
+    }
+
+    @DynamoDbPartitionKey
+    public Long getBankAccountId() {
+        return bankAccountId;
+    }
+
+    public void setBankAccountId(Long bankAccountId) {
         this.bankAccountId = bankAccountId;
-        this.dateCreated = dateCreated;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    @DynamoDbSortKey
     public void setName(String name) {
         this.name = name;
     }
@@ -53,19 +55,11 @@ public class Recipient {
         this.iban = iban;
     }
 
-    public Long getBankAccountId() {
-        return bankAccountId;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setBankAccountId(Long bankAccountId) {
-        this.bankAccountId = bankAccountId;
-    }
-
-    public LocalDateTime getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(LocalDateTime dateCreated) {
-        this.dateCreated = dateCreated;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -1,15 +1,16 @@
 package com.blitzar.bank_account_recipient.service;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -24,35 +25,36 @@ class DeleteRecipientServiceTest {
     private DeleteRecipientService deleteRecipientService;
 
     @Mock
-    private RecipientRepository recipientRepositoryMock;
+    private DynamoDbTable<Recipient> dynamoDbTable;
+
+    private Long bankAccountId = 300L;
+    private String recipientName = "Jefferson Condotta";
 
     @BeforeEach
     public void beforeEach(){
-        deleteRecipientService = new DeleteRecipientService(recipientRepositoryMock);
+        deleteRecipientService = new DeleteRecipientService(dynamoDbTable);
     }
 
     @Test
     public void givenExistentRecipient_whenDeleteRecipient_thenDelete(){
         Recipient recipientMock = mock(Recipient.class);
 
-        when(recipientRepositoryMock.find(anyLong(), anyString())).thenReturn(Optional.of(recipientMock));
+        when(dynamoDbTable.getItem(any(Key.class))).thenReturn(recipientMock);
 
-        deleteRecipientService.deleteRecipient(anyLong(), anyString());
-        verify(recipientRepositoryMock).delete(any());
+        deleteRecipientService.deleteRecipient(bankAccountId, recipientName);
+        verify(dynamoDbTable).deleteItem(recipientMock);
     }
 
     @Test
     public void givenNonExistentRecipient_whenDeleteRecipient_thenThrowException(){
-        var recipientId = "65a4557f95588135b2948184";
-        var bankAccountId = 300L;
-        when(recipientRepositoryMock.find(bankAccountId, recipientId)).thenReturn(Optional.empty());
+        when(dynamoDbTable.getItem(any(Key.class))).thenReturn(null);
 
-        var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> deleteRecipientService.deleteRecipient(bankAccountId, recipientId));
+        var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> deleteRecipientService.deleteRecipient(bankAccountId, recipientName));
 
         assertAll(
-                () -> assertThat(exception.getMessage()).isEqualTo("No recipient has been found with id: " + recipientId + " related to bank account: " + bankAccountId)
+                () -> assertThat(exception.getMessage()).isEqualTo("No recipient has been found with name: " + recipientName + " related to bank account: " + bankAccountId)
         );
 
-        verify(recipientRepositoryMock, never()).delete(any());
+        verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
     }
 }

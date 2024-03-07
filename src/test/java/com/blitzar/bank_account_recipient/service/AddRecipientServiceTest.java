@@ -1,13 +1,13 @@
 package com.blitzar.bank_account_recipient.service;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
+import com.blitzar.bank_account_recipient.domain.Recipient;
+import com.blitzar.bank_account_recipient.factory.TestClockFactory;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,34 +15,37 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.time.Clock;
-import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AddRecipientServiceTest {
 
+    private Long bankAccountId = 998372L;
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "DE00 0000 0000 0000 00";
-    private Long bankAccountId = 998372L;
 
     private AddRecipientService addRecipientService;
 
+    private Clock testClockUTC = new TestClockFactory().testCurrentInstantUTC();
+
     @Mock
-    private RecipientRepository recipientRepository;
+    private DynamoDbTable<Recipient> dynamoDbTable;
 
     private static final Validator VALIDATOR = TestValidatorBuilder.getValidator();
 
     @BeforeEach
     public void beforeEach(){
-        addRecipientService = new AddRecipientService(recipientRepository, Clock.system(ZoneOffset.UTC), VALIDATOR);
+        addRecipientService = new AddRecipientService(dynamoDbTable, testClockUTC, VALIDATOR);
     }
 
     @Test
@@ -50,7 +53,7 @@ class AddRecipientServiceTest {
         var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
 
         addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
-        verify(recipientRepository).save(any());
+        verify(dynamoDbTable).putItem(any(Recipient.class));
     }
 
     @ParameterizedTest
@@ -68,7 +71,7 @@ class AddRecipientServiceTest {
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("name")
                 ));
 
-        verify(recipientRepository, never()).save(any());
+        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
     }
 
     @ParameterizedTest
@@ -86,6 +89,6 @@ class AddRecipientServiceTest {
                         () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("iban")
                 ));
 
-        verify(recipientRepository, never()).save(any());
+        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
     }
 }

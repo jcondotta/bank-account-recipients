@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.config;
+package com.blitzar.bank_account_recipient.factory;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
@@ -13,7 +13,7 @@ public class TestClockFactory {
 
     @Primary
     @Singleton
-    public Clock testClock() {
+    public Clock testCurrentInstantUTC() {
         return Clock.fixed(
                 Instant.parse("2022-06-24T12:45:01Z"),
                 ZoneOffset.UTC);

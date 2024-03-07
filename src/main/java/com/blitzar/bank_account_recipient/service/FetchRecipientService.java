@@ -1,36 +1,40 @@
 package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
-import io.micronaut.data.model.Sort;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.util.Collection;
-import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
+
+import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo;
 
 @Singleton
 public class FetchRecipientService {
 
     private static final Logger logger = LoggerFactory.getLogger(FetchRecipientService.class);
-    private RecipientRepository recipientRepository;
 
     @Inject
-    public FetchRecipientService(RecipientRepository recipientRepository) {
-        this.recipientRepository = recipientRepository;
+    private final DynamoDbTable<Recipient> dynamoDbTable;
+
+    @Inject
+    public FetchRecipientService(DynamoDbTable<Recipient> dynamoDbTable) {
+        this.dynamoDbTable = dynamoDbTable;
     }
 
     public RecipientsDTO findRecipients(Long bankAccountId){
         logger.info("Fetching recipients from bank account id: {}", bankAccountId);
 
-        var recipients = StreamSupport.stream(recipientRepository.find(bankAccountId, Sort.of(Sort.Order.desc("dateCreated")))
-                .spliterator(), false)
+        Collection<RecipientDTO> recipients = dynamoDbTable.query(keyEqualTo(k -> k.partitionValue(bankAccountId)))
+                .items()
+                .stream()
                 .map(recipient -> new RecipientDTO(recipient))
-                .toList();
+                .collect(Collectors.toList());
 
         return new RecipientsDTO(recipients);
     }

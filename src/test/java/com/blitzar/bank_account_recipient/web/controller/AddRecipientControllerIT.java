@@ -1,10 +1,8 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.MongoDBTestContainer;
+import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -19,30 +17,33 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddRecipientControllerIT implements MongoDBTestContainer {
+public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
-    private RecipientRepository recipientRepository;
+    private DynamoDbTable<Recipient> dynamoDbTable;
 
     @Inject
-    private Clock testFixedInstantUTC;
+    private Clock testClockUTC;
 
     private RequestSpecification requestSpecification;
 
+    private Long bankAccountId = 998372L;
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "DE00 0000 0000 0000 00";
-    private Long bankAccountId = 998372L;
 
     @BeforeAll
     public static void beforeAll(){
@@ -60,26 +61,26 @@ public class AddRecipientControllerIT implements MongoDBTestContainer {
     public void givenValidRequest_whenAddRecipient_thenReturnCreated(){
         var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
 
-        var responseRecipientId = given()
+        given()
             .spec(requestSpecification)
                 .pathParam("bank-account-id", bankAccountId)
                 .body(addRecipientRequest)
         .when()
             .post()
         .then()
-            .statusCode(HttpStatus.CREATED.getCode())
-                .body(hasLength(24))
-                .extract().asString();
+            .statusCode(HttpStatus.CREATED.getCode());
 
-        Recipient recipient = recipientRepository.findById(responseRecipientId)
-                .orElseThrow(() -> new ResourceNotFoundException("No recipient has been found with id: " + responseRecipientId));
+        Recipient recipient = dynamoDbTable.getItem(Key.builder()
+                .partitionValue(bankAccountId)
+                .sortValue(recipientName)
+                .build());
 
+        assertThat(recipient).isNotNull();
         assertAll(
-                () -> assertThat(recipient.getId()).isEqualTo(responseRecipientId),
+                () -> assertThat(recipient.getBankAccountId()).isEqualTo(bankAccountId),
                 () -> assertThat(recipient.getName()).isEqualTo(addRecipientRequest.name()),
                 () -> assertThat(recipient.getIban()).isEqualTo(addRecipientRequest.iban()),
-                () -> assertThat(recipient.getBankAccountId()).isEqualTo(bankAccountId),
-                () -> assertThat(recipient.getDateCreated()).isEqualTo(LocalDateTime.now(testFixedInstantUTC))
+                () -> assertThat(recipient.getCreatedAt()).isEqualTo(LocalDateTime.now(testClockUTC))
         );
     }
 

@@ -1,8 +1,9 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.MongoDBTestContainer;
+import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
+import com.blitzar.bank_account_recipient.service.AddRecipientService;
+import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
@@ -14,22 +15,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.mockito.ArgumentMatchers.any;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class DeleteRecipientControllerIT implements MongoDBTestContainer {
+public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
-    private RecipientRepository recipientRepository;
+    private DynamoDbTable<Recipient> dynamoDbTable;
+
+    @Inject
+    private AddRecipientService addRecipientService;
 
     @Inject
     private Clock testFixedInstantUTC;
@@ -49,40 +53,53 @@ public class DeleteRecipientControllerIT implements MongoDBTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.GET_RECIPIENT_API_V1_MAPPING);
+                .basePath(RecipientAPIConstants.DELETE_RECIPIENT_API_V1_MAPPING);
     }
 
     @Test
     public void givenExistentRecipient_whenDeleteRecipient_thenReturnNoContent(){
-        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId, LocalDateTime.now(testFixedInstantUTC));
-        recipientRepository.save(recipient);
+        var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
+        addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", recipient.getBankAccountId())
-                .pathParam("recipient-id", recipient.getId())
+                .pathParam("bank-account-id", bankAccountId)
+                .pathParam("recipient-name", addRecipientRequest.name())
         .when()
             .delete()
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
-        assertThat(recipientRepository.find(recipient.getBankAccountId(), recipient.getId())).isEmpty();
+        Recipient recipient = dynamoDbTable.getItem(Key.builder()
+                .partitionValue(bankAccountId)
+                .sortValue(recipientName)
+                .build());
+
+        assertThat(recipient).isNull();
     }
 
     @Test
     public void givenNonExistentRecipient_whenDeleteRecipient_thenReturnNotFound(){
-        var recipient = new Recipient(recipientName, recipientIBAN, bankAccountId, LocalDateTime.now(testFixedInstantUTC));
-        recipientRepository.save(recipient);
+        var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
+        addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
 
         given()
             .spec(requestSpecification)
                 .pathParam("bank-account-id", Integer.MIN_VALUE)
-                .pathParam("recipient-id", recipient.getId())
+                .pathParam("recipient-name", "nonExistentRecipientName")
         .when()
             .delete()
         .then()
-            .statusCode(HttpStatus.NOT_FOUND.getCode());
+            .statusCode(HttpStatus.NOT_FOUND.getCode())
+            .rootPath("_embedded")
+            .body("errors", hasSize(1))
+            .body("errors[0].message", equalTo("No recipient has been found with name: nonExistentRecipientName related to bank account: " + Integer.MIN_VALUE));
 
-        assertThat(recipientRepository.find(recipient.getBankAccountId(), recipient.getId())).isNotEmpty();
+        Recipient recipient = dynamoDbTable.getItem(Key.builder()
+                .partitionValue(bankAccountId)
+                .sortValue(recipientName)
+                .build());
+
+        assertThat(recipient).isNotNull();
     }
 }

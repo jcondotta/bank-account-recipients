@@ -9,13 +9,12 @@ import java.time.LocalDateTime;
 @Introspected
 @Serdeable
 public record RecipientDTO(
-        String recipientId,
+        Long bankAccountId,
         String name,
         String iban,
-        Long bankAccountId,
-        LocalDateTime dateCreated) {
+        LocalDateTime createdAt) {
 
     public RecipientDTO(Recipient recipient) {
-        this(recipient.getId(), recipient.getName(), recipient.getIban(), recipient.getBankAccountId(), recipient.getDateCreated());
+        this(recipient.getBankAccountId(), recipient.getName(), recipient.getIban(), recipient.getCreatedAt());
     }
 }

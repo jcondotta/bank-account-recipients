@@ -1,14 +1,15 @@
 package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -18,12 +19,12 @@ public class AddRecipientService {
 
     private static final Logger logger = LoggerFactory.getLogger(AddRecipientService.class);
 
-    private final RecipientRepository recipientRepository;
+    private final DynamoDbTable<Recipient> dynamoDbTable;
     private final Clock currentInstant;
     private final Validator validator;
 
-    public AddRecipientService(RecipientRepository recipientRepository, Clock currentInstant, Validator validator) {
-        this.recipientRepository = recipientRepository;
+    public AddRecipientService(DynamoDbTable<Recipient> dynamoDbTable, Clock currentInstant, Validator validator) {
+        this.dynamoDbTable = dynamoDbTable;
         this.currentInstant = currentInstant;
         this.validator = validator;
     }
@@ -36,7 +37,9 @@ public class AddRecipientService {
             throw new ConstraintViolationException(constraintViolations);
         }
 
-        var recipient = new Recipient(addRecipientRequest.name(), addRecipientRequest.iban(), bankAccountId, LocalDateTime.now(currentInstant));
-        return recipientRepository.save(recipient);
+        var recipient = new Recipient(bankAccountId, addRecipientRequest.name(), addRecipientRequest.iban(), LocalDateTime.now(currentInstant));
+        dynamoDbTable.putItem(recipient);
+
+        return recipient;
     }
 }

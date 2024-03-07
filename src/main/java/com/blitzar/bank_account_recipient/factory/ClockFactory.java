@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.config;
+package com.blitzar.bank_account_recipient.factory;
 
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
@@ -6,7 +6,7 @@ import jakarta.inject.Singleton;
 import java.time.Clock;
 
 @Factory
-public class ClockConfiguration {
+public class ClockFactory {
 
     @Singleton
     public Clock currentInstantUTC(){

@@ -1,11 +1,12 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.MongoDBTestContainer;
+import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
-import com.blitzar.bank_account_recipient.repository.RecipientRepository;
+import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
+import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
@@ -28,15 +29,17 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class FetchRecipientControllerIT implements MongoDBTestContainer {
+public class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
-    private RecipientRepository recipientRepository;
+    private AddRecipientService addRecipientService;
 
     @Inject
     private Clock testFixedInstantUTC;
 
     private RequestSpecification requestSpecification;
+
+    private final Long bankAccountId = 1736472L;
 
     private final String recipientName1 = "Jefferson Condotta";
     private final String recipientIBAN1 = "DE00 0000 0000 0000 00";
@@ -44,8 +47,6 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
     private final String recipientName2 = "Jefferson William";
     private final String recipientIBAN2 = "ES00 0000 0000 0000 00";
 
-    private final Long bankAccountId1 = 1L;
-    private final Long bankAccountId2 = 2L;
 
     @BeforeAll
     public static void beforeAll(){
@@ -54,7 +55,7 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
-        recipientRepository.deleteAll();
+//        recipientRepository.deleteAll();
 
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
@@ -63,15 +64,17 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
 
     @Test
     public void givenExistentRecipients_whenFetchRecipientsByBankAccountId_thenReturnOk(){
-        var recipient1BankAccount1 = recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId1, LocalDateTime.now(testFixedInstantUTC)));
-        var recipient2BankAccount1 = recipientRepository.save(new Recipient(recipientName2, recipientIBAN2, bankAccountId1, LocalDateTime.now(testFixedInstantUTC)));
-        recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId2, LocalDateTime.now(testFixedInstantUTC)));
+        var addRecipientRequest1 = new AddRecipientRequest(recipientName1, recipientIBAN1);
+        var recipient1 = addRecipientService.addRecipient(bankAccountId, addRecipientRequest1);
 
-        var expectedRecipients = List.of(recipient1BankAccount1, recipient2BankAccount1);
+        var addRecipientRequest2 = new AddRecipientRequest(recipientName2, recipientIBAN2);
+        var recipient2 = addRecipientService.addRecipient(bankAccountId, addRecipientRequest2);
+
+        var expectedRecipients = List.of(recipient1, recipient2);
 
         var recipientsDTO = given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", bankAccountId1)
+                .pathParam("bank-account-id", bankAccountId)
         .when()
             .get()
         .then()
@@ -83,27 +86,24 @@ public class FetchRecipientControllerIT implements MongoDBTestContainer {
 
         expectedRecipients.stream().forEach(expectedRecipient -> {
             RecipientDTO recipientDTO = recipientsDTO.recipients().stream()
-                    .filter(dto -> dto.recipientId().equals(expectedRecipient.getId()))
+                    .filter(dto -> dto.name().equals(expectedRecipient.getName()))
                     .findFirst()
-                    .orElseThrow(() -> new ResourceNotFoundException("Expected recipient with id: " + expectedRecipient.getId() + " is not present."));
+                    .orElseThrow(() -> new ResourceNotFoundException("Expected recipient with name: " + expectedRecipient.getName() + " is not present."));
 
             assertAll(
-                    () -> assertThat(recipientDTO.recipientId()).isEqualTo(expectedRecipient.getId()),
                     () -> assertThat(recipientDTO.name()).isEqualTo(expectedRecipient.getName()),
                     () -> assertThat(recipientDTO.iban()).isEqualTo(expectedRecipient.getIban()),
                     () -> assertThat(recipientDTO.bankAccountId()).isEqualTo(expectedRecipient.getBankAccountId()),
-                    () -> assertThat(recipientDTO.dateCreated()).isEqualTo(LocalDateTime.now(testFixedInstantUTC))
+                    () -> assertThat(recipientDTO.createdAt()).isEqualTo(LocalDateTime.now(testFixedInstantUTC))
             );
         });
     }
 
     @Test
     public void givenNonExistentRecipients_whenFetchRecipientsByBankAccountId_thenReturnOk(){
-        recipientRepository.save(new Recipient(recipientName1, recipientIBAN1, bankAccountId1, LocalDateTime.now(testFixedInstantUTC)));
-
         var recipientsDTO = given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", bankAccountId2)
+                .pathParam("bank-account-id", Long.MIN_VALUE)
         .when()
             .get()
         .then()

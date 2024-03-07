@@ -1,8 +1,38 @@
 version: '3.7'
+
 services:
-  mongodb-standalone:
-    image: mongo:7
-    container_name: mongo-7-bank-account-recipient
-    restart: always
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack-dev
+    environment:
+      - LOCALSTACK_HOSTNAME=localhost
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=eu-west-3
+      - SERVICES=dynamodb
+      - DATA_DIR=/tmp/localstack/data
+      - TEST_AWS_ACCOUNT_ID=000000000000
+      - DEBUG=1
     ports:
-      - 27017:27017
+      - "4566:4566"
+#    volumes:
+#      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      DYNAMO_ENDPOINT: "http://localstack:4566"
+      AWS_REGION: eu-west-3
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    depends_on:
+      - localstack
+
+#  mongodb-standalone:
+#    image: mongo:7
+#    container_name: mongo-7-bank-account-recipient
+#    restart: always
+#    ports:
+#      - 27017:27017

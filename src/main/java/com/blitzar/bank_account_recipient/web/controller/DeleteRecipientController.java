@@ -9,7 +9,7 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.validation.Validated;
 
 @Validated
-@Controller(RecipientAPIConstants.GET_RECIPIENT_API_V1_MAPPING)
+@Controller(RecipientAPIConstants.DELETE_RECIPIENT_API_V1_MAPPING)
 public class DeleteRecipientController {
     private final DeleteRecipientService deleteRecipientService;
 
@@ -18,8 +18,8 @@ public class DeleteRecipientController {
     }
 
     @Delete(consumes = MediaType.APPLICATION_JSON)
-    public HttpResponse<?> deleteRecipient(@PathVariable("bank-account-id") Long bankAccountId, @PathVariable("recipient-id") String recipientId){
-        deleteRecipientService.deleteRecipient(bankAccountId, recipientId);
+    public HttpResponse<?> deleteRecipient(@PathVariable("bank-account-id") Long bankAccountId, @PathVariable("recipient-name") String recipientName){
+        deleteRecipientService.deleteRecipient(bankAccountId, recipientName);
         return HttpResponse.noContent();
     }
 }

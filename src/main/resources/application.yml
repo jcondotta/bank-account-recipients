@@ -4,10 +4,13 @@ micronaut:
   server:
     port: 8086
 
-mongodb:
-  uri: mongodb://127.0.0.1:27017/recipients
-  package-names:
-    - 'com.blitzar.bank_account_recipient.domain'
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${AWS_DEFAULT_REGION}
+  dynamodb:
+    table-name: 'recipients'
+    endpoint: ${AWS_DYNAMODB_ENDPOINT}
 
 jackson:
   mapper:
