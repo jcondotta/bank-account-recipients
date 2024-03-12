@@ -1,0 +1,3 @@
+aws:
+  dynamodb:
+    endpoint: ${AWS_DYNAMODB_ENDPOINT}

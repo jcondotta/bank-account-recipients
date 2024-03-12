@@ -13,7 +13,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 public class TestAWSDynamoDBFactory {
 
     @Value("${aws.dynamodb.table-name}")
-    private String tableName;
+    protected String tableName;
 
     @Singleton
     @Primary

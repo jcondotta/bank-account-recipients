@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.validation.Validated;
+import jakarta.validation.Valid;
 
 @Validated
 @Controller(RecipientAPIConstants.BASE_PATH_API_V1_MAPPING)
@@ -22,7 +23,7 @@ public class AddRecipientController {
     }
 
     @Post(consumes = MediaType.APPLICATION_JSON)
-    public HttpResponse<?> addRecipient(@PathVariable("bank-account-id") Long bankAccountId, @Body AddRecipientRequest addRecipientRequest){
+    public HttpResponse<?> addRecipient(@PathVariable("bank-account-id") Long bankAccountId, @Body @Valid AddRecipientRequest addRecipientRequest){
         Recipient recipient = addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
         return HttpResponse.created(recipient);
     }

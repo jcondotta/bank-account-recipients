@@ -1,6 +1,5 @@
 package com.blitzar.bank_account_recipient.service;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
@@ -23,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 

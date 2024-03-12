@@ -1,16 +1,12 @@
 package com.blitzar.bank_account_recipient.factory.aws;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Value;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Singleton;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -18,40 +14,30 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.URI;
+import java.util.Objects;
 
 @Factory
 public class AWSDynamoDBFactory {
 
     @Value("${aws.region}")
-    private String region;
+    protected String region;
 
+    @Nullable
     @Value("${aws.dynamodb.endpoint}")
-    private String dynamoDBEndpoint;
+    protected String dynamoDBEndpoint;
 
     @Value("${aws.dynamodb.table-name}")
-    private String tableName;
-
-    @Singleton
-    AmazonDynamoDBAsync amazonDynamoDBAsync(AWSStaticCredentialsProvider credentialsProvider) {
-        var endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(dynamoDBEndpoint, region);
-
-        return AmazonDynamoDBAsyncClientBuilder
-                .standard()
-                .withEndpointConfiguration(endpointConfiguration)
-                .build();
-    }
-
-    @Singleton
-    public DynamoDBMapper dynamoDBMapper(AmazonDynamoDB amazonDynamoDB){
-        return new DynamoDBMapper(amazonDynamoDB);
-    }
+    protected String tableName;
 
     @Singleton
     @Primary
-    public DynamoDbClient dynamoDbClient(){
+    public DynamoDbClient dynamoDbClient(AwsCredentialsProvider awsCredentialsProvider){
+        var endpointOverride = Objects.nonNull(dynamoDBEndpoint) ? URI.create(dynamoDBEndpoint) : null;
+
         return DynamoDbClient.builder()
                 .region(Region.of(region))
-                .endpointOverride(URI.create(dynamoDBEndpoint))
+                .credentialsProvider(awsCredentialsProvider)
+                .endpointOverride(endpointOverride)
                 .build();
     }
 

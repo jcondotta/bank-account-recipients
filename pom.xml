@@ -22,8 +22,8 @@
         <micronaut.aot.enabled>false</micronaut.aot.enabled>
         <micronaut.aot.packageName>com.blitzar.bank_account_recipient.aot.generated</micronaut.aot.packageName>
         <micronaut.test.resources.enabled>true</micronaut.test.resources.enabled>
-        <micronaut.runtime>netty</micronaut.runtime>
-        <exec.mainClass>com.blitzar.bank_account_recipient.Application</exec.mainClass>
+        <micronaut.runtime>lambda</micronaut.runtime>
+        <exec.mainClass>io.micronaut.function.aws.runtime.MicronautLambdaRuntime</exec.mainClass>
     </properties>
 
     <repositories>
@@ -141,21 +141,12 @@
             <version>7.0.2.Final</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.apache.commons</groupId>-->
-<!--            <artifactId>commons-lang3</artifactId>-->
-<!--            <version>3.12.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>jakarta.validation</groupId>-->
-<!--            <artifactId>jakarta.validation-api</artifactId>-->
-<!--            <version>3.0.1</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>javax.el</groupId>-->
-<!--            <artifactId>javax.el-api</artifactId>-->
-<!--            <version>2.2.4</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>aws-sdk-java</artifactId>
+            <version>2.25.2</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -164,10 +155,29 @@
         </dependency>
 
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>aws-sdk-java</artifactId>
-            <version>2.25.3</version>
-            <scope>provided</scope>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-aws-lambda-events-serde</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-function-aws-api-proxy</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-function-aws-api-proxy-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-function-aws-custom-runtime</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-function-aws-test</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
