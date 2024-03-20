@@ -6,8 +6,8 @@ services:
     container_name: localstack-dev
     environment:
       - LOCALSTACK_HOSTNAME=localhost
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ACCESS_KEY_ID=accesskey
+      - AWS_SECRET_ACCESS_KEY=secretkey
       - AWS_DEFAULT_REGION=eu-west-3
       - SERVICES=dynamodb
       - DATA_DIR=/tmp/localstack/data
@@ -29,10 +29,3 @@ services:
       AWS_SECRET_ACCESS_KEY: test
     depends_on:
       - localstack
-
-#  mongodb-standalone:
-#    image: mongo:7
-#    container_name: mongo-7-bank-account-recipient
-#    restart: always
-#    ports:
-#      - 27017:27017

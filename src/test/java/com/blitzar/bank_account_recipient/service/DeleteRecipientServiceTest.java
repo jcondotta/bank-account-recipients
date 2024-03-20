@@ -49,7 +49,7 @@ class DeleteRecipientServiceTest {
         var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> deleteRecipientService.deleteRecipient(bankAccountId, recipientName));
 
         assertAll(
-                () -> assertThat(exception.getMessage()).isEqualTo("No recipient has been found with name: " + recipientName + " related to bank account: " + bankAccountId)
+                () -> assertThat(exception.getMessage()).isEqualTo("[BankAccountId=" + bankAccountId + "] No recipient has been found with name: " + recipientName)
         );
 
         verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));

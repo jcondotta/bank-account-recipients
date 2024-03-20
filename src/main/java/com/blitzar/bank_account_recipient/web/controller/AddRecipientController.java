@@ -4,11 +4,9 @@ import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.validation.Validated;
 import jakarta.validation.Valid;
 
@@ -22,6 +20,7 @@ public class AddRecipientController {
         this.addRecipientService = addRecipientService;
     }
 
+    //@Status(HttpStatus.CREATED)
     @Post(consumes = MediaType.APPLICATION_JSON)
     public HttpResponse<?> addRecipient(@PathVariable("bank-account-id") Long bankAccountId, @Body @Valid AddRecipientRequest addRecipientRequest){
         Recipient recipient = addRecipientService.addRecipient(bankAccountId, addRecipientRequest);

@@ -30,7 +30,7 @@ public class AddRecipientService {
     }
 
     public Recipient addRecipient(@NotNull Long bankAccountId, @NotNull AddRecipientRequest addRecipientRequest){
-        logger.info("Attempting to add a recipient to bank account id: {}", bankAccountId);
+        logger.info("[BankAccountId={}] Attempting to add a recipient", bankAccountId);
 
         var constraintViolations = validator.validate(addRecipientRequest);
         if(!constraintViolations.isEmpty()){
@@ -39,6 +39,9 @@ public class AddRecipientService {
 
         var recipient = new Recipient(bankAccountId, addRecipientRequest.name(), addRecipientRequest.iban(), LocalDateTime.now(currentInstant));
         dynamoDbTable.putItem(recipient);
+
+        logger.info("[BankAccountId={}] Recipient saved to DB", bankAccountId);
+        logger.debug(recipient.toString());
 
         return recipient;
     }

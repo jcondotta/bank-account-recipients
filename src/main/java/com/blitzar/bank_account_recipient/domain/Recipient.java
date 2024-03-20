@@ -1,6 +1,5 @@
 package com.blitzar.bank_account_recipient.domain;
 
-import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
@@ -61,5 +60,15 @@ public class Recipient {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Recipient{" +
+                "bankAccountId=" + bankAccountId +
+                ", name='" + name + '\'' +
+                ", iban='" + iban + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

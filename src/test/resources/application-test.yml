@@ -1,3 +1,7 @@
+micronaut:
+  server:
+    port: 8186
+
 aws:
   dynamodb:
     endpoint: ${AWS_DYNAMODB_ENDPOINT}

@@ -13,12 +13,16 @@ import io.micronaut.validation.exceptions.ConstraintExceptionHandler;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Produces
 @Singleton
 @Replaces(value = ConstraintExceptionHandler.class)
 @Requires(classes = {ConstraintViolationException.class, ExceptionHandler.class})
 public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(RestConstraintExceptionHandler.class);
 
     @Inject
     public RestConstraintExceptionHandler(ErrorResponseProcessor<?> errorResponseProcessor) {
@@ -28,6 +32,8 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
     @Override
     @Status(value = HttpStatus.BAD_REQUEST)
     public HttpResponse<?> handle(HttpRequest request, ConstraintViolationException exception) {
+        logger.error(exception.getMessage());
+
         return super.handle(request, exception);
     }
 }

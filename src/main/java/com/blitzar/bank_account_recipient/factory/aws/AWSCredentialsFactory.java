@@ -11,14 +11,8 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 @Factory
 public class AWSCredentialsFactory {
 
-    @Value("${aws.access-key-id}")
-    protected String accessKey;
-
-    @Value("${aws.secret-key}")
-    protected String secretKey;
-
     @Singleton
-    public AwsCredentials awsCredentials(){
+    public AwsCredentials awsCredentials(@Value("${aws.access-key-id}") String accessKey, @Value("${aws.secret-key}") String secretKey){
         return AwsBasicCredentials.create(accessKey, secretKey);
     }
 

@@ -28,7 +28,7 @@ public class FetchRecipientService {
     }
 
     public RecipientsDTO findRecipients(Long bankAccountId){
-        logger.info("Fetching recipients from bank account id: {}", bankAccountId);
+        logger.info("[BankAccountId={}] Fetching recipients", bankAccountId);
 
         Collection<RecipientDTO> recipients = dynamoDbTable.query(keyEqualTo(k -> k.partitionValue(bankAccountId)))
                 .items()
@@ -36,6 +36,7 @@ public class FetchRecipientService {
                 .map(recipient -> new RecipientDTO(recipient))
                 .collect(Collectors.toList());
 
+        logger.info("[BankAccountId={}] {} recipient(s) found", bankAccountId, recipients.size());
         return new RecipientsDTO(recipients);
     }
 }
