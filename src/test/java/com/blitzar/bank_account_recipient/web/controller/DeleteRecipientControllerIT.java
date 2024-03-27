@@ -83,17 +83,18 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
         var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
         addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
 
+        var nonExistentRecipientName = "nonExistentRecipientName";
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", Integer.MIN_VALUE)
-                .pathParam("recipient-name", "nonExistentRecipientName")
+                .pathParam("bank-account-id", bankAccountId)
+                .pathParam("recipient-name", nonExistentRecipientName)
         .when()
             .delete()
         .then()
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
             .body("errors", hasSize(1))
-            .body("errors[0].message", equalTo("No recipient has been found with name: nonExistentRecipientName related to bank account: " + Integer.MIN_VALUE));
+            .body("errors[0].message", equalTo("[BankAccountId=" + bankAccountId + "] No recipient has been found with name: " + nonExistentRecipientName));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
                 .partitionValue(bankAccountId)

@@ -27,7 +27,6 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
 
         return Stream.of(getAWSProperties())
                 .flatMap(property -> property.entrySet().stream())
-                .peek(a -> System.out.println(a.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
