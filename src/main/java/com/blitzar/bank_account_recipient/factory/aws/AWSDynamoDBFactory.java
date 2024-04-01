@@ -6,9 +6,12 @@ import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+import java.time.LocalDateTime;
 
 @Factory
 public class AWSDynamoDBFactory {
@@ -29,6 +32,25 @@ public class AWSDynamoDBFactory {
 
     @Singleton
     public DynamoDbTable<Recipient> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, @Value("${aws.dynamodb.table-name}") String tableName){
-        return dynamoDbEnhancedClient.table(tableName, TableSchema.fromBean(Recipient.class));
+        StaticTableSchema<Recipient> staticTableSchema = StaticTableSchema.builder(Recipient.class)
+                .newItemSupplier(Recipient::new)
+                .addAttribute(Long.class, attr -> attr.name("bankAccountId")
+                        .getter(Recipient::getBankAccountId)
+                        .setter(Recipient::setBankAccountId)
+                        .tags(StaticAttributeTags.primaryPartitionKey()))
+                .addAttribute(String.class, attr -> attr.name("name")
+                        .getter(Recipient::getName)
+                        .setter(Recipient::setName)
+                        .tags(StaticAttributeTags.primarySortKey()))
+                .addAttribute(String.class, attr -> attr.name("iban")
+                        .getter(Recipient::getIban)
+                        .setter(Recipient::setIban))
+                .addAttribute(LocalDateTime.class, attr -> attr.name("createdAt")
+                        .getter(Recipient::getCreatedAt)
+                        .setter(Recipient::setCreatedAt))
+                .build();
+
+
+        return dynamoDbEnhancedClient.table(tableName, staticTableSchema);
     }
 }
