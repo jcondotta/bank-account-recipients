@@ -11,7 +11,7 @@ import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
 
 @Validated
-@Controller(RecipientAPIConstants.BASE_PATH_API_V1_MAPPING)
+@Controller(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
 public class FetchRecipientsController {
 
     private final FetchRecipientService fetchRecipientService;

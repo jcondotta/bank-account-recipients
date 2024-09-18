@@ -54,7 +54,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.BASE_PATH_API_V1_MAPPING);
+                .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING);
     }
 
     @Test

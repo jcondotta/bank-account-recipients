@@ -11,7 +11,7 @@ import io.micronaut.validation.Validated;
 import jakarta.validation.Valid;
 
 @Validated
-@Controller(RecipientAPIConstants.BASE_PATH_API_V1_MAPPING)
+@Controller(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
 public class AddRecipientController {
 
     private final AddRecipientService addRecipientService;
@@ -20,7 +20,7 @@ public class AddRecipientController {
         this.addRecipientService = addRecipientService;
     }
 
-    //@Status(HttpStatus.CREATED)
+    @Status(HttpStatus.CREATED)
     @Post(consumes = MediaType.APPLICATION_JSON)
     public HttpResponse<?> addRecipient(@PathVariable("bank-account-id") Long bankAccountId, @Body @Valid AddRecipientRequest addRecipientRequest){
         Recipient recipient = addRecipientService.addRecipient(bankAccountId, addRecipientRequest);

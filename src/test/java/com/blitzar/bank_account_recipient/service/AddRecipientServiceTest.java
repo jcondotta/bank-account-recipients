@@ -3,7 +3,7 @@ package com.blitzar.bank_account_recipient.service;
 import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.factory.TestClockFactory;
+import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -34,7 +34,7 @@ class AddRecipientServiceTest {
 
     private AddRecipientService addRecipientService;
 
-    private Clock testClockUTC = new TestClockFactory().testCurrentInstantUTC();
+    private Clock testClockUTC = ClockTestFactory.testClockFixedInstant;
 
     @Mock
     private DynamoDbTable<Recipient> dynamoDbTable;

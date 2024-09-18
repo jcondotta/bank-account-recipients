@@ -55,11 +55,9 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
-//        recipientRepository.deleteAll();
-
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.BASE_PATH_API_V1_MAPPING);
+                .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING);
     }
 
     @Test
