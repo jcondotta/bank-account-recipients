@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: bank-account-recipient
+    name: bank-account-recipients
   server:
     port: 8086
 
@@ -10,6 +10,7 @@ aws:
   region: ${AWS_DEFAULT_REGION}
   dynamodb:
     table-name: 'recipients'
+    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
 
 jackson:
   mapper:
