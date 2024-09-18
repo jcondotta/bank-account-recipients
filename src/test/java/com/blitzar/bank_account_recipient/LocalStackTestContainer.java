@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Testcontainers
 public interface LocalStackTestContainer extends TestPropertyProvider {
 
-    String localStackImageName = "localstack/localstack:2.1.0";
+    String localStackImageName = "localstack/localstack:3.7.0";
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(localStackImageName);
 
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
