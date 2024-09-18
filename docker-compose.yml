@@ -1,31 +1,20 @@
-version: '3.7'
+version: "3.8"
 
 services:
   localstack:
-    image: localstack/localstack:latest
-    container_name: localstack-dev
-    environment:
-      - LOCALSTACK_HOSTNAME=localhost
-      - AWS_ACCESS_KEY_ID=accesskey
-      - AWS_SECRET_ACCESS_KEY=secretkey
-      - AWS_DEFAULT_REGION=eu-west-3
-      - SERVICES=dynamodb
-      - DATA_DIR=/tmp/localstack/data
-      - TEST_AWS_ACCOUNT_ID=000000000000
-      - DEBUG=1
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack:3.7.0
     ports:
-      - "4566:4566"
-#    volumes:
-#      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
-
-  dynamodb-admin:
-    image: aaronshaf/dynamodb-admin
-    ports:
-      - "8001:8001"
+      - '127.0.0.1:4566:4566'
+      - '127.0.0.1:4510-4513:4510-4513' # External services port range.
     environment:
-      DYNAMO_ENDPOINT: "http://localstack:4566"
-      AWS_REGION: eu-west-3
-      AWS_ACCESS_KEY_ID: test
-      AWS_SECRET_ACCESS_KEY: test
-    depends_on:
-      - localstack
+      SERVICES: dynamodb, iam, lambda, apigateway
+      AWS_ACCESS_KEY_ID: devAccessKeyId
+      AWS_SECRET_ACCESS_KEY: devSecretAccessKey
+      AWS_DEFAULT_REGION: us-east-1
+      LS_LOG: ${LS_LOG:-debug}
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './localstack:/etc/localstack/init/ready.d/'
+      - './target/bank-account-recipients-0.1.jar:/home/localstack/bank-account-recipients-0.1.jar'
