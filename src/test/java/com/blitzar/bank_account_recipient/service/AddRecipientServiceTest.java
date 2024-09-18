@@ -3,6 +3,7 @@ package com.blitzar.bank_account_recipient.service;
 import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
+import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
 import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -19,6 +20,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import java.time.Clock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;

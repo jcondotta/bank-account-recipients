@@ -24,7 +24,7 @@ public class DeleteRecipientService {
     }
 
     public void deleteRecipient(Long bankAccountId, String recipientName){
-        logger.info("[BankAccountId={}] Attempting to delete a recipient with name: {}", bankAccountId, recipientName);
+        logger.info("[BankAccountId={}, RecipientName={}] Attempting to delete a recipient", bankAccountId, recipientName);
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
                 .partitionValue(bankAccountId)
@@ -33,10 +33,10 @@ public class DeleteRecipientService {
 
         if(Objects.nonNull(recipient)){
             dynamoDbTable.deleteItem(recipient);
-            logger.info("[BankAccountId={}] Recipient deleted", bankAccountId);
+            logger.info("[BankAccountId={}, RecipientName={}] Recipient deleted", bankAccountId, recipientName);
         }
         else{
-            throw new ResourceNotFoundException("[BankAccountId=" + bankAccountId + "] No recipient has been found with name: " + recipientName);
+            throw new ResourceNotFoundException("[BankAccountId=" + bankAccountId + ", RecipientName=" + recipientName + "] No recipient has been found");
         }
     }
 }

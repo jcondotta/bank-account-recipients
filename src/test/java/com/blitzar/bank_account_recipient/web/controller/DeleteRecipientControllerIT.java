@@ -53,7 +53,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.DELETE_RECIPIENT_API_V1_MAPPING);
+                .basePath(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
     }
 
     @Test

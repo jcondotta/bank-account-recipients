@@ -11,6 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,7 +25,7 @@ class DeleteRecipientServiceTest {
     @Mock
     private DynamoDbTable<Recipient> dynamoDbTable;
 
-    private Long bankAccountId = 300L;
+    private Long bankAccountId = 998372L;
     private String recipientName = "Jefferson Condotta";
 
     @BeforeEach
@@ -46,11 +47,9 @@ class DeleteRecipientServiceTest {
     public void givenNonExistentRecipient_whenDeleteRecipient_thenThrowException(){
         when(dynamoDbTable.getItem(any(Key.class))).thenReturn(null);
 
-        var exception = assertThrowsExactly(ResourceNotFoundException.class, () -> deleteRecipientService.deleteRecipient(bankAccountId, recipientName));
-
-        assertAll(
-                () -> assertThat(exception.getMessage()).isEqualTo("[BankAccountId=" + bankAccountId + "] No recipient has been found with name: " + recipientName)
-        );
+        assertThatThrownBy(() -> deleteRecipientService.deleteRecipient(bankAccountId, recipientName))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("[BankAccountId=" + bankAccountId + ", RecipientName=" + recipientName + "] No recipient has been found");
 
         verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
     }

@@ -11,7 +11,7 @@ import io.micronaut.http.annotation.Status;
 import io.micronaut.validation.Validated;
 
 @Validated
-@Controller(RecipientAPIConstants.DELETE_RECIPIENT_API_V1_MAPPING)
+@Controller(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING)
 public class DeleteRecipientController {
     private final DeleteRecipientService deleteRecipientService;
 
