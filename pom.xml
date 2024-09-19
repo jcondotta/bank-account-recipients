@@ -17,7 +17,6 @@
         <packaging>jar</packaging>
         <jdk.version>17</jdk.version>
         <release.version>17</release.version>
-<!--        <micronaut.version>4.5.0</micronaut.version>-->
         <micronaut.runtime>lambda</micronaut.runtime>
         <micronaut.aot.enabled>false</micronaut.aot.enabled>
         <micronaut.aot.packageName>com.blitzar.bank_account_recipient.aot.generated</micronaut.aot.packageName>
@@ -49,22 +48,19 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-http-client-jdk</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut.aws</groupId>
             <artifactId>micronaut-aws-lambda-events-serde</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut.aws</groupId>
             <artifactId>micronaut-function-aws-api-proxy</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut.aws</groupId>
             <artifactId>micronaut-function-aws-api-proxy-test</artifactId>
-            <scope>compile</scope>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut.aws</groupId>
@@ -85,12 +81,12 @@
         <dependency>
             <groupId>io.micronaut.validation</groupId>
             <artifactId>micronaut-validation</artifactId>
-            <scope>compile</scope>
+            <version>4.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>7.0.2.Final</version>
+            <version>8.0.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
