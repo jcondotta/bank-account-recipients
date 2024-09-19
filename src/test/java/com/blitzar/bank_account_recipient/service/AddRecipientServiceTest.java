@@ -3,7 +3,6 @@ package com.blitzar.bank_account_recipient.service;
 import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
 import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import jakarta.validation.ConstraintViolationException;

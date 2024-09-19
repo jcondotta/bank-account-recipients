@@ -1,7 +1,7 @@
 package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
+import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class DeleteRecipientService {
             logger.info("[BankAccountId={}, RecipientName={}] Recipient deleted", bankAccountId, recipientName);
         }
         else{
-            throw new ResourceNotFoundException("[BankAccountId=" + bankAccountId + ", RecipientName=" + recipientName + "] No recipient has been found");
+            throw new RecipientNotFoundException("recipient.notFound", bankAccountId, recipientName);
         }
     }
 }

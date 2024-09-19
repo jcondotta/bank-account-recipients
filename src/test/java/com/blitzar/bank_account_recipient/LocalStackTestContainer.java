@@ -25,6 +25,9 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     default Map<String, String> getProperties() {
         Startables.deepStart(LOCALSTACK_CONTAINER).join();
 
+        getAWSProperties().entrySet().stream()
+                .forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
+
         return Stream.of(getAWSProperties())
                 .flatMap(property -> property.entrySet().stream())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));

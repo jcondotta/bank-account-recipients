@@ -4,12 +4,15 @@ import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
+import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
+import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +41,10 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
     private Clock testFixedInstantUTC;
+
+    @Inject
+    @Named("exceptionMessageSource")
+    private MessageSource exceptionMessageSource;
 
     private RequestSpecification requestSpecification;
 
@@ -93,8 +101,9 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
         .then()
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
-            .body("errors", hasSize(1))
-            .body("errors[0].message", equalTo("[BankAccountId=" + bankAccountId + "] No recipient has been found with name: " + nonExistentRecipientName));
+                .body("errors", hasSize(1))
+                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("recipient.notFound", Locale.getDefault(), bankAccountId, nonExistentRecipientName)
+                        .orElseThrow()));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
                 .partitionValue(bankAccountId)

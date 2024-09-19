@@ -1,7 +1,7 @@
 package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
+import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,8 +48,8 @@ class DeleteRecipientServiceTest {
         when(dynamoDbTable.getItem(any(Key.class))).thenReturn(null);
 
         assertThatThrownBy(() -> deleteRecipientService.deleteRecipient(bankAccountId, recipientName))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("[BankAccountId=" + bankAccountId + ", RecipientName=" + recipientName + "] No recipient has been found");
+                .isInstanceOf(RecipientNotFoundException.class)
+                .hasMessage("recipient.notFound");
 
         verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
     }

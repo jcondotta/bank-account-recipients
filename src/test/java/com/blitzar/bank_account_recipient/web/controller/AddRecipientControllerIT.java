@@ -4,12 +4,15 @@ import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
+import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +43,11 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private Clock testClockUTC;
 
+    @Inject
+    @Named("exceptionMessageSource")
+    private MessageSource exceptionMessageSource;
+
+    @Inject
     private RequestSpecification requestSpecification;
 
     private Long bankAccountId = 998372L;
@@ -99,7 +108,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo("name: recipient.name.notBlank"));
+                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("recipient.name.notBlank", Locale.getDefault()).orElseThrow()));
     }
 
     @ParameterizedTest
@@ -117,6 +126,6 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo("iban: recipient.iban.notBlank"));
+                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("recipient.iban.notBlank", Locale.getDefault()).orElseThrow()));
     }
 }

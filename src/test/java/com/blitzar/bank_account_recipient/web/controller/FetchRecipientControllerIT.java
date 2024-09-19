@@ -1,8 +1,7 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.LocalStackTestContainer;
-import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.exception.ResourceNotFoundException;
+import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
@@ -86,7 +85,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
             RecipientDTO recipientDTO = recipientsDTO.recipients().stream()
                     .filter(dto -> dto.name().equals(expectedRecipient.getName()))
                     .findFirst()
-                    .orElseThrow(() -> new ResourceNotFoundException("Expected recipient with name: " + expectedRecipient.getName() + " is not present."));
+                    .orElseThrow(() -> new RecipientNotFoundException("recipient.notFound", bankAccountId, recipientName1));
 
             assertAll(
                     () -> assertThat(recipientDTO.name()).isEqualTo(expectedRecipient.getName()),
