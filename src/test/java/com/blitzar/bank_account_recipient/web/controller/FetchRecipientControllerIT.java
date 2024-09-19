@@ -21,6 +21,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +39,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     private RequestSpecification requestSpecification;
 
-    private final Long bankAccountId = 1736472L;
+    private final UUID bankAccountId = UUID.fromString("01920bff-1338-7efd-ade6-e9128debe5d4");
 
     private final String recipientName1 = "Jefferson Condotta";
     private final String recipientIBAN1 = "DE00 0000 0000 0000 00";
@@ -98,9 +99,10 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void givenNonExistentRecipients_whenFetchRecipientsByBankAccountId_thenReturnOk(){
+        var nonExistentBankAccountId = UUID.fromString("01920c09-6fe3-7780-8c2c-aee60a603f48");
         var recipientsDTO = given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", Long.MIN_VALUE)
+                .pathParam("bank-account-id", nonExistentBankAccountId)
         .when()
             .get()
         .then()

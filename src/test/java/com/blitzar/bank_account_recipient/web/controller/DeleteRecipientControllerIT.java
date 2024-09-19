@@ -23,6 +23,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.util.Locale;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,9 +49,9 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     private RequestSpecification requestSpecification;
 
+    private UUID bankAccountId = UUID.fromString("01920bff-6704-7f02-9671-ddcbbcd33a65");
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "DE00 0000 0000 0000 00";
-    private Long bankAccountId = 998372L;
 
     @BeforeAll
     public static void beforeAll(){
@@ -79,7 +80,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId)
+                .partitionValue(bankAccountId.toString())
                 .sortValue(recipientName)
                 .build());
 
@@ -106,7 +107,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
                         .orElseThrow()));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId)
+                .partitionValue(bankAccountId.toString())
                 .sortValue(recipientName)
                 .build());
 

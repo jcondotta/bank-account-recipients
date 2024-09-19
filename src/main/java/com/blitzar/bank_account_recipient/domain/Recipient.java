@@ -6,12 +6,13 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Serdeable
 @DynamoDbBean
 public class Recipient {
 
-    private Long bankAccountId;
+    private UUID bankAccountId;
 
     private String name;
 
@@ -21,7 +22,7 @@ public class Recipient {
 
     public Recipient() { }
 
-    public Recipient(Long bankAccountId, String name, String iban, LocalDateTime createdAt) {
+    public Recipient(UUID bankAccountId, String name, String iban, LocalDateTime createdAt) {
         this.bankAccountId = bankAccountId;
         this.name = name;
         this.iban = iban;
@@ -29,11 +30,11 @@ public class Recipient {
     }
 
     @DynamoDbPartitionKey
-    public Long getBankAccountId() {
+    public UUID getBankAccountId() {
         return bankAccountId;
     }
 
-    public void setBankAccountId(Long bankAccountId) {
+    public void setBankAccountId(UUID bankAccountId) {
         this.bankAccountId = bankAccountId;
     }
 

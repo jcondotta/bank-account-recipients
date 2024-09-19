@@ -10,6 +10,8 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
 
+import java.util.UUID;
+
 @Validated
 @Controller(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
 public class FetchRecipientsController {
@@ -22,7 +24,7 @@ public class FetchRecipientsController {
     }
 
     @Get(produces = MediaType.APPLICATION_JSON)
-    public HttpResponse<?> findRecipients(@PathVariable("bank-account-id") Long bankAccountId){
+    public HttpResponse<?> findRecipients(@PathVariable("bank-account-id") UUID bankAccountId){
         RecipientsDTO recipientsDTO = fetchRecipientService.findRecipients(bankAccountId);
         return HttpResponse.ok().body(recipientsDTO);
     }

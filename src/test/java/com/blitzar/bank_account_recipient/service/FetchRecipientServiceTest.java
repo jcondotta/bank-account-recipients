@@ -15,6 +15,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,7 +33,7 @@ class FetchRecipientServiceTest {
     @Mock
     private PageIterable<Recipient> pageIterable;
 
-    private Long bankAccountId = 998372L;
+    private UUID bankAccountId = UUID.fromString("01920bfc-b488-753b-b89d-d7bfb9b6964e");
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "DE00 0000 0000 0000 00";
     private LocalDateTime currentDateTime = LocalDateTime.of(2022, Month.APRIL, 22, 10, 10, 10);
@@ -64,7 +65,7 @@ class FetchRecipientServiceTest {
 
     @Test
     public void givenNonExistentRecipients_whenGetRecipientByBankAccountId_thenReturnEmptyList(){
-        var nonExistentBankAccountId = NumberUtils.INTEGER_MINUS_ONE.longValue();
+        var nonExistentBankAccountId = UUID.fromString("01920bfd-33d8-73cf-bb06-1b779291a1a7");
 
         when(dynamoDbTable.query(any(QueryConditional.class))).thenReturn(pageIterable);
         when(pageIterable.items()).thenReturn(() -> Collections.emptyIterator());

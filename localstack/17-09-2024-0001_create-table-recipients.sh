@@ -5,7 +5,7 @@
 awslocal dynamodb create-table \
    --table-name "${RECIPIENTS_TABLE_NAME}" \
    --attribute-definitions \
-          AttributeName=bankAccountId,AttributeType=N \
+          AttributeName=bankAccountId,AttributeType=S \
           AttributeName=name,AttributeType=S \
    --key-schema \
           AttributeName=bankAccountId,KeyType=HASH \

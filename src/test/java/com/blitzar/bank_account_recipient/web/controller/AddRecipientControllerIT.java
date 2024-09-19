@@ -26,6 +26,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private RequestSpecification requestSpecification;
 
-    private Long bankAccountId = 998372L;
+    private UUID bankAccountId = UUID.fromString("01920c06-d936-799c-b119-3e782e396e6f");
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "DE00 0000 0000 0000 00";
 
@@ -80,7 +81,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.CREATED.getCode());
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId)
+                .partitionValue(bankAccountId.toString())
                 .sortValue(recipientName)
                 .build());
 

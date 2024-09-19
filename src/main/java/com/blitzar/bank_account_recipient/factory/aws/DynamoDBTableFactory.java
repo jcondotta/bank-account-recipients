@@ -10,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Factory
 public class DynamoDBTableFactory {
@@ -18,7 +19,7 @@ public class DynamoDBTableFactory {
     public DynamoDbTable<Recipient> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, @Value("${aws.dynamodb.table-name}") String tableName){
         StaticTableSchema<Recipient> staticTableSchema = StaticTableSchema.builder(Recipient.class)
                 .newItemSupplier(Recipient::new)
-                .addAttribute(Long.class, attr -> attr.name("bankAccountId")
+                .addAttribute(UUID.class, attr -> attr.name("bankAccountId")
                         .getter(Recipient::getBankAccountId)
                         .setter(Recipient::setBankAccountId)
                         .tags(StaticAttributeTags.primaryPartitionKey()))

@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -25,7 +27,7 @@ class DeleteRecipientServiceTest {
     @Mock
     private DynamoDbTable<Recipient> dynamoDbTable;
 
-    private Long bankAccountId = 998372L;
+    private UUID bankAccountId = UUID.fromString("01920bfe-017f-712e-b6f8-21d1a2853169");
     private String recipientName = "Jefferson Condotta";
 
     @BeforeEach

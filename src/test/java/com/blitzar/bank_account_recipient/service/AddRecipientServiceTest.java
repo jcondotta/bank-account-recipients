@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.time.Clock;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class AddRecipientServiceTest {
 
-    private Long bankAccountId = 998372L;
+    private UUID bankAccountId = UUID.fromString("01920bfd-b3b7-76f7-b7dd-ea87163d77bc");
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "DE00 0000 0000 0000 00";
 

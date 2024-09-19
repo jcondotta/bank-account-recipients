@@ -5,11 +5,13 @@ import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo;
@@ -27,10 +29,10 @@ public class FetchRecipientService {
         this.dynamoDbTable = dynamoDbTable;
     }
 
-    public RecipientsDTO findRecipients(Long bankAccountId){
+    public RecipientsDTO findRecipients(@NotNull UUID bankAccountId){
         logger.info("[BankAccountId={}] Fetching recipients", bankAccountId);
 
-        var recipients = dynamoDbTable.query(keyEqualTo(k -> k.partitionValue(bankAccountId)))
+        var recipients = dynamoDbTable.query(keyEqualTo(k -> k.partitionValue(bankAccountId.toString())))
                 .items()
                 .stream()
                 .map(recipient -> new RecipientDTO(recipient))

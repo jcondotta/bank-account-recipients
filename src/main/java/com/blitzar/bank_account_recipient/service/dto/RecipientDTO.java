@@ -6,11 +6,12 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Introspected
 @Serdeable
 public record RecipientDTO(
-        Long bankAccountId,
+        UUID bankAccountId,
         String name,
         String iban,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC") LocalDateTime createdAt) {

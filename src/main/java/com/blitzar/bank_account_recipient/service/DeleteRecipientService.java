@@ -10,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Singleton
 public class DeleteRecipientService {
@@ -23,11 +24,11 @@ public class DeleteRecipientService {
         this.dynamoDbTable = dynamoDbTable;
     }
 
-    public void deleteRecipient(Long bankAccountId, String recipientName){
+    public void deleteRecipient(UUID bankAccountId, String recipientName){
         logger.info("[BankAccountId={}, RecipientName={}] Attempting to delete a recipient", bankAccountId, recipientName);
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId)
+                .partitionValue(bankAccountId.toString())
                 .sortValue(recipientName)
                 .build());
 

@@ -14,6 +14,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Singleton
 public class AddRecipientService {
@@ -30,7 +31,7 @@ public class AddRecipientService {
         this.validator = validator;
     }
 
-    public Recipient addRecipient(@NotNull Long bankAccountId, @NotNull AddRecipientRequest addRecipientRequest){
+    public Recipient addRecipient(@NotNull UUID bankAccountId, @NotNull AddRecipientRequest addRecipientRequest){
         logger.info("[BankAccountId={}] Attempting to add a recipient", bankAccountId);
 
         var constraintViolations = validator.validate(addRecipientRequest);

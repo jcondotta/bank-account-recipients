@@ -1,6 +1,25 @@
+micronaut:
+  openapi:
+    enabled: true
+    target:
+      file: bank-account-recipients-spec.yml
+    property:
+      naming:
+        strategy: KEBAB_CASE
+
+  router:
+    static-resources:
+      swagger:
+        paths: 'classpath:META-INF/swagger'
+        mapping: '/swagger/**'
+      swagger-ui:
+        paths: 'classpath:META-INF/swagger/views/swagger-ui'
+        mapping: '/swagger-ui/**'
+
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID:devAccessKeyId}
   secret-key: ${AWS_SECRET_ACCESS_KEY:devSecretAccessKey}
   region: ${AWS_DEFAULT_REGION:us-east-1}
   dynamodb:
     endpoint: ${AWS_DYNAMODB_ENDPOINT:`http://127.0.0.1:4566`}
+

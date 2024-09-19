@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -51,7 +52,7 @@ public class AddBankAccountLambdaIT implements LocalStackTestContainer {
     @Inject
     private ApplicationContext applicationContext;
 
-    private Long bankAccountId = 998372L;
+    private UUID bankAccountId = UUID.fromString("01920c00-4ede-7982-be8d-98878230b2f1");
     private String recipientName = "Jefferson Condotta";
     private String recipientIBAN = "BR34 9984 1263 6653 4422";
 

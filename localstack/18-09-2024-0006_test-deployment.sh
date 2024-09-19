@@ -11,7 +11,7 @@ BANK_ACCOUNT_ID_PLACE_HOLDER_RESOURCE_ID=$(awslocal apigateway get-resources \
                                           --query "items[?pathPart=='{bank-account-id}'].[id]" \
                                           --output text)
 
-BANK_ACCOUNT_ID=999999999
+BANK_ACCOUNT_ID='01920c12-797d-7ad5-8ba8-c6075ebd77a2'
 RECIPIENT_NAME="recipient-name-test"
 
 awslocal apigateway test-invoke-method \
