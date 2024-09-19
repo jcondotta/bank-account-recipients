@@ -3,5 +3,8 @@ micronaut:
     port: 8186
 
 aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID:devAccessKeyId}
+  secret-key: ${AWS_SECRET_ACCESS_KEY:devSecretAccessKey}
+  region: ${AWS_DEFAULT_REGION:us-east-1}
   dynamodb:
-    endpoint: ${AWS_DYNAMODB_ENDPOINT}
+    endpoint: ${AWS_DYNAMODB_ENDPOINT:`http://127.0.0.1:4566`}
