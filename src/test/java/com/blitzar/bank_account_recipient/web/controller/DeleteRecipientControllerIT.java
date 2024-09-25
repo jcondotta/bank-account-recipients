@@ -1,6 +1,8 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.LocalStackTestContainer;
+import com.blitzar.bank_account_recipient.MessageResolver;
+import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
@@ -12,12 +14,10 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -47,11 +48,14 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     @Named("exceptionMessageSource")
     private MessageSource exceptionMessageSource;
 
+    @Inject
     private RequestSpecification requestSpecification;
 
-    private UUID bankAccountId = UUID.fromString("01920bff-6704-7f02-9671-ddcbbcd33a65");
-    private String recipientName = "Jefferson Condotta";
-    private String recipientIBAN = "DE00 0000 0000 0000 00";
+    private MessageResolver messageResolver;
+
+    private static final UUID BANK_ACCOUNT_ID = UUID.fromString("01920bff-6704-7f02-9671-ddcbbcd33a65");
+    private static final String RECIPIENT_NAME = "Jefferson Condotta";
+    private static final String RECIPIENT_IBAN = "GB69 BARC 2004 0183 9936 68";
 
     @BeforeAll
     public static void beforeAll(){
@@ -60,42 +64,79 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
+        this.messageResolver = new MessageResolver(exceptionMessageSource);
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
                 .basePath(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
     }
 
     @Test
-    public void givenExistentRecipient_whenDeleteRecipient_thenReturnNoContent(){
-        var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
-        addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
+    public void shouldReturn204NoContent_whenRecipientExists() {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
+        addRecipientService.addRecipient(addRecipientRequest);
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", bankAccountId)
-                .pathParam("recipient-name", addRecipientRequest.name())
+                .pathParam("bank-account-id", addRecipientRequest.bankAccountId())
+                .pathParam("recipient-name", addRecipientRequest.recipientName())
         .when()
             .delete()
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId.toString())
-                .sortValue(recipientName)
+                .partitionValue(BANK_ACCOUNT_ID.toString())
+                .sortValue(RECIPIENT_NAME)
                 .build());
 
         assertThat(recipient).isNull();
     }
 
     @Test
-    public void givenNonExistentRecipient_whenDeleteRecipient_thenReturnNotFound(){
-        var addRecipientRequest = new AddRecipientRequest(recipientName, recipientIBAN);
-        addRecipientService.addRecipient(bankAccountId, addRecipientRequest);
+    public void shouldReturn404NotFound_whenRecipientIsDeleted() {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
+        addRecipientService.addRecipient(addRecipientRequest);
+
+        given()
+            .spec(requestSpecification)
+                .pathParam("bank-account-id", addRecipientRequest.bankAccountId())
+                .pathParam("recipient-name", addRecipientRequest.recipientName())
+        .when()
+            .delete()
+        .then()
+            .statusCode(HttpStatus.NO_CONTENT.getCode());
+
+        given()
+            .spec(requestSpecification)
+                .pathParam("bank-account-id", addRecipientRequest.bankAccountId())
+                .pathParam("recipient-name", addRecipientRequest.recipientName())
+        .when()
+            .delete()
+        .then()
+            .statusCode(HttpStatus.NOT_FOUND.getCode());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
+    @Disabled
+    public void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) {
+    }
+
+    @Test
+    @Disabled
+    public void shouldReturn400BadRequest_whenRecipientNameIsMalicious() {
+
+    }
+
+    @Test
+    public void shouldReturn404NotFound_whenRecipientDoesNotExist() {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
+        addRecipientService.addRecipient(addRecipientRequest);
 
         var nonExistentRecipientName = "nonExistentRecipientName";
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", bankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID)
                 .pathParam("recipient-name", nonExistentRecipientName)
         .when()
             .delete()
@@ -103,12 +144,11 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(exceptionMessageSource.getMessage("recipient.notFound", Locale.getDefault(), bankAccountId, nonExistentRecipientName)
-                        .orElseThrow()));
+                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.notFound", BANK_ACCOUNT_ID, nonExistentRecipientName)));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId.toString())
-                .sortValue(recipientName)
+                .partitionValue(BANK_ACCOUNT_ID.toString())
+                .sortValue(RECIPIENT_NAME)
                 .build());
 
         assertThat(recipient).isNotNull();
