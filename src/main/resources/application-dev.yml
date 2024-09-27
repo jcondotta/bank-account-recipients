@@ -1,12 +1,4 @@
 micronaut:
-  openapi:
-    enabled: true
-    target:
-      file: bank-account-recipients-spec.yml
-    property:
-      naming:
-        strategy: KEBAB_CASE
-
   router:
     static-resources:
       swagger:

@@ -4,6 +4,9 @@ micronaut:
   server:
     port: 8086
 
+i18n:
+  default-locale: en_US
+
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
   secret-key: ${AWS_SECRET_ACCESS_KEY}
