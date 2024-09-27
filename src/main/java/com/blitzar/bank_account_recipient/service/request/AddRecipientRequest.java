@@ -1,5 +1,7 @@
 package com.blitzar.bank_account_recipient.service.request;
 
+import com.blitzar.bank_account_recipient.validation.Iban;
+import com.blitzar.bank_account_recipient.validation.f.NoMaliciousInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -23,12 +25,12 @@ public record AddRecipientRequest(
                 requiredMode = RequiredMode.REQUIRED)
         @NotBlank(message = "recipient.recipientName.notBlank")
         @Size(max = 50, message = "recipient.recipientName.tooLong")
+        @NoMaliciousInput(message = "recipient.recipientName.invalid")
         String recipientName,
 
         @Schema(description = "The IBAN of the recipient.",
                 example = "GB29NWBK60161331926819",
                 requiredMode = RequiredMode.REQUIRED)
-//        @InvalidIban
-                @NotBlank(message = "recipient.recipientIban.notBlank")
+        @Iban
         String recipientIban
 ) {}

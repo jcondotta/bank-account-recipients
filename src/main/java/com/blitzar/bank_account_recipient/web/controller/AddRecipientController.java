@@ -42,10 +42,10 @@ public class AddRecipientController {
 
     @Status(HttpStatus.CREATED)
     @Post(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @Operation(summary = "Add a new recipient to a bank account",
-            description = "Creates a new recipient for the provided bank account ID. "
-                    + "The recipient details include the recipientName and IBAN. This endpoint "
-                    + "returns the created recipient's data along with the resource location.")
+    @Operation(summary = "Add a new recipient",
+            description = "Creates a new recipient for the specified bank account. "
+                    + "The request body includes the bankAccountId, recipientName, and IBAN. "
+                    + "This endpoint returns the created recipient's data along with the resource location.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Recipient successfully created.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class))),
@@ -55,7 +55,7 @@ public class AddRecipientController {
                     description = "Internal server error. An unexpected error occurred while processing the request.")
     })
     public HttpResponse<RecipientDTO> addRecipient(
-            @Schema(description = "The request body containing the recipient's recipientName and IBAN.", requiredMode = RequiredMode.REQUIRED)
+            @Schema(description = "The request body containing the bankAccountId, recipientName, and IBAN.", requiredMode = RequiredMode.REQUIRED)
             @Body AddRecipientRequest addRecipientRequest,
             HttpRequest<?> request) {
 

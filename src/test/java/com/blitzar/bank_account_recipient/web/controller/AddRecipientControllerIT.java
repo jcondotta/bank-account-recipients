@@ -2,6 +2,8 @@ package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.MessageResolver;
+import com.blitzar.bank_account_recipient.TestBankAccount;
+import com.blitzar.bank_account_recipient.TestRecipient;
 import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidIBANArgumentProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.MaliciousInputArgumentProvider;
@@ -25,7 +27,6 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -52,9 +53,9 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     private MessageResolver messageResolver;
 
-    private static final UUID BANK_ACCOUNT_ID = UUID.fromString("01920c06-d936-799c-b119-3e782e396e6f");
-    private static final String RECIPIENT_NAME = "Jefferson Condotta";
-    private static final String RECIPIENT_IBAN = "ES74 0487 2679 9321 2855 3867";
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
+    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
+    private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
     @BeforeAll
     public static void beforeAll() {
@@ -71,8 +72,8 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void shouldReturn201_whenRequestIsValid() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
-        var expectedLocation = String.format(RecipientAPIConstants.BANK_ACCOUNT_API_V1_PLACE_HOLDER, BANK_ACCOUNT_ID);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
+        var expectedLocation = String.format(RecipientAPIConstants.BANK_ACCOUNT_API_V1_PLACE_HOLDER, BANK_ACCOUNT_ID_BRAZIL);
         var expectedCreatedAt = LocalDateTime.now(testClockUTC);
 
         var recipientDTO = given()
@@ -94,22 +95,22 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
         );
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(BANK_ACCOUNT_ID.toString())
-                .sortValue(RECIPIENT_NAME)
+                .partitionValue(BANK_ACCOUNT_ID_BRAZIL.toString())
+                .sortValue(RECIPIENT_NAME_JEFFERSON)
                 .build());
 
         assertThat(recipient).isNotNull();
         assertAll(
                 () -> assertThat(recipient.getBankAccountId()).isEqualTo(addRecipientRequest.bankAccountId()),
-                () -> assertThat(recipient.getName()).isEqualTo(addRecipientRequest.recipientName()),
-                () -> assertThat(recipient.getIban()).isEqualTo(addRecipientRequest.recipientIban()),
+                () -> assertThat(recipient.getRecipientName()).isEqualTo(addRecipientRequest.recipientName()),
+                () -> assertThat(recipient.getRecipientIban()).isEqualTo(addRecipientRequest.recipientIban()),
                 () -> assertThat(recipient.getCreatedAt()).isEqualTo(expectedCreatedAt)
         );
     }
 
     @Test
     public void shouldReturn400_whenBankAccountIdIsNull() {
-        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME, RECIPIENT_IBAN);
+        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -126,7 +127,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
     public void shouldReturn400_whenRecipientNameIsBlank(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, invalidRecipientName, RECIPIENT_IBAN);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -142,9 +143,8 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(MaliciousInputArgumentProvider.class)
-    @Disabled
     public void shouldReturn400_whenRecipientNameIsMalicious(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, invalidRecipientName, RECIPIENT_IBAN);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -160,7 +160,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void shouldReturn400_whenRecipientNameIsLongerThan50Characters() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, "J".repeat(51), RECIPIENT_IBAN);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, "J".repeat(51), RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -177,7 +177,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
     public void shouldReturn400_whenRecipientIbanIsBlank(String invalidRecipientIban) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, invalidRecipientIban);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
 
         given()
             .spec(requestSpecification)
@@ -188,14 +188,13 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.recipientIban.notBlank")));
+                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.recipientIban.invalid")));
     }
 
     @ParameterizedTest
     @ArgumentsSource(MaliciousInputArgumentProvider.class)
-    @Disabled
     public void shouldReturn400_whenRecipientIBANIsMalicious(String invalidRecipientIBAN) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, invalidRecipientIBAN);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIBAN);
 
         given()
             .spec(requestSpecification)
@@ -211,9 +210,8 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(InvalidIBANArgumentProvider.class)
-    @Disabled
     public void shouldReturn400_whenRecipientIBANIsInvalid(String invalidRecipientIBAN) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, invalidRecipientIBAN);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIBAN);
 
         given()
             .spec(requestSpecification)
@@ -243,7 +241,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
                 .body("errors.message", containsInAnyOrder(
                         messageResolver.getMessage("recipient.bankAccountId.notNull"),
                         messageResolver.getMessage("recipient.recipientName.notBlank"),
-                        messageResolver.getMessage("recipient.recipientIban.notBlank"))
+                        messageResolver.getMessage("recipient.recipientIban.invalid"))
                 );
 
     }

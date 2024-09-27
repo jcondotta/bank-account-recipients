@@ -106,7 +106,7 @@ class AddRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.notBlank");
+                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.invalid");
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
                 });
 
@@ -140,7 +140,7 @@ class AddRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.notBlank");
+                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
                 });
 
@@ -157,7 +157,7 @@ class AddRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.notBlank");
+                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
                 });
 
@@ -195,7 +195,7 @@ class AddRecipientServiceTest {
         Map<String, String> expectedViolations = Map.of(
                 "recipient.bankAccountId.notNull", "bankAccountId",
                 "recipient.recipientName.notBlank", "recipientName",
-                "recipient.recipientIban.notBlank", "recipientIban"
+                "recipient.recipientIban.invalid", "recipientIban"
         );
 
         violations.forEach(violation -> {

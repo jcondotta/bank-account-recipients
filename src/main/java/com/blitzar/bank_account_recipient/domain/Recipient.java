@@ -14,18 +14,18 @@ public class Recipient {
 
     private UUID bankAccountId;
 
-    private String name;
+    private String recipientName;
 
-    private String iban;
+    private String recipientIban;
 
     private LocalDateTime createdAt;
 
     public Recipient() { }
 
-    public Recipient(UUID bankAccountId, String name, String iban, LocalDateTime createdAt) {
+    public Recipient(UUID bankAccountId, String recipientName, String recipientIban, LocalDateTime createdAt) {
         this.bankAccountId = bankAccountId;
-        this.name = name;
-        this.iban = iban;
+        this.recipientName = recipientName;
+        this.recipientIban = recipientIban;
         this.createdAt = createdAt;
     }
 
@@ -38,21 +38,21 @@ public class Recipient {
         this.bankAccountId = bankAccountId;
     }
 
-    public String getName() {
-        return name;
+    public String getRecipientName() {
+        return recipientName;
     }
 
     @DynamoDbSortKey
-    public void setName(String name) {
-        this.name = name;
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
     }
 
-    public String getIban() {
-        return iban;
+    public String getRecipientIban() {
+        return recipientIban;
     }
 
-    public void setIban(String iban) {
-        this.iban = iban;
+    public void setRecipientIban(String recipientIban) {
+        this.recipientIban = recipientIban;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -67,8 +67,8 @@ public class Recipient {
     public String toString() {
         return "Recipient{" +
                 "bankAccountId=" + bankAccountId +
-                ", name='" + name + '\'' +
-                ", iban='" + iban + '\'' +
+                ", recipientName='" + recipientName + '\'' +
+                ", recipientIban='" + recipientIban + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }
