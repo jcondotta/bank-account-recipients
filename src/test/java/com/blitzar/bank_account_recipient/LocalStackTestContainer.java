@@ -23,7 +23,12 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
 
     @Override
     default Map<String, String> getProperties() {
-        Startables.deepStart(LOCALSTACK_CONTAINER).join();
+        try {
+            Startables.deepStart(LOCALSTACK_CONTAINER).join();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Failed to start LocalStack container", e);
+        }
 
         return Stream.of(getAWSProperties())
                 .flatMap(property -> property.entrySet().stream())
