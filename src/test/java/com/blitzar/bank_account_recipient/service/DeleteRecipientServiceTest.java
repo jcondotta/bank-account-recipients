@@ -2,11 +2,9 @@ package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.TestValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.InvalidStringArgumentProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.MaliciousInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
-import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import com.blitzar.bank_account_recipient.service.request.DeleteRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -100,7 +98,7 @@ class DeleteRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.notBlank");
+                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.invalid");
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
                 });
 

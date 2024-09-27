@@ -1,11 +1,8 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.LocalStackTestContainer;
-import com.blitzar.bank_account_recipient.MessageResolver;
+import com.blitzar.bank_account_recipient.*;
 import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.service.AddRecipientService;
-import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -21,13 +18,8 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
-import java.time.Clock;
-import java.util.Locale;
-import java.util.UUID;
-
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -39,10 +31,10 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     private DynamoDbTable<Recipient> dynamoDbTable;
 
     @Inject
-    private AddRecipientService addRecipientService;
+    private AddRecipientTestService addRecipientService;
 
     @Inject
-    private Clock testFixedInstantUTC;
+    private RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
     @Named("exceptionMessageSource")
@@ -52,10 +44,6 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     private RequestSpecification requestSpecification;
 
     private MessageResolver messageResolver;
-
-    private static final UUID BANK_ACCOUNT_ID = UUID.fromString("01920bff-6704-7f02-9671-ddcbbcd33a65");
-    private static final String RECIPIENT_NAME = "Jefferson Condotta";
-    private static final String RECIPIENT_IBAN = "GB69 BARC 2004 0183 9936 68";
 
     @BeforeAll
     public static void beforeAll(){
@@ -70,23 +58,27 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
                 .basePath(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
     }
 
+    @AfterEach
+    public void afterEach(){
+        recipientTablePurgeService.purgeTable();
+    }
+
     @Test
     public void shouldReturn204NoContent_whenRecipientExists() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
-        addRecipientService.addRecipient(addRecipientRequest);
+        var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", addRecipientRequest.bankAccountId())
-                .pathParam("recipient-name", addRecipientRequest.recipientName())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("recipient-name", jeffersonRecipientDTO.recipientName())
         .when()
             .delete()
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(BANK_ACCOUNT_ID.toString())
-                .sortValue(RECIPIENT_NAME)
+                .partitionValue(jeffersonRecipientDTO.bankAccountId().toString())
+                .sortValue(jeffersonRecipientDTO.recipientName())
                 .build());
 
         assertThat(recipient).isNull();
@@ -94,13 +86,12 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void shouldReturn404NotFound_whenRecipientIsDeleted() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
-        addRecipientService.addRecipient(addRecipientRequest);
+        var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", addRecipientRequest.bankAccountId())
-                .pathParam("recipient-name", addRecipientRequest.recipientName())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("recipient-name", jeffersonRecipientDTO.recipientName())
         .when()
             .delete()
         .then()
@@ -108,8 +99,8 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", addRecipientRequest.bankAccountId())
-                .pathParam("recipient-name", addRecipientRequest.recipientName())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("recipient-name", jeffersonRecipientDTO.recipientName())
         .when()
             .delete()
         .then()
@@ -130,13 +121,12 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void shouldReturn404NotFound_whenRecipientDoesNotExist() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID, RECIPIENT_NAME, RECIPIENT_IBAN);
-        addRecipientService.addRecipient(addRecipientRequest);
+        var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         var nonExistentRecipientName = "nonExistentRecipientName";
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", BANK_ACCOUNT_ID)
+                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
                 .pathParam("recipient-name", nonExistentRecipientName)
         .when()
             .delete()
@@ -144,11 +134,12 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.notFound", BANK_ACCOUNT_ID, nonExistentRecipientName)));
+                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.notFound",
+                        jeffersonRecipientDTO.bankAccountId(), nonExistentRecipientName)));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(BANK_ACCOUNT_ID.toString())
-                .sortValue(RECIPIENT_NAME)
+                .partitionValue(jeffersonRecipientDTO.bankAccountId().toString())
+                .sortValue(jeffersonRecipientDTO.recipientName())
                 .build());
 
         assertThat(recipient).isNotNull();
