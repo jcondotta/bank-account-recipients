@@ -2,7 +2,12 @@ package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.*;
 import com.blitzar.bank_account_recipient.domain.Recipient;
+import com.blitzar.bank_account_recipient.helper.TestBankAccount;
+import com.blitzar.bank_account_recipient.helper.TestRecipient;
+import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
+import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
+import com.blitzar.bank_account_recipient.validation.RecipientValidator;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
@@ -32,7 +37,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     private static final int PAGE_LIMIT_2 = 2;
 
     @Inject
-    private AddRecipientTestService addRecipientService;
+    private AddRecipientServiceFacade addRecipientService;
 
     @Inject
     private DynamoDbTable<Recipient> dynamoDbTable;
@@ -86,7 +91,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    void shouldReturn200OkAndQueryWithRecipientNamePrefix_whenRecipientNameIsProvided() {
+    void shouldReturn200OKAndRecipientListWithRecipientNamePrefix_whenRecipientNameIsProvided() {
         var expectedRecipients = addRecipientService.addRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JESSICA);
         addRecipientService.addRecipient(TestBankAccount.ITALY, TestRecipient.PATRIZIO);
 

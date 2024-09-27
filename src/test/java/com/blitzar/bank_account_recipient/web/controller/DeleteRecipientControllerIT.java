@@ -1,8 +1,12 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.*;
-import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.MaliciousInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
+import com.blitzar.bank_account_recipient.helper.TestBankAccount;
+import com.blitzar.bank_account_recipient.helper.TestRecipient;
+import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
+import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
 import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -31,7 +35,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     private DynamoDbTable<Recipient> dynamoDbTable;
 
     @Inject
-    private AddRecipientTestService addRecipientService;
+    private AddRecipientServiceFacade addRecipientService;
 
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
@@ -108,15 +112,20 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    @Disabled
-    public void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) {
-    }
-
-    @Test
-    @Disabled
-    public void shouldReturn400BadRequest_whenRecipientNameIsMalicious() {
-
+    @ArgumentsSource(MaliciousInputArgumentProvider.class)
+    public void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
+        given()
+            .spec(requestSpecification)
+                .pathParam("bank-account-id", TestBankAccount.BRAZIL.getBankAccountId())
+                .pathParam("recipient-name", invalidRecipientName)
+        .when()
+            .delete()
+        .then()
+            .statusCode(HttpStatus.BAD_REQUEST.getCode())
+            .rootPath("_embedded")
+                .body("errors", hasSize(1))
+                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.recipientName.invalid",
+                        TestBankAccount.BRAZIL.getBankAccountId(), invalidRecipientName)));
     }
 
     @Test

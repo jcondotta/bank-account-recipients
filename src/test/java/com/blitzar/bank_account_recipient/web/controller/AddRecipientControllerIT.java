@@ -2,16 +2,18 @@ package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.MessageResolver;
-import com.blitzar.bank_account_recipient.TestBankAccount;
-import com.blitzar.bank_account_recipient.TestRecipient;
+import com.blitzar.bank_account_recipient.helper.TestBankAccount;
+import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.InvalidIBANArgumentProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.MaliciousInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
+import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -27,6 +29,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -51,6 +54,9 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private RequestSpecification requestSpecification;
 
+    @Inject
+    private RecipientTablePurgeService recipientTablePurgeService;
+
     private MessageResolver messageResolver;
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
@@ -70,10 +76,20 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
                 .basePath(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING);
     }
 
+    @AfterEach
+    public void afterEach(){
+        recipientTablePurgeService.purgeTable();
+    }
+
     @Test
-    public void shouldReturn201_whenRequestIsValid() {
+    public void shouldReturn201Created_whenRequestIsValid() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
-        var expectedLocation = String.format(RecipientAPIConstants.BANK_ACCOUNT_API_V1_PLACE_HOLDER, BANK_ACCOUNT_ID_BRAZIL);
+
+        var expectedLocation = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
+                .expand(Map.of("bank-account-id", BANK_ACCOUNT_ID_BRAZIL))
+                .getRawPath();
+
+
         var expectedCreatedAt = LocalDateTime.now(testClockUTC);
 
         var recipientDTO = given()
@@ -109,7 +125,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn400_whenBankAccountIdIsNull() {
+    public void shouldReturn400BadRequest_whenBankAccountIdIsNull() {
         var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -126,7 +142,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    public void shouldReturn400_whenRecipientNameIsBlank(String invalidRecipientName) {
+    public void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -143,7 +159,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(MaliciousInputArgumentProvider.class)
-    public void shouldReturn400_whenRecipientNameIsMalicious(String invalidRecipientName) {
+    public void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -159,7 +175,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn400_whenRecipientNameIsLongerThan50Characters() {
+    public void shouldReturn400BadRequest_whenRecipientNameIsLongerThan50Characters() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, "J".repeat(51), RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -176,7 +192,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    public void shouldReturn400_whenRecipientIbanIsBlank(String invalidRecipientIban) {
+    public void shouldReturn400BadRequest_whenRecipientIbanIsBlank(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
 
         given()
@@ -193,7 +209,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(MaliciousInputArgumentProvider.class)
-    public void shouldReturn400_whenRecipientIBANIsMalicious(String invalidRecipientIBAN) {
+    public void shouldReturn400BadRequest_whenRecipientIBANIsMalicious(String invalidRecipientIBAN) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIBAN);
 
         given()
@@ -210,7 +226,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(InvalidIBANArgumentProvider.class)
-    public void shouldReturn400_whenRecipientIBANIsInvalid(String invalidRecipientIBAN) {
+    public void shouldReturn400BadRequest_whenRecipientIBANIsInvalid(String invalidRecipientIBAN) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIBAN);
 
         given()
@@ -226,7 +242,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    void shouldReturn400_whenAllFieldsAreNull() {
+    void shouldReturn400BadRequest_whenAllFieldsAreNull() {
         var addRecipientRequest = new AddRecipientRequest(null, null, null);
 
         given()

@@ -17,4 +17,4 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './localstack:/etc/localstack/init/ready.d/'
-      - './target/bank-account-recipients-0.1.jar:/home/localstack/bank-account-recipients-0.1.jar'
+#      - './target/bank-account-recipients-0.1.jar:/home/localstack/bank-account-recipients-0.1.jar'

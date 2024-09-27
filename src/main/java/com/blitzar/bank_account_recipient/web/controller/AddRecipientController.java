@@ -20,6 +20,8 @@ import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -63,14 +65,14 @@ public class AddRecipientController {
                 addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
 
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
-        var locationUri = buildLocationUri(addRecipientRequest.bankAccountId()).build();
+        var locationUri = buildLocationUri(addRecipientRequest.bankAccountId());
 
         return HttpResponse.created(locationUri)
                 .body(recipientDTO);
     }
 
-    private UriBuilder buildLocationUri(UUID bankAccountId) {
-        var location = String.format(RecipientAPIConstants.BANK_ACCOUNT_API_V1_PLACE_HOLDER, bankAccountId);
-        return UriBuilder.of(location);
+    private URI buildLocationUri(UUID bankAccountId) {
+        return UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
+                .expand(Map.of("bank-account-id", bankAccountId));
     }
 }

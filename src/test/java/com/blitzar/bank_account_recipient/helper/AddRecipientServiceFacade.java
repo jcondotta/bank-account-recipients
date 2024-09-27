@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient;
+package com.blitzar.bank_account_recipient.helper;
 
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
@@ -12,12 +12,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Singleton
-public class AddRecipientTestService {
+public class AddRecipientServiceFacade {
 
     private final AddRecipientService addRecipientService;
 
     @Inject
-    public AddRecipientTestService(AddRecipientService addRecipientService) {
+    public AddRecipientServiceFacade(AddRecipientService addRecipientService) {
         this.addRecipientService = addRecipientService;
     }
 
