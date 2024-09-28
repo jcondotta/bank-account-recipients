@@ -1,34 +1,65 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: On Push - CI pipeline
+name: Microservice CI with Docker Cache and Integration Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
-    permissions: write-all
+
+    services:
+      localstack:
+        image: localstack/localstack:3.7.0
+        ports:
+          - 4566:4566
+        options: --health-cmd "curl -f http://localhost:4566/health || exit 1" --health-interval 10s --health-retries 5 --health-timeout 5s
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'corretto'
-          cache: maven
 
-      - name: Build and Run Tests
-        run: mvn test --batch-mode --fail-at-end
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.docker-cache
+          key: ${{ runner.os }}-docker-localstack-3.7.0
+          restore-keys: |
+            ${{ runner.os }}-docker-localstack
+
+      - name: Load Docker image from cache
+        run: |
+          if [[ -f /tmp/.docker-cache ]]; then
+            docker load -i /tmp/.docker-cache
+          else
+            echo "No cached Docker image found."
+          fi
+
+      - name: Pull LocalStack image (if not cached)
+        run: docker pull localstack/localstack:3.7.0
+
+      - name: Save Docker image to cache
+        run: docker save -o /tmp/.docker-cache localstack/localstack:3.7.0
+
+      - name: Build and run unit tests
+        run: mvn clean test
+
+      - name: Run integration tests
+        run: mvn verify -DskipTests=true -DskipITs=false
