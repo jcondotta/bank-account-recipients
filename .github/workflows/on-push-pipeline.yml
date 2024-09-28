@@ -47,20 +47,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-localstack
 
+      # Check if the cache was restored
+      - name: Check if Docker cache exists
+        run: |
+          if [ -f /tmp/.docker-cache ]; then
+            echo "Docker cache found!"
+          else
+            echo "Docker cache NOT found!"
+          fi
+
       - name: Load Docker image from cache
         run: |
           if [ -f /tmp/.docker-cache ]; then
             docker load -i /tmp/.docker-cache || true
           fi
 
+      # Optionally pull LocalStack image if not cached
       - name: Pull LocalStack image (if not cached)
-        run: docker pull localstack/localstack:3.7.0 || true
+        run: |
+          if [ "$(docker images -q localstack/localstack:3.7.0 2> /dev/null)" == "" ]; then
+            echo "Pulling LocalStack image"
+            docker pull localstack/localstack:3.7.0
+          else
+            echo "LocalStack image found in cache"
+          fi
 
       - name: Save Docker image to cache
         run: docker save -o /tmp/.docker-cache localstack/localstack:3.7.0
-
-#      - name: Build and run unit tests
-#        run: mvn clean test
 
       - name: Build and run unit/integration tests
         run: mvn clean verify
