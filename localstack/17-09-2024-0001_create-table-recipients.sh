@@ -6,9 +6,9 @@ awslocal dynamodb create-table \
    --table-name "${RECIPIENTS_TABLE_NAME}" \
    --attribute-definitions \
           AttributeName=bankAccountId,AttributeType=S \
-          AttributeName=name,AttributeType=S \
+          AttributeName=recipientName,AttributeType=S \
    --key-schema \
           AttributeName=bankAccountId,KeyType=HASH \
-          AttributeName=name,KeyType=RANGE \
+          AttributeName=recipientName,KeyType=RANGE \
    --billing-mode=PROVISIONED \
    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
