@@ -46,13 +46,11 @@ jobs:
             echo "Docker image cache not found, proceeding with fresh pull."
           fi
 
-      - name: Pull LocalStack image (if not cached)
-        run: docker pull localstack/localstack:3.7.0
-
       - name: Save Docker image to cache
+        if: always()
         run: docker save -o /tmp/.docker-cache localstack/localstack:3.7.0
 
-      - name: Start LocalStack
+      - name: Start LocalStack manually
         run: |
           docker run -d --name localstack \
             -p 4566:4566 \
