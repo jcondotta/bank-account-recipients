@@ -26,6 +26,7 @@ jobs:
         env:
           SERVICES: dynamodb
 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
