@@ -55,6 +55,14 @@ jobs:
       - name: Save Docker image to cache
         run: docker save -o /tmp/.docker-cache localstack/localstack:3.7.0
 
+      - name: Start LocalStack manually
+        run: |
+          docker run -d --name localstack \
+            -p 4566:4566 \
+            -p 4510-4513:4510-4513 \
+            -e SERVICES=dynamodb \
+            localstack/localstack:3.7.0
+
       - name: Build and run unit tests
         run: mvn clean test
 
