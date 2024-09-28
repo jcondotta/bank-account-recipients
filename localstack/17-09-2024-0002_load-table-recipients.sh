@@ -9,9 +9,9 @@ awslocal dynamodb batch-write-item \
             {"PutRequest":
               {"Item":
                 {
-                  "bankAccountId": {"S": "01920c11-fc94-758b-b1f4-377b6f05de4a"},
-                  "name": {"S": "Jefferson Condotta"},
-                  "iban": {"S": "ES9220804343856445468519"},
+                  "bankAccountId": {"S": "01920bff-1338-7efd-ade6-e9128debe5d4"},
+                  "recipientName": {"S": "Jefferson Condotta"},
+                  "recipientIban": {"S": "ES3801283316232166447417"},
                   "createdAt": {"S": "2024-08-20T09:27:33.448631954"}
                 }
               }
@@ -19,9 +19,9 @@ awslocal dynamodb batch-write-item \
             {"PutRequest":
               {"Item":
                 {
-                  "bankAccountId": {"S": "01920c11-fc94-758b-b1f4-377b6f05de4a"},
-                  "name": {"S": "Jefferson William"},
-                  "iban": {"S": "BR0648882682239868944168935S6"},
+                  "bankAccountId": {"S": "01920bff-1338-7efd-ade6-e9128debe5d4"},
+                  "recipientName": {"S": "Indalecio Condotta"},
+                  "recipientIban": {"S": "BR2346424773884897968151332C5"},
                   "createdAt": {"S": "2022-01-16T14:11:02.112445345"}
                 }
               }
@@ -29,9 +29,9 @@ awslocal dynamodb batch-write-item \
             {"PutRequest":
               {"Item":
                 {
-                  "bankAccountId": {"S": "01920c11-fc94-758b-b1f4-377b6f05de4a"},
-                  "name": {"S": "Jefferson Feitosa"},
-                  "iban": {"S": "BR0648882682239868944168999S9"},
+                  "bankAccountId": {"S": "01920bff-1338-7efd-ade6-e9128debe5d4"},
+                  "recipientName": {"S": "Virginio Condotta"},
+                  "recipientIban": {"S": "IT49W0300203280114524628857"},
                   "createdAt": {"S": "2022-01-16T14:11:02.112445345"}
                 }
               }
@@ -39,9 +39,9 @@ awslocal dynamodb batch-write-item \
             {"PutRequest":
               {"Item":
                 {
-                  "bankAccountId": {"S": "01920c11-fc94-758b-b1f4-377b6f05de4a"},
-                  "name": {"S": "Patrizio Condotta"},
-                  "iban": {"S": "ES9234080434000044543219"},
+                  "bankAccountId": {"S": "01920bff-1338-7efd-ade6-e9128debe5d4"},
+                  "recipientName": {"S": "Patrizio Condotta"},
+                  "recipientIban": {"S": "IT93Q0300203280175171887193"},
                   "createdAt": {"S": "2024-08-20T09:27:33.448631954"}
                 }
               }
@@ -49,19 +49,19 @@ awslocal dynamodb batch-write-item \
             {"PutRequest":
               {"Item":
                 {
-                  "bankAccountId": {"S": "01921a68-8d69-7fc1-952e-9beeac6b0c75"},
-                  "name": {"S": "Virginio Condotta"},
-                  "iban": {"S": "BR0648882682239868944168911S1"},
-                  "createdAt": {"S": "2022-01-16T14:11:02.112445345"}
+                  "bankAccountId": {"S": "01920bff-1338-7efd-ade6-e9128debe5d4"},
+                  "recipientName": {"S": "Jessica Condotta"},
+                  "recipientIban": {"S": "BR4873995739459736698619729E5"},
+                  "createdAt": {"S": "2024-08-20T09:27:33.448631954"}
                 }
               }
             },
             {"PutRequest":
               {"Item":
                 {
-                  "bankAccountId": {"S": "01921a68-8d69-7fc1-952e-9beeac6b0c75"},
-                  "name": {"S": "Indalecio Condotta"},
-                  "iban": {"S": "BR0648882682239868944168911S1"},
+                  "bankAccountId": {"S": "01921f7f-5672-70ac-8c7e-6d7a941706cb"},
+                  "recipientName": {"S": "Jefferson Condotta"},
+                  "recipientIban": {"S": "ES3801283316232166447417"},
                   "createdAt": {"S": "2022-01-16T14:11:02.112445345"}
                 }
               }
