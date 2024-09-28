@@ -21,7 +21,6 @@ jobs:
         env:
           SERVICES: dynamodb
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -49,10 +48,13 @@ jobs:
             ${{ runner.os }}-docker-localstack
 
       - name: Load Docker image from cache
-        run: docker load -i /tmp/.docker-cache || true
+        run: |
+          if [ -f /tmp/.docker-cache ]; then
+            docker load -i /tmp/.docker-cache || true
+          fi
 
       - name: Pull LocalStack image (if not cached)
-        run: docker pull localstack/localstack:3.7.0
+        run: docker pull localstack/localstack:3.7.0 || true
 
       - name: Save Docker image to cache
         run: docker save -o /tmp/.docker-cache localstack/localstack:3.7.0
@@ -61,8 +63,9 @@ jobs:
         run: mvn clean test
 
       - name: Run integration tests
-        run: mvn verify -DskipTests=false -DskipITs=false
+        run: mvn verify -DskipTests=true -DskipITs=false
 
       - name: Print LocalStack logs on failure
         if: failure()
-        run: docker logs $(docker ps -q --filter ancestor=localstack/localstack:3.7.0)
+        run: |
+          docker logs $(docker ps -q --filter ancestor=localstack/localstack:3.7.0) || echo "No logs available for LocalStack."
