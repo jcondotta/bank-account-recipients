@@ -33,4 +33,4 @@ public record AddRecipientRequest(
                 requiredMode = RequiredMode.REQUIRED)
         @Iban
         String recipientIban
-) {}
+) { }
