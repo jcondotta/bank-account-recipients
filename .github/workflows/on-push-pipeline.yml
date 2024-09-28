@@ -16,10 +16,15 @@ jobs:
       localstack:
         image: localstack/localstack:3.7.0
         ports:
-          - 4566:4566
-        options: --health-cmd "curl -f http://localhost:4566/health || exit 1" --health-interval 20s --health-retries 10 --health-timeout 10s
+          - 127.0.0.1:4566:4566
+          - 127.0.0.1:4510-4513:4510-4513
+        options: >
+          --health-cmd "curl -f http://localhost:4566/health || exit 1" 
+          --health-interval 10s 
+          --health-retries 5 
+          --health-timeout 5s
         env:
-          SERVICES: dynamodb,s3  # Specify required services for faster startup
+          SERVICES: dynamodb
 
     steps:
       - name: Checkout code
