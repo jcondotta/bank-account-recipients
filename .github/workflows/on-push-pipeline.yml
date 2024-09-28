@@ -63,7 +63,7 @@ jobs:
 #        run: mvn clean test
 
       - name: Build and run unit/integration tests
-        run: mvn clean verify -DskipTests=true -DskipITs=false
+        run: mvn clean verify
 
       - name: Print LocalStack logs on failure
         if: failure()
