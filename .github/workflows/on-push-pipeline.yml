@@ -12,6 +12,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      LOCALSTACK_VERSION: "3.7.0"
+      LAMBDA_FUNCTION_NAME: "bank-account-recipients-java-17"
+      ARTIFACT_NAME: "bank-account-recipients-0.1.jar"
+      AWS_REGION: "eu-west-3"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,7 +27,7 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: '17'
-          cache: maven  # Automatically caches Maven dependencies
+          cache: maven
 
       # Cache LocalStack image
       - name: Cache LocalStack image
@@ -29,7 +35,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.docker-cache/localstack
-          key: ${{ runner.os }}-localstack-3.7.0
+          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
 
       # Load or Pull LocalStack Docker image
       - name: Get LocalStack Docker Image
@@ -39,11 +45,11 @@ jobs:
             docker load -i ~/.docker-cache/localstack/localstack.tar
           else
             echo "LocalStack image not found in cache, pulling from Docker Hub..."
-            docker pull localstack/localstack:3.7.0
-            
+            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
+          
             echo "Saving LocalStack image to cache..."
             mkdir -p ~/.docker-cache/localstack
-            docker save localstack/localstack:3.7.0 -o ~/.docker-cache/localstack/localstack.tar
+            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
           fi
 
       # Cache Ryuk image
@@ -63,7 +69,7 @@ jobs:
           else
             echo "Ryuk image not found in cache, pulling from Docker Hub..."
             docker pull testcontainers/ryuk:0.7.0
-            
+          
             echo "Saving Ryuk image to cache..."
             mkdir -p ~/.docker-cache/ryuk
             docker save testcontainers/ryuk:0.7.0 -o ~/.docker-cache/ryuk/ryuk.tar
@@ -75,7 +81,7 @@ jobs:
           docker run -d --name localstack \
             -p 127.0.0.1:4566:4566 \
             -e SERVICES=dynamodb \
-            localstack/localstack:3.7.0
+            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
       # Run mvn verify to build and test the project, which also packages the JAR
       - name: Build, run tests, and package
@@ -87,11 +93,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-3
+          aws-region: ${{ env.AWS_REGION }}
 
       # Deploy the JAR to AWS Lambda
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
-            --function-name bank-account-recipients-java-17 \
-            --zip-file fileb://target/bank-account-recipients-0.1.jar 
+            --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://target/${{ env.ARTIFACT_NAME }}
