@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  localstack:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -63,11 +63,29 @@ jobs:
             -p 127.0.0.1:4510-4513:4510-4513 \
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
+          
           echo "Waiting for LocalStack to be fully ready..."
-          until curl -s http://localhost:4566/health | grep "\"dynamodb\": \"running\""; do
-            echo "Waiting for LocalStack..."
-            sleep 5
+          
+          MAX_ATTEMPTS=30  # Maximum number of attempts to check the service health
+          SLEEP_TIME=10    # Wait time between attempts
+          
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            echo "Checking LocalStack health... attempt #$i"
+            HEALTH_STATUS=$(curl -s http://localhost:4566/health | jq -r .services.dynamodb)
+            if [ "$HEALTH_STATUS" == "running" ]; then
+              echo "LocalStack DynamoDB is running!"
+              break
+            fi
+            echo "LocalStack not ready yet. Sleeping for $SLEEP_TIME seconds..."
+            sleep $SLEEP_TIME
           done
+          
+          if [ "$HEALTH_STATUS" != "running" ]; then
+            echo "LocalStack failed to start after $MAX_ATTEMPTS attempts."
+            echo "Printing LocalStack logs for debugging:"
+            docker logs localstack
+            exit 1
+          fi
 
       - name: Build and run unit tests
         run: mvn clean test
