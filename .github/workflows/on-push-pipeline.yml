@@ -41,7 +41,7 @@ jobs:
           mkdir -p /tmp/localstack-cache
           docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
 
-            - name: Start LocalStack manually
+      - name: Start LocalStack manually
         run: |
           echo "Starting LocalStack container..."
           docker run -d --name localstack \
@@ -60,7 +60,7 @@ jobs:
 
             # Check the container's health status directly using Docker
             CONTAINER_HEALTH=$(docker inspect --format='{{json .State.Health.Status}}' localstack)
-          
+
             if [ "$CONTAINER_HEALTH" == "\"healthy\"" ]; then
               echo "LocalStack container is healthy!"
               break
