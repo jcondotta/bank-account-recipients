@@ -1,4 +1,4 @@
-name:  Microservice CI with LocalStack Docker Cache and Integration Tests
+name: Microservice CI with LocalStack Docker Cache and Integration Tests
 
 on:
   push:
@@ -6,34 +6,19 @@ on:
       - main
 
 jobs:
-  build:
+  localstack:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Cache JDK
-        uses: actions/cache@v3
-        with:
-          path: ~/.sdkman/candidates/java/17.0.10-amzn
-          key: ${{ runner.os }}-jdk-corretto-17
-          restore-keys: |
-            ${{ runner.os }}-jdk-corretto
-
-      - name: Set up JDK
+      - name: Set up JDK with Maven cache
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: '17'
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven
+          cache: maven  # Automatically caches Maven dependencies
 
       - name: Cache LocalStack image
         id: cache-localstack
@@ -63,12 +48,9 @@ jobs:
 #            -p 127.0.0.1:4510-4513:4510-4513 \
 #            -e SERVICES=dynamodb \
 #            localstack/localstack:3.7.0
-#
 #          echo "Waiting for LocalStack to be fully ready..."
-#
-#          MAX_ATTEMPTS=30  # Maximum number of attempts to check the service health
-#          SLEEP_TIME=10    # Wait time between attempts
-#
+#          MAX_ATTEMPTS=30
+#          SLEEP_TIME=10
 #          for i in $(seq 1 $MAX_ATTEMPTS); do
 #            echo "Checking LocalStack health... attempt #$i"
 #            HEALTH_STATUS=$(curl -s http://localhost:4566/health | jq -r .services.dynamodb)
@@ -79,10 +61,8 @@ jobs:
 #            echo "LocalStack not ready yet. Sleeping for $SLEEP_TIME seconds..."
 #            sleep $SLEEP_TIME
 #          done
-#
 #          if [ "$HEALTH_STATUS" != "running" ]; then
 #            echo "LocalStack failed to start after $MAX_ATTEMPTS attempts."
-#            echo "Printing LocalStack logs for debugging:"
 #            docker logs localstack
 #            exit 1
 #          fi
