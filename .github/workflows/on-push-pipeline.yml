@@ -41,12 +41,11 @@ jobs:
           mkdir -p /tmp/localstack-cache
           docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
 
-      - name: Start LocalStack manually
+            - name: Start LocalStack manually
         run: |
           echo "Starting LocalStack container..."
           docker run -d --name localstack \
             -p 127.0.0.1:4566:4566 \
-            -p 127.0.0.1:4510-4513:4510-4513 \
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
 
@@ -61,7 +60,7 @@ jobs:
 
             # Check the container's health status directly using Docker
             CONTAINER_HEALTH=$(docker inspect --format='{{json .State.Health.Status}}' localstack)
-
+          
             if [ "$CONTAINER_HEALTH" == "\"healthy\"" ]; then
               echo "LocalStack container is healthy!"
               break
@@ -80,28 +79,38 @@ jobs:
             # Verify that ports are open and accessible
             netstat -tuln | grep 4566 || echo "Port 4566 is not open yet"
 
-            # Capture the curl response and check if it's valid JSON before parsing
-            HEALTH_RESPONSE=$(curl --max-time 10 -s http://localhost:4566/health | jq -r .services.dynamodb)
+            # Capture the curl response
+            HEALTH_RESPONSE=$(curl --max-time 10 -s http://localhost:4566/health)
 
-            # Print the health response for debugging
-            echo "DynamoDB health response: $HEALTH_RESPONSE"
+            # Print the raw response for debugging
+            echo "Raw health response: $HEALTH_RESPONSE"
 
-            if [ "$HEALTH_RESPONSE" == "running" ]; then
-              echo "LocalStack DynamoDB is running!"
-              break
+            # Ensure the response is valid JSON before using jq
+            if echo "$HEALTH_RESPONSE" | jq empty > /dev/null 2>&1; then
+              HEALTH_STATUS=$(echo "$HEALTH_RESPONSE" | jq -r .services.dynamodb)
+
+              if [ "$HEALTH_STATUS" == "running" ]; then
+                echo "LocalStack DynamoDB is running!"
+                break
+              else
+                echo "LocalStack DynamoDB is not running yet. Current status: $HEALTH_STATUS"
+              fi
             else
-              echo "LocalStack DynamoDB is not ready yet. Current status: $HEALTH_RESPONSE"
+              echo "Invalid JSON response: $HEALTH_RESPONSE"
             fi
 
-            echo "Sleeping for $SLEEP_TIME seconds..."
+            echo "LocalStack not ready yet. Sleeping for $SLEEP_TIME seconds..."
             sleep $SLEEP_TIME
           done
 
-          if [ "$HEALTH_RESPONSE" != "running" ]; then
+          if [ "$HEALTH_STATUS" != "running" ]; then
             echo "LocalStack failed to start after $MAX_ATTEMPTS attempts."
             docker logs localstack
             exit 1
           fi
+      
+      
+      
 
       - name: Build and run unit tests
         run: mvn clean test
