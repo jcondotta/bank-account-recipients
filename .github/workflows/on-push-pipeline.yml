@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  localstack:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,21 +28,19 @@ jobs:
           path: /tmp/localstack-cache
           key: ${{ runner.os }}-localstack-3.7.0
 
-      # Load LocalStack image from cache
-      - name: Load LocalStack Docker image from cache
-        if: steps.cache-localstack.outputs.cache-hit == 'true'
-        run: docker load -i /tmp/localstack-cache/localstack.tar
-
-      # Pull and save LocalStack image if not cached
-      - name: Log and Pull LocalStack Docker image if not cached
-        if: steps.cache-localstack.outputs.cache-hit != 'true'
+      - name: Load / Pull LocalStack Docker image
         run: |
-          echo "LocalStack image not found in cache, pulling from Docker Hub..."
-          docker pull localstack/localstack:3.7.0
+          if [ -f /tmp/localstack-cache/localstack.tar ]; then
+            echo "Loading LocalStack Docker image from cache..."
+            docker load -i /tmp/localstack-cache/localstack.tar
+          else
+            echo "LocalStack image not found in cache, pulling from Docker Hub..."
+            docker pull localstack/localstack:3.7.0
           
-          echo "Saving LocalStack image to cache..."
-          mkdir -p /tmp/localstack-cache
-          docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
+            echo "Saving LocalStack image to cache..."
+            mkdir -p /tmp/localstack-cache
+            docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
+          fi
 
       # Cache Ryuk(for testcontainers) image
       - name: Cache ryuk-0.7.0 image
@@ -53,20 +51,19 @@ jobs:
           key: ${{ runner.os }}-ryuk-0.7.0
 
       # Load Ryuk image from cache
-      - name: Load Ryuk Docker image from cache
-        if: steps.cache-ryuk.outputs.cache-hit == 'true'
-        run: docker load -i /tmp/ryuk-cache/ryuk.tar
-
-      # Pull and save Ryuk image if not cached
-      - name: Log and Pull Ryuk Docker image if not cached
-        if: steps.cache-ryuk.outputs.cache-hit != 'true'
+      - name: Load / Pull Ryuk Docker image
         run: |
-          echo "Ryuk image not found in cache, pulling from Docker Hub..."
-          docker pull testcontainers/ryuk:0.7.0
+          if [ -f /tmp/ryuk-cache/ryuk.tar ]; then
+            echo "Loading Ryuk Docker image from cache..."
+            docker load -i /tmp/ryuk-cache/ryuk.tar
+          else
+            echo "Ryuk image not found in cache, pulling from Docker Hub..."
+            docker pull testcontainers/ryuk:0.7.0
           
-          echo "Saving Ryuk image to cache..."
-          mkdir -p /tmp/ryuk-cache
-          docker save testcontainers/ryuk:0.7.0 -o /tmp/ryuk-cache/ryuk.tar
+            echo "Saving Ryuk image to cache..."
+            mkdir -p /tmp/ryuk-cache
+            docker save testcontainers/ryuk:0.7.0 -o /tmp/ryuk-cache/ryuk.tar
+          fi
 
       # Start LocalStack manually
       - name: Start LocalStack container
