@@ -49,9 +49,6 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
 
-      - name: Build and run unit tests
-        run: mvn test
-
-      - name: Run integration tests (skip unit tests)
-        run: mvn verify -DskipTests=true -Dit.test=com.blitzar.bank_account_recipient.web.controller.FetchRecipientControllerIT
+      - name: Build and run (unit + integration) tests
+        run: mvn verify
 
