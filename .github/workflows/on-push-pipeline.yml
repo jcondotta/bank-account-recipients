@@ -1,4 +1,4 @@
-name: Microservice CI with LocalStack Docker Cache and Integration Tests
+name: Microservice CI with LocalStack and Docker Cache
 
 on:
   push:
@@ -20,37 +20,56 @@ jobs:
           java-version: '17'
           cache: maven  # Automatically caches Maven dependencies
 
-      # Cache Docker images (LocalStack + Testcontainers)
-      - name: Cache Docker images
+      # Cache LocalStack image
+      - name: Cache LocalStack-3.7.0 image
+        id: cache-localstack
         uses: actions/cache@v3
         with:
-          path: /tmp/docker-cache
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-docker
-          run: echo "Checking for cached Docker images..."
+          path: /tmp/localstack-cache
+          key: ${{ runner.os }}-localstack-3.7.0
 
-      # Load LocalStack Docker image from cache if it exists
+      # Load LocalStack image from cache
       - name: Load LocalStack Docker image from cache
         if: steps.cache-localstack.outputs.cache-hit == 'true'
-        run: |
-          echo "Loading cached LocalStack Docker image..."
-          docker load -i /tmp/localstack-cache/localstack.tar
+        run: docker load -i /tmp/localstack-cache/localstack.tar
 
-      # Pull necessary Docker images if not cached
-      - name: Pre-pull Docker images for Testcontainers
+      # Pull and save LocalStack image if not cached
+      - name: Log and Pull LocalStack Docker image if not cached
+        if: steps.cache-localstack.outputs.cache-hit != 'true'
         run: |
-          echo "Pulling Testcontainers and LocalStack Docker images..."
-          docker pull testcontainers/ryuk:0.7.0
+          echo "LocalStack image not found in cache, pulling from Docker Hub..."
           docker pull localstack/localstack:3.7.0
-
-      - name: Save LocalStack Docker image to cache
-        run: |
-          echo "Saving LocalStack Docker image to cache..."
+          
+          echo "Saving LocalStack image to cache..."
           mkdir -p /tmp/localstack-cache
           docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
 
-      - name: Start LocalStack manually
+      # Cache Ryuk(for testcontainers) image
+      - name: Cache ryuk-0.7.0 image
+        id: cache-ryuk
+        uses: actions/cache@v3
+        with:
+          path: /tmp/ryuk-cache
+          key: ${{ runner.os }}-ryuk-0.7.0
+
+      # Load Ryuk image from cache
+      - name: Load Ryuk Docker image from cache
+        if: steps.cache-ryuk.outputs.cache-hit == 'true'
+        run: docker load -i /tmp/ryuk-cache/ryuk.tar
+
+      # Pull and save Ryuk image if not cached
+      - name: Log and Pull Ryuk Docker image if not cached
+        if: steps.cache-ryuk.outputs.cache-hit != 'true'
+        run: |
+          echo "Ryuk image not found in cache, pulling from Docker Hub..."
+          docker pull testcontainers/ryuk:0.7.0
+          
+          echo "Saving Ryuk image to cache..."
+          mkdir -p /tmp/ryuk-cache
+          docker save testcontainers/ryuk:0.7.0 -o /tmp/ryuk-cache/ryuk.tar
+
+      # Start LocalStack manually
+      - name: Start LocalStack container
         run: |
           echo "Starting LocalStack container..."
           docker run -d --name localstack \
@@ -58,6 +77,6 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
 
-      - name: Build and run (unit + integration) tests xD
-        run: |
-          mvn verify
+      # Build and run unit + integration tests
+      - name: Build and run tests
+        run: mvn verify
