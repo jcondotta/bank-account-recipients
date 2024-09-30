@@ -26,25 +26,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven      # Fallback key in case the exact key is not found
 
-#      - name: Cache LocalStack image
-#        id: cache-localstack
-#        uses: actions/cache@v3
-#        with:
-#          path: /tmp/localstack-cache
-#          key: localstack-${{ runner.os }}-3.7.0 # Use your preferred version here
-#
-#      - name: Load LocalStack Docker image from cache
-#        if: steps.cache-localstack.outputs.cache-hit == 'true'
-#        run: docker load -i /tmp/localstack-cache/localstack.tar
-#
-#      - name: Log and Pull LocalStack Docker image if not cached
-#        if: steps.cache-localstack.outputs.cache-hit != 'true'
-#        run: |
-#          echo "LocalStack image not found in cache, pulling from Docker Hub..."
-#          docker pull localstack/localstack:3.7.0
-#          echo "Saving LocalStack image to cache..."
-#          mkdir -p /tmp/localstack-cache
-#          docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
+      - name: Cache LocalStack image
+        id: cache-localstack
+        uses: actions/cache@v3
+        with:
+          path: /tmp/localstack-cache
+          key: localstack-${{ runner.os }}-3.7.0 # Use your preferred version here
+
+      - name: Load LocalStack Docker image from cache
+        if: steps.cache-localstack.outputs.cache-hit == 'true'
+        run: docker load -i /tmp/localstack-cache/localstack.tar
+
+      - name: Log and Pull LocalStack Docker image if not cached
+        if: steps.cache-localstack.outputs.cache-hit != 'true'
+        run: |
+          echo "LocalStack image not found in cache, pulling from Docker Hub..."
+          docker pull localstack/localstack:3.7.0
+          echo "Saving LocalStack image to cache..."
+          mkdir -p /tmp/localstack-cache
+          docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
 #
 #      - name: Start LocalStack with DynamoDB
 #        uses: localstack/github-action@v1
