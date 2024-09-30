@@ -77,5 +77,21 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
 
-      - name: Build and run tests
-        run: mvn verify
+      # Run mvn verify to build and test the project, which also packages the JAR
+      - name: Build, run tests, and package
+        run: mvn verify --batch-mode --fail-at-end
+
+      # Configure AWS credentials for deployment
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-3
+
+      # Deploy the JAR to AWS Lambda
+      - name: Deploy to AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name bank-account-recipients-java-17 \
+            --zip-file fileb://target/bank-account-recipients-0.1.jar 
