@@ -18,6 +18,14 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository        # Path to Maven repository to cache
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}  # Key based on OS and hash of pom.xml
+          restore-keys: |
+            ${{ runner.os }}-maven      # Fallback key in case the exact key is not found
+
 #      - name: Cache LocalStack image
 #        id: cache-localstack
 #        uses: actions/cache@v3
