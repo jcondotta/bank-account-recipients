@@ -28,7 +28,7 @@ jobs:
           key: ${{ runner.os }}-docker-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-docker
-        run: echo "Checking for cached Docker images..."
+          run: echo "Checking for cached Docker images..."
 
       # Load LocalStack Docker image from cache if it exists
       - name: Load LocalStack Docker image from cache
