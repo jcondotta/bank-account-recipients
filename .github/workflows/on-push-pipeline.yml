@@ -58,6 +58,6 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
 
-      - name: Build and run (unit + integration) tests
+      - name: Build and run (unit + integration) tests xD
         run: |
           mvn verify
