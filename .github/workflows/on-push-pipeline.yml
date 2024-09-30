@@ -14,6 +14,7 @@ jobs:
 
     env:
       LOCALSTACK_VERSION: "3.7.0"
+      RYUK_VERSION: "0.7.0"
       LAMBDA_FUNCTION_NAME: "bank-account-recipients-java-17"
       ARTIFACT_NAME: "bank-account-recipients-0.1.jar"
       AWS_REGION: "eu-west-3"
@@ -58,7 +59,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.docker-cache/ryuk
-          key: ${{ runner.os }}-ryuk-0.7.0
+          key: ${{ runner.os }}-ryuk-${{ env.RYUK_VERSION }}
 
       # Load or Pull Ryuk Docker image
       - name: Get Ryuk Docker Image
@@ -68,11 +69,11 @@ jobs:
             docker load -i ~/.docker-cache/ryuk/ryuk.tar
           else
             echo "Ryuk image not found in cache, pulling from Docker Hub..."
-            docker pull testcontainers/ryuk:0.7.0
+            docker pull testcontainers/ryuk:${{ env.RYUK_VERSION }}
           
             echo "Saving Ryuk image to cache..."
             mkdir -p ~/.docker-cache/ryuk
-            docker save testcontainers/ryuk:0.7.0 -o ~/.docker-cache/ryuk/ryuk.tar
+            docker save testcontainers/ryuk:${{ env.RYUK_VERSION }} -o ~/.docker-cache/ryuk/ryuk.tar
           fi
 
       - name: Start LocalStack container
