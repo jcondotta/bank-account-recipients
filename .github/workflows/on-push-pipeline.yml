@@ -55,17 +55,33 @@ jobs:
           MAX_ATTEMPTS=30
           SLEEP_TIME=10
 
-          # Verify that the container is running
-          docker ps -a
-
+          # Check the Docker container's health status before attempting curl
           for i in $(seq 1 $MAX_ATTEMPTS); do
-            echo "Checking LocalStack health... attempt #$i"
+            echo "Checking LocalStack container health... attempt #$i"
+
+            # Check the container's health status directly using Docker
+            CONTAINER_HEALTH=$(docker inspect --format='{{json .State.Health.Status}}' localstack)
+
+            if [ "$CONTAINER_HEALTH" == "\"healthy\"" ]; then
+              echo "LocalStack container is healthy!"
+              break
+            else
+              echo "LocalStack container is not healthy yet. Current status: $CONTAINER_HEALTH"
+            fi
+
+            echo "Sleeping for $SLEEP_TIME seconds..."
+            sleep $SLEEP_TIME
+          done
+
+          # Once container is healthy, start checking the health endpoint
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            echo "Checking LocalStack service health... attempt #$i"
 
             # Verify that ports are open and accessible
             netstat -tuln | grep 4566 || echo "Port 4566 is not open yet"
 
             # Capture the curl response and check if it's valid JSON before parsing
-            HEALTH_RESPONSE=$(curl -s http://localhost:4566/health)
+            HEALTH_RESPONSE=$(curl --max-time 10 -s http://localhost:4566/health)
 
             # Print the health response for debugging
             echo "Health response: $HEALTH_RESPONSE"
@@ -91,6 +107,7 @@ jobs:
             docker logs localstack
             exit 1
           fi
+      
       
 
       - name: Build and run unit tests
