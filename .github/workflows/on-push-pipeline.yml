@@ -42,15 +42,16 @@ jobs:
         run: |
           echo "LocalStack image not found in cache, pulling from Docker Hub..."
           docker pull localstack/localstack:3.7.0
+          
           echo "Saving LocalStack image to cache..."
           mkdir -p /tmp/localstack-cache
           docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
-#
-#      - name: Start LocalStack with DynamoDB
-#        uses: localstack/github-action@v1
-#        with:
-#          services: dynamodb
-#          localstack-version: "3.7.0"
+
+      - name: Start LocalStack with DynamoDB
+        uses: localstack/github-action@v1
+        with:
+          services: dynamodb
+          localstack-version: "3.7.0"
 
       - name: Run Tests
         run: |
