@@ -50,7 +50,7 @@ jobs:
             localstack/localstack:3.7.0
 
       - name: Build and run unit tests
-        run: mvn clean test
+        run: mvn test
 
       - name: Run integration tests (skip unit tests)
         run: mvn verify -DskipTests=true -Dit.test=com.blitzar.bank_account_recipient.web.controller.FetchRecipientControllerIT
