@@ -53,4 +53,5 @@ jobs:
         run: mvn clean test
 
       - name: Run integration tests (skip unit tests)
-        run: mvn verify -Dit.test=com.blitzar.bank_account_recipient.web.controller.FetchRecipientControllerIT
+        run: mvn verify -DskipTests=true -Dit.test=com.blitzar.bank_account_recipient.web.controller.FetchRecipientControllerIT
+
