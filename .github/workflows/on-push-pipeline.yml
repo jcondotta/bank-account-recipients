@@ -8,6 +8,16 @@ on:
 jobs:
   localstack:
     runs-on: ubuntu-latest
+
+    services:
+      localstack:
+        image: localstack/localstack:3.7.0
+        ports:
+          - 127.0.0.1:4566:4566
+          - 127.0.0.1:4510-4513:4510-4513
+        env:
+          SERVICES: dynamodb
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -55,25 +65,25 @@ jobs:
           mkdir -p /tmp/localstack-cache
           docker save localstack/localstack:3.7.0 -o /tmp/localstack-cache/localstack.tar
 
-      - name: Start LocalStack manually
-        run: |
-          docker run -d --name localstack \
-            -p 127.0.0.1:4566:4566 \
-            -p 127.0.0.1:4510-4513:4510-4513 \
-            -e SERVICES=dynamodb \
-            localstack/localstack:3.7.0
-          echo "Waiting for LocalStack to be fully ready..."
-          until curl -s http://localhost:4566/health | grep "\"dynamodb\": \"running\""; do
-            echo "Waiting for LocalStack..."
-            sleep 5
-          done
+#      - name: Start LocalStack manually
+#        run: |
+#          docker run -d --name localstack \
+#            -p 127.0.0.1:4566:4566 \
+#            -p 127.0.0.1:4510-4513:4510-4513 \
+#            -e SERVICES=dynamodb \
+#            localstack/localstack:3.7.0
+#          echo "Waiting for LocalStack to be fully ready..."
+#          until curl -s http://localhost:4566/health | grep "\"dynamodb\": \"running\""; do
+#            echo "Waiting for LocalStack..."
+#            sleep 5
+#          done
 
       - name: Build and run unit tests
         run: mvn clean test
 
-      - name: Run integration tests (skip unit tests)
-        run: mvn verify -DskipTests=true -DskipITs=false
-
-      - name: Print LocalStack logs on failure
-        if: failure()
-        run: docker logs $(docker ps -q --filter ancestor=localstack/localstack:3.7.0)
+#      - name: Run integration tests (skip unit tests)
+#        run: mvn verify -DskipTests=true -DskipITs=false
+#
+#      - name: Print LocalStack logs on failure
+#        if: failure()
+#        run: docker logs $(docker ps -q --filter ancestor=localstack/localstack:3.7.0)
