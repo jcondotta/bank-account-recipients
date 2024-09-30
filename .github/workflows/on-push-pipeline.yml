@@ -8,7 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
+      fail-fast: false
       matrix:
         service: [localstack, ryuk]
 
@@ -67,13 +69,10 @@ jobs:
               docker save testcontainers/ryuk:0.7.0 -o ~/.docker-cache/ryuk.tar
             fi
           fi
-        strategy:
-          fail-fast: false
-          matrix:
-            service: [localstack, ryuk]
 
-      # Start LocalStack after pulling the images
+      # Start LocalStack container only if LocalStack was handled
       - name: Start LocalStack container
+        if: matrix.service == 'localstack'
         run: |
           echo "Starting LocalStack container..."
           docker run -d --name localstack \
@@ -81,6 +80,6 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
 
-      # Build and run tests
+      # Build and run tests (executed after both services are ready)
       - name: Build and run tests
         run: mvn verify
