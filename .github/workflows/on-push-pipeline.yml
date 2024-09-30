@@ -24,7 +24,7 @@ jobs:
           cache: maven  # Automatically caches Maven dependencies
 
       # Cache LocalStack image
-      - name: Cache LocalStack-3.7.0 image
+      - name: Cache LocalStack image
         id: cache-localstack
         uses: actions/cache@v3
         with:
@@ -46,7 +46,7 @@ jobs:
           fi
 
       # Cache Ryuk image
-      - name: Cache Ryuk-0.7.0 image
+      - name: Cache Ryuk image
         id: cache-ryuk
         uses: actions/cache@v3
         with:
