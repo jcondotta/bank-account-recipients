@@ -50,8 +50,8 @@ jobs:
       - name: Start LocalStack manually
         run: |
           docker run -d --name localstack \
-            -p 4566:4566 \
-            -p 4510-4513:4510-4513 \
+            -p 127.0.0.1:4566:4566 \
+            -p 127.0.0.1:4510-4513:4510-4513 \
             -e SERVICES=dynamodb \
             localstack/localstack:3.7.0
           echo "Waiting for LocalStack to be fully ready..."
