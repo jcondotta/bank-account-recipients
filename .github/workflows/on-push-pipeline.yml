@@ -1,4 +1,4 @@
-name: Microservice CI with LocalStack Docker Cache and Integration Tests
+name:  Microservice CI with LocalStack Docker Cache and Integration Tests
 
 on:
   push:
