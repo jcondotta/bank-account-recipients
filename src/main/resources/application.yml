@@ -12,7 +12,7 @@ aws:
   secret-key: ${AWS_SECRET_ACCESS_KEY}
   region: ${AWS_DEFAULT_REGION}
   dynamodb:
-    table-name: 'recipients'
+    table-name: ${AWS_DYNAMODB_RECIPIENTS_TABLE_NAME}
     endpoint: ${AWS_DYNAMODB_ENDPOINT:}
 
 jackson:
