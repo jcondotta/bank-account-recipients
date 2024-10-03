@@ -16,12 +16,6 @@ resource "aws_iam_role" "recipients_lambda_role_exec" {
   tags = var.tags
 }
 
-# Define local variables for commonly used ARN components
-locals {
-  # Construct the full ARN for the Lambda function's log group
-  lambda_log_group_arn = "arn:aws:logs:${var.aws_region}:${var.current_aws_account_id}:log-group:/aws/lambda/${var.recipients_lambda_function_name}"
-}
-
 # IAM Role Policy to allow Lambda to interact with DynamoDB and CloudWatch Logs
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "${var.recipients_lambda_function_name}-policy"
@@ -33,7 +27,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
         {
           "Action" : "logs:CreateLogGroup",
           "Effect" : "Allow",
-          "Resource" : local.lambda_log_group_arn
+          "Resource" : "arn:aws:logs:${var.aws_region}:${var.current_aws_account_id}:log-group:/aws/lambda/*"
         },
         {
           "Action" : [
@@ -41,7 +35,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
             "logs:PutLogEvents"
           ],
           "Effect" : "Allow",
-          "Resource" : "${local.lambda_log_group_arn}:*"
+          "Resource" : "arn:aws:logs:${var.aws_region}:${var.current_aws_account_id}:log-group:/aws/lambda/${var.recipients_lambda_function_name}:*"
         },
         {
           "Action" : [

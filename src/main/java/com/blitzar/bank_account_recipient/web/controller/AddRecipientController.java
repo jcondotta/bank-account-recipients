@@ -47,17 +47,19 @@ public class AddRecipientController {
     @Operation(summary = "Add a new recipient",
             description = "Creates a new recipient for the specified bank account. "
                     + "The request body includes the bankAccountId, recipientName, and IBAN. "
-                    + "This endpoint returns the created recipient's data along with the resource location.")
+                    + "This endpoint returns the created recipient's data along with the resource location.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "The request body containing the bankAccountId, recipientName, and IBAN.",
+                    required = true,
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AddRecipientRequest.class))
+            ))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Recipient successfully created.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class))),
-            @ApiResponse(responseCode = "400",
-                    description = "Invalid bank account ID, recipient name, or IBAN. Ensure that all required fields are valid."),
-            @ApiResponse(responseCode = "500",
-                    description = "Internal server error. An unexpected error occurred while processing the request.")
+            @ApiResponse(responseCode = "400", description = "Invalid bank account ID, recipient name, or IBAN. Ensure that all required fields are valid."),
+            @ApiResponse(responseCode = "500", description = "Internal server error. This may occur due to system issues, failed database connections, or unexpected runtime exceptions.")
     })
     public HttpResponse<RecipientDTO> addRecipient(
-            @Schema(description = "The request body containing the bankAccountId, recipientName, and IBAN.", requiredMode = RequiredMode.REQUIRED)
             @Body AddRecipientRequest addRecipientRequest,
             HttpRequest<?> request) {
 

@@ -21,6 +21,7 @@ variable "environment" {
 variable "recipients_billing_mode" {
   description = "recipients DynamoDB billing mode (PROVISIONED or PAY_PER_REQUEST)"
   type        = string
+  default     = "PROVISIONED"
 
   validation {
     condition     = contains(["PROVISIONED", "PAY_PER_REQUEST"], var.recipients_billing_mode)
@@ -31,6 +32,7 @@ variable "recipients_billing_mode" {
 variable "recipients_read_capacity" {
   description = "recipients DynamoDB read capacity units"
   type        = number
+  default     = 2
 
   validation {
     condition     = var.recipients_read_capacity > 0
@@ -41,6 +43,7 @@ variable "recipients_read_capacity" {
 variable "recipients_write_capacity" {
   description = "recipients DynamoDB write capacity units"
   type        = number
+  default     = 1
 
   validation {
     condition     = var.recipients_write_capacity > 0

@@ -6,15 +6,12 @@ services:
     image: localstack/localstack:3.7.0
     ports:
       - '127.0.0.1:4566:4566'
-      - '127.0.0.1:4510-4513:4510-4513' # External services port range.
     environment:
-      SERVICES: dynamodb, iam, lambda, apigateway
-      AWS_ACCESS_KEY_ID: devAccessKeyId
-      AWS_SECRET_ACCESS_KEY: devSecretAccessKey
+      SERVICES: dynamodb, iam, sts, lambda, apigateway
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-east-1
+      AWS_DYNAMODB_ENDPOINT: 'http://localstack:4566'
       LS_LOG: ${LS_LOG:-debug}
-      DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - './localstack:/etc/localstack/init/ready.d/'
-#      - './target/bank-account-recipients-0.1.jar:/home/localstack/bank-account-recipients-0.1.jar'

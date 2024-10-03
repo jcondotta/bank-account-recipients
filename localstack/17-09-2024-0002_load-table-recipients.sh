@@ -2,9 +2,11 @@
 
 . /etc/localstack/init/ready.d/environment-variables/dynamodb-recipients-table-settings.sh
 
-awslocal dynamodb batch-write-item \
+aws dynamodb batch-write-item \
+    --profile jcondotta \
+    --region us-east-1 \
     --request-items \
-        '{"'${RECIPIENTS_TABLE_NAME}'":
+        '{"'recipients-prod'":
           [
             {"PutRequest":
               {"Item":

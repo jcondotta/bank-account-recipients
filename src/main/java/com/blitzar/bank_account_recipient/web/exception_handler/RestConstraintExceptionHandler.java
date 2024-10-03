@@ -47,7 +47,6 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
         // Collect all error messages
         List<String> errorMessages = new ArrayList<>();
         for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
-            // Use violation.getMessage() to get the message
             String message = violation.getMessage();
             String localizedMessage = messageSource.getMessage(message, Locale.getDefault()).orElse(message);
             errorMessages.add(localizedMessage); // Add each localized message to the list
