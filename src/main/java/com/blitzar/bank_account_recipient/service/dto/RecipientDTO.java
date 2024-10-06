@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Serdeable
 @Schema(name = "RecipientDTO", description = "Represents a recipient entity with account details.")

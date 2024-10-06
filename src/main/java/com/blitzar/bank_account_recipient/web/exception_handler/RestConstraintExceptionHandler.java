@@ -18,10 +18,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Produces
 @Singleton
@@ -42,13 +39,13 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
     @Override
     @Status(value = HttpStatus.BAD_REQUEST)
     public HttpResponse<?> handle(HttpRequest request, ConstraintViolationException exception) {
-        var locale = request.getLocale().orElse(Locale.getDefault());
+        var locale = (Locale) request.getLocale().orElse(Locale.getDefault());
 
-        // Collect all error messages
         List<String> errorMessages = new ArrayList<>();
         for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
             String message = violation.getMessage();
-            String localizedMessage = messageSource.getMessage(message, Locale.getDefault()).orElse(message);
+
+            String localizedMessage = messageSource.getMessage(message, locale).orElse(message);
             errorMessages.add(localizedMessage); // Add each localized message to the list
             logger.error(localizedMessage); // Log each error message
         }
@@ -62,9 +59,12 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
         );
 
         // Return the processed response
-        return errorResponseProcessor.processResponse(ErrorContext.builder(request)
-                .cause(exception)
-                .errorMessages(errorMessages) // Pass the list of error messages directly
-                .build(), HttpResponse.badRequest().body(responseBody));
+        return errorResponseProcessor.processResponse(
+                ErrorContext.builder(request)
+                        .cause(exception)
+                        .errorMessages(errorMessages) // Pass the list of error messages directly
+                        .build(),
+                HttpResponse.badRequest().body(responseBody)
+        );
     }
 }

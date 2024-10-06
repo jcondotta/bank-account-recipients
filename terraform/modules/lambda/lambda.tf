@@ -11,7 +11,6 @@ resource "aws_lambda_function" "recipients_lambda" {
 
   environment {
     variables = {
-      AWS_DYNAMODB_ENDPOINT              = var.environment == "dev" ? "http://host.docker.internal:4566" : ""
       AWS_DYNAMODB_RECIPIENTS_TABLE_NAME = "recipients-${var.environment}"
     }
   }

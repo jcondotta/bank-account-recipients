@@ -1,12 +1,15 @@
 package com.blitzar.bank_account_recipient.service;
 
-import com.blitzar.bank_account_recipient.helper.TestBankAccount;
-import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
-import com.blitzar.bank_account_recipient.argumentprovider.*;
+import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.EdgeCaseValidIBANArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.InvalidIBANArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.malicious.MaliciousInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
+import com.blitzar.bank_account_recipient.helper.TestBankAccount;
+import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
+import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,9 +53,10 @@ class AddRecipientServiceTest {
         addRecipientService = new AddRecipientService(dynamoDbTable, TEST_CLOCK_FIXED_INSTANT, VALIDATOR);
     }
 
-    @Test
-    public void shouldSaveRecipient_whenRequestIsValid() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
+    @ParameterizedTest
+    @ArgumentsSource(EdgeCaseValidIBANArgumentProvider.class)
+    public void shouldSaveRecipient_whenRequestIsValid(String validIban) {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, validIban);
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
 
         verify(dynamoDbTable).putItem(any(Recipient.class));
@@ -60,7 +64,7 @@ class AddRecipientServiceTest {
         assertAll(
                 () -> assertThat(recipientDTO.bankAccountId()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL),
                 () -> assertThat(recipientDTO.recipientName()).isEqualTo(RECIPIENT_NAME_JEFFERSON),
-                () -> assertThat(recipientDTO.recipientIban()).isEqualTo(RECIPIENT_IBAN_JEFFERSON),
+                () -> assertThat(recipientDTO.recipientIban()).isEqualTo(validIban),
                 () -> assertThat(recipientDTO.createdAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT))
         );
     }
@@ -184,7 +188,7 @@ class AddRecipientServiceTest {
     }
 
     @Test
-    void shouldThrowMultipleConstraintViolationExceptions_whenAllFieldsAreNull() {
+    void shouldThrowConstraintViolationException_whenAllFieldsAreNull() {
         var addRecipientRequest = new AddRecipientRequest(null, null, null);
 
         var exception = assertThrows(

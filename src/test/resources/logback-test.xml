@@ -11,4 +11,14 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
+
+<!--    &lt;!&ndash; Enable DEBUG level logging for Testcontainers &ndash;&gt;-->
+<!--    <logger name="org.testcontainers" level="debug" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
+
+<!--    &lt;!&ndash; Optionally, enable DEBUG logs for Docker interactions as well &ndash;&gt;-->
+<!--    <logger name="com.github.dockerjava" level="debug" additivity="false">-->
+<!--        <appender-ref ref="STDOUT" />-->
+<!--    </logger>-->
 </configuration>

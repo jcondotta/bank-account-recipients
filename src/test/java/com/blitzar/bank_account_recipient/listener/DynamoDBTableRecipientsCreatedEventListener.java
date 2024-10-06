@@ -21,10 +21,14 @@ public class DynamoDBTableRecipientsCreatedEventListener implements BeanCreatedE
 
         try {
             dynamoDBTable.describeTable();
+            logger.info("DynamoDB table for type {} exists.", dynamoDBTable.tableSchema().itemType());
         }
         catch (ResourceNotFoundException e) {
-            logger.info("Creating DynamoDbTable from type: {}", dynamoDBTable.tableSchema().itemType());
+            logger.warn("DynamoDB table for type {} not found. Creating the table.", dynamoDBTable.tableSchema().itemType());
             dynamoDBTable.createTable();
+        }
+        catch (Exception e) {
+            logger.error("An unexpected error occurred while checking the DynamoDB table: {}", e.getMessage(), e);
         }
 
         return dynamoDBTable;

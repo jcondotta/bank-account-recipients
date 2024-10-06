@@ -1,25 +1,22 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.service.DeleteRecipientService;
-import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.DeleteRecipientRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Status;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.UUID;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
 @Controller(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING)

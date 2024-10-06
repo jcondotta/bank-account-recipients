@@ -1,14 +1,14 @@
-## Backend configuration
-terraform {
-  backend "s3" {
-    bucket         = "terraform-recipients-state-bucket"
-    key            = "prod/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-recipients-lock-table"
-    profile        = "jcondotta"
-  }
-}
+### Backend configuration
+#terraform {
+#  backend "s3" {
+#    bucket         = "terraform-recipients-state-bucket"
+#    key            = "prod/terraform.tfstate"
+#    region         = "us-east-1"
+#    encrypt        = true
+#    dynamodb_table = "terraform-recipients-lock-table"
+#    profile        = "jcondotta"
+#  }
+#}
 
 provider "aws" {
   region  = var.aws_region
@@ -38,12 +38,13 @@ module "lambda" {
   environment            = var.environment
   tags                   = merge(var.tags, { "environment" = var.environment })
 
-  recipients_lambda_function_name = "recipients-lambda-${var.lambda_runtime}-${var.environment}"
+  recipients_lambda_function_name = "recipients-lambda-${var.environment}"
   dynamodb_table_arn              = module.dynamodb.recipients_table_arn # Reference the DynamoDB table ARN from the dynamodb module
   lambda_memory_size              = var.lambda_memory_size
   lambda_timeout                  = var.lambda_timeout
   lambda_runtime                  = var.lambda_runtime
   lambda_handler                  = var.lambda_handler
+  lambda_file                     = var.lambda_file
 }
 
 module "apigateway" {

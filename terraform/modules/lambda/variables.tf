@@ -53,10 +53,10 @@ variable "lambda_handler" {
   type        = string
 }
 
-#variable "lambda_jar_file" {
-#  description = "The path to the JAR file for the Lambda function"
-#  type        = string
-#}
+variable "lambda_file" {
+  description = "The path to the file(jar, zip) for the Lambda function"
+  type        = string
+}
 
 variable "dynamodb_table_arn" {
   description = "The ARN of the DynamoDB recipients table the Lambda will interact with"

@@ -1,16 +1,14 @@
 package com.blitzar.bank_account_recipient.service;
 
+import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.RecipientFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.LastEvaluatedKey;
+import com.blitzar.bank_account_recipient.service.request.QueryParams;
 import com.blitzar.bank_account_recipient.validation.RecipientValidator;
 import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
-import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
-import com.blitzar.bank_account_recipient.service.request.QueryParams;
-import io.micronaut.http.HttpStatus;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,15 +21,13 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

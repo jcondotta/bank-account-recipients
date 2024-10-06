@@ -1,7 +1,7 @@
 package com.blitzar.bank_account_recipient.service.request;
 
 import com.blitzar.bank_account_recipient.validation.Iban;
-import com.blitzar.bank_account_recipient.validation.f.NoMaliciousInput;
+import com.blitzar.bank_account_recipient.validation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Serdeable
 @Schema(description = "Request object for adding a new recipient.")
@@ -25,7 +25,7 @@ public record AddRecipientRequest(
                 requiredMode = RequiredMode.REQUIRED)
         @NotBlank(message = "recipient.recipientName.notBlank")
         @Size(max = 50, message = "recipient.recipientName.tooLong")
-        @NoMaliciousInput(message = "recipient.recipientName.invalid")
+        @SecureInput(message = "recipient.recipientName.invalid")
         String recipientName,
 
         @Schema(description = "The IBAN of the recipient.",

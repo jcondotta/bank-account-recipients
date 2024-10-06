@@ -1,14 +1,14 @@
 package com.blitzar.bank_account_recipient.service.dto;
 
 import com.blitzar.bank_account_recipient.service.request.LastEvaluatedKey;
-import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Serdeable
 @Schema(description = "A DTO representing a list of recipients with pagination details.")

@@ -18,7 +18,7 @@ import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
 @Controller(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)

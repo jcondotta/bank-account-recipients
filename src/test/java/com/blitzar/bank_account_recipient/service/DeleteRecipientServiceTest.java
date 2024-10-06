@@ -1,13 +1,13 @@
 package com.blitzar.bank_account_recipient.service;
 
-import com.blitzar.bank_account_recipient.helper.TestBankAccount;
-import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
 import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.MaliciousInputArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.malicious.MaliciousInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
+import com.blitzar.bank_account_recipient.helper.TestBankAccount;
+import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.request.DeleteRecipientRequest;
+import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

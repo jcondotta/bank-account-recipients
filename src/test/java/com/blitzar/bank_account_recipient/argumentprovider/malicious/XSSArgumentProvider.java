@@ -1,12 +1,11 @@
-package com.blitzar.bank_account_recipient.argumentprovider;
+package com.blitzar.bank_account_recipient.argumentprovider.malicious;
 
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Named;
 
 public class XSSArgumentProvider implements ArgumentsProvider {
 

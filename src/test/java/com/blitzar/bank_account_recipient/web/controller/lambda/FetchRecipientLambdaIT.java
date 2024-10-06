@@ -3,14 +3,14 @@ package com.blitzar.bank_account_recipient.web.controller.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.blitzar.bank_account_recipient.*;
+import com.blitzar.bank_account_recipient.LocalStackTestContainer;
+import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
-import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
 import com.blitzar.bank_account_recipient.validation.RecipientValidator;
+import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
@@ -34,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     private static Context mockLambdaContext = new MockLambdaContext();
-    private static final UriBuilder DELETE_RECIPIENT_URI_BUILDER = UriBuilder.of(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;

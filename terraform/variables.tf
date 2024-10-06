@@ -85,6 +85,12 @@ variable "lambda_handler" {
   default     = "io.micronaut.function.aws.proxy.payload1.ApiGatewayProxyRequestEventFunction"
 }
 
+variable "lambda_file" {
+  description = "The path to the file(jar, zip) for the Lambda function"
+  type        = string
+}
+
+
 variable "tags" {
   description = "Tags applied to all resources for organization and cost tracking across environments and projects."
   type        = map(string)

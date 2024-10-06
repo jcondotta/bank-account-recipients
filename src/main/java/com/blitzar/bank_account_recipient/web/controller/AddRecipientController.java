@@ -3,7 +3,10 @@ package com.blitzar.bank_account_recipient.web.controller;
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
-import io.micronaut.http.*;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
@@ -23,8 +26,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
-
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
 @Controller(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)

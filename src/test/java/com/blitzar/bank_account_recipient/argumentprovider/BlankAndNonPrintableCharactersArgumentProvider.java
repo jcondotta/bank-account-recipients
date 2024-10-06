@@ -8,11 +8,19 @@ import java.util.stream.Stream;
 
 public class BlankAndNonPrintableCharactersArgumentProvider implements ArgumentsProvider {
 
+    private final BlankValuesArgumentProvider blankValuesArgumentProvider;
+    private final NonPrintableCharactersArgumentProvider nonPrintableCharactersArgumentProvider;
+
+    public BlankAndNonPrintableCharactersArgumentProvider() {
+        blankValuesArgumentProvider = new BlankValuesArgumentProvider();
+        nonPrintableCharactersArgumentProvider = new NonPrintableCharactersArgumentProvider();
+    }
+
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         return Stream.concat(
-                new BlankValuesArgumentProvider().provideArguments(context),
-                new NonPrintableCharactersArgumentProvider().provideArguments(context)
+                blankValuesArgumentProvider.provideArguments(context),
+                nonPrintableCharactersArgumentProvider.provideArguments(context)
         );
     }
 }

@@ -1,9 +1,9 @@
 package com.blitzar.bank_account_recipient.validation;
 
-import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
 import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
 import com.blitzar.bank_account_recipient.factory.RecipientDTOFactory;
+import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static com.blitzar.bank_account_recipient.helper.TestRecipient.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.blitzar.bank_account_recipient.helper.TestRecipient.INDALECIO;
+import static com.blitzar.bank_account_recipient.helper.TestRecipient.JEFFERSON;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RecipientValidatorTest {
 

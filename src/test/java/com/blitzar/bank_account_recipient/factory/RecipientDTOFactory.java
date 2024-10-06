@@ -1,8 +1,8 @@
 package com.blitzar.bank_account_recipient.factory;
 
-import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
+import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 
 import java.time.Clock;
 import java.time.LocalDateTime;

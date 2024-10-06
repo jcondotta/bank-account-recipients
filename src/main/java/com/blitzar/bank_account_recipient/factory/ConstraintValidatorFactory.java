@@ -2,8 +2,8 @@ package com.blitzar.bank_account_recipient.factory;
 
 import com.blitzar.bank_account_recipient.validation.Iban;
 import com.blitzar.bank_account_recipient.validation.IbanValidator;
-import com.blitzar.bank_account_recipient.validation.f.MaliciousInputValidator;
-import com.blitzar.bank_account_recipient.validation.f.NoMaliciousInput;
+import com.blitzar.bank_account_recipient.validation.SecureInputValidator;
+import com.blitzar.bank_account_recipient.validation.SecureInput;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import jakarta.inject.Singleton;
@@ -17,7 +17,7 @@ public class ConstraintValidatorFactory {
     }
 
     @Singleton
-    ConstraintValidator<NoMaliciousInput, String> maliciousInputValidator() {
-        return (value, annotationMetadata, context) -> new MaliciousInputValidator().isValid(value, context);
+    ConstraintValidator<SecureInput, String> maliciousInputValidator() {
+        return (value, annotationMetadata, context) -> new SecureInputValidator().isValid(value, context);
     }
 }

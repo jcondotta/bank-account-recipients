@@ -242,7 +242,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
-
                 <configuration>
                     <!-- Uncomment to enable incremental compilation -->
                     <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
@@ -284,6 +283,7 @@
                     <compilerArgs>
                         <arg>-Amicronaut.processing.group=com.blitzar.bank_account_recipient</arg>
                         <arg>-Amicronaut.processing.module=bank-account-recipients</arg>
+                        <arg>-Xlint:unchecked</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

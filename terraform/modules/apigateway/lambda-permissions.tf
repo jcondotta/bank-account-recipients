@@ -1,6 +1,6 @@
 # Lambda permission to allow API Gateway to invoke the function
 resource "aws_lambda_permission" "allow_apigateway_invoke" {
-  statement_id  = "AllowExecutionFromAPIGateway"
+  statement_id  = "AllowExecutionFromAPIGateway-${var.lambda_function_name}"
   action        = "lambda:InvokeFunction"
   function_name = var.lambda_function_name
   principal     = "apigateway.amazonaws.com"

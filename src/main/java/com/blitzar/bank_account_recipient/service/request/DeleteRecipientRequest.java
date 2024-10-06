@@ -1,7 +1,6 @@
 package com.blitzar.bank_account_recipient.service.request;
 
-import com.blitzar.bank_account_recipient.validation.InvalidString;
-import com.blitzar.bank_account_recipient.validation.f.NoMaliciousInput;
+import com.blitzar.bank_account_recipient.validation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -23,7 +22,7 @@ public record DeleteRecipientRequest(
         @Schema(description = "The recipientName of the recipient to be deleted.",
                 example = "Jefferson Condotta",
                 requiredMode = RequiredMode.REQUIRED)
-        @NoMaliciousInput(message = "recipient.recipientName.invalid")
+        @SecureInput(message = "recipient.recipientName.invalid")
         @NotBlank(message = "recipient.recipientName.notBlank")
-        String recipientName)
-{ }
+        String recipientName) {
+}

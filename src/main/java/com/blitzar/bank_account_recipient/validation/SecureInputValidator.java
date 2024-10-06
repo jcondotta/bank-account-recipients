@@ -1,15 +1,14 @@
-package com.blitzar.bank_account_recipient.validation.f;
+package com.blitzar.bank_account_recipient.validation;
 
-import java.util.regex.Pattern;
-
-import com.blitzar.bank_account_recipient.validation.f.NoMaliciousInput;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
 
-public class MaliciousInputValidator implements ConstraintValidator<NoMaliciousInput, String> {
+import java.util.regex.Pattern;
+
+public class SecureInputValidator implements ConstraintValidator<SecureInput, String> {
 
     // Updated XSS Pattern to catch encoded and specific edge cases
     private static final Pattern XSS_PATTERN = Pattern.compile(
@@ -52,7 +51,7 @@ public class MaliciousInputValidator implements ConstraintValidator<NoMaliciousI
     );
 
     @Override
-    public boolean isValid(@Nullable String value, @NonNull AnnotationValue<NoMaliciousInput> annotationMetadata, @NonNull ConstraintValidatorContext context) {
+    public boolean isValid(@Nullable String value, @NonNull AnnotationValue<SecureInput> annotationMetadata, @NonNull ConstraintValidatorContext context) {
         if (value == null || value.isEmpty()) {
             return true; // No input to validate, so it's valid
         }

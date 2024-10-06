@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.argumentprovider;
+package com.blitzar.bank_account_recipient.argumentprovider.malicious;
 
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
