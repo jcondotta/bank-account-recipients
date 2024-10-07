@@ -23,19 +23,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-          # Correct GraalVM setup
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
-          version: 'latest'  # Use specific GraalVM version if needed, like '22.3.0'
+          version: 'latest'
           java-version: '17'
-          components: 'native-image'  # This adds native-image support
+          components: 'native-image'
           cache: maven
 
       # Build the native Docker image for Linux 2023 Lambda using GraalVM
       - name: Build Native Docker Image for Linux 2023 Lambda
         run: |
-          ./mvnw package -Dpackaging=docker-native
+          docker build -t ${DOCKER_IMAGE_TAG} .
 
       # Package the native Docker image as a zip for AWS Lambda deployment
       - name: Package Native Docker Image as Zip
