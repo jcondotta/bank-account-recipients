@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.argumentprovider;
+package com.blitzar.bank_account_recipient.argumentprovider.validation.iban;
 
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -7,11 +7,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import java.util.stream.Stream;
 
-/**
- * Provides valid IBAN edge cases for testing. This includes minimal length IBANs,
- * maximal length IBANs, and IBANs with different country formats.
- */
-public class EdgeCaseValidIBANArgumentProvider implements ArgumentsProvider {
+public class EdgeCaseIbanArgumentsProvider implements ArgumentsProvider {
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {

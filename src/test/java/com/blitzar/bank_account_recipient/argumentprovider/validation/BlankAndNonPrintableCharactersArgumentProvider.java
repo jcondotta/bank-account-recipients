@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.argumentprovider;
+package com.blitzar.bank_account_recipient.argumentprovider.validation;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;

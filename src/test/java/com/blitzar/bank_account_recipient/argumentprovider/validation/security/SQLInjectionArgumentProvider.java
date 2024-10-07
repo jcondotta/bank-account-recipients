@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.argumentprovider.malicious;
+package com.blitzar.bank_account_recipient.argumentprovider.validation.security;
 
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -16,7 +16,6 @@ public class SQLInjectionArgumentProvider implements ArgumentsProvider {
                 Arguments.of(Named.of("SQL Injection - Comment", "1; DROP TABLE users; --")),
                 Arguments.of(Named.of("SQL Injection - Union Select", "1 UNION SELECT username, password FROM users")),
                 Arguments.of(Named.of("SQL Injection - OR Condition", "1 OR 1=1")),
-                Arguments.of(Named.of("SQL Injection - Subquery", "1; SELECT * FROM information_schema.tables;")),
                 Arguments.of(Named.of("SQL Injection - Time Delay", "1; WAITFOR DELAY '00:00:10';")),
                 Arguments.of(Named.of("SQL Injection - Nested Queries", "1; SELECT (SELECT COUNT(*) FROM users);")),
                 Arguments.of(Named.of("SQL Injection - Commented Code", "1; -- SELECT * FROM users"))

@@ -1,10 +1,10 @@
-package com.blitzar.bank_account_recipient.validation;
+package com.blitzar.bank_account_recipient.factory;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
-public class ValidatorBuilder {
+public class ValidatorTestFactory {
 
     public static Validator getValidator(){
         return Validation.byDefaultProvider()

@@ -1,5 +1,6 @@
-package com.blitzar.bank_account_recipient.validation;
+package com.blitzar.bank_account_recipient.validation.annotation;
 
+import com.blitzar.bank_account_recipient.validation.annotation.validator.SecureInputValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

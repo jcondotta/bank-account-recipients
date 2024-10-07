@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.argumentprovider;
+package com.blitzar.bank_account_recipient.argumentprovider.validation.iban;
 
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  * Provides invalid IBAN scenarios for parameterized tests. This includes IBANs that are
  * too short, too long, have invalid country codes, or contain invalid characters.
  */
-public class InvalidIBANArgumentProvider implements ArgumentsProvider {
+public class InvalidIbanArgumentsProvider implements ArgumentsProvider {
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {

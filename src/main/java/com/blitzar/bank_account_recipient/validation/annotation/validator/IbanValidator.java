@@ -1,5 +1,6 @@
-package com.blitzar.bank_account_recipient.validation;
+package com.blitzar.bank_account_recipient.validation.annotation.validator;
 
+import com.blitzar.bank_account_recipient.validation.annotation.Iban;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
