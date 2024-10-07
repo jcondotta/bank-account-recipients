@@ -26,10 +26,9 @@ jobs:
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '17.0.10'  # Use the exact version you need
+          version: '17.0.10'  # Correct version for your GraalVM
           java-version: '17'
           components: 'native-image'
-          architecture: 'amd64'  # Adjust this if necessary
           cache: maven
 
       # Build the GraalVM native image and package it as a ZIP for AWS Lambda
