@@ -1,4 +1,4 @@
-name: Microservice CI with LocalStack and Docker Cache
+name: Microservice CI/CD for GraalVM Lambda
 
 on:
   push:
@@ -13,80 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      LOCALSTACK_VERSION: "3.7.0"
-      RYUK_VERSION: "0.7.0"
-      LAMBDA_FUNCTION_NAME: "bank-account-recipients-java-17"
-      ARTIFACT_NAME: "bank-account-recipients-0.1.jar"
+      NATIVE_ZIP_NAME: "bank-account-recipients-linux-2023.zip"
       AWS_REGION: "eu-west-3"
+      LINUX_2023_LAMBDA_NAME: "bank-account-recipients-linux-2023"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up JDK with Maven cache
-        uses: actions/setup-java@v3
+      - name: Set up GraalVM for Native Image
+        uses: graalvm/setup-graalvm@v2
         with:
-          distribution: 'corretto'
+          graalvm-version: '22.3.0'
           java-version: '17'
-          cache: maven
 
-      # Cache LocalStack image
-      - name: Cache LocalStack image
-        id: cache-localstack
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/localstack
-          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
-
-      # Load or Pull LocalStack Docker image
-      - name: Get LocalStack Docker Image
+      # Install Native Image component
+      - name: Install Native Image component
         run: |
-          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
-            echo "Loading LocalStack Docker image from cache..."
-            docker load -i ~/.docker-cache/localstack/localstack.tar
-          else
-            echo "LocalStack image not found in cache, pulling from Docker Hub..."
-            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-          
-            echo "Saving LocalStack image to cache..."
-            mkdir -p ~/.docker-cache/localstack
-            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
-          fi
+          gu install native-image
 
-      # Cache Ryuk image
-      - name: Cache Ryuk image
-        id: cache-ryuk
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/ryuk
-          key: ${{ runner.os }}-ryuk-${{ env.RYUK_VERSION }}
-
-      # Load or Pull Ryuk Docker image
-      - name: Get Ryuk Docker Image
+      # Build the native image using GraalVM
+      - name: Build Native Image
         run: |
-          if [ -f ~/.docker-cache/ryuk/ryuk.tar ]; then
-            echo "Loading Ryuk Docker image from cache..."
-            docker load -i ~/.docker-cache/ryuk/ryuk.tar
-          else
-            echo "Ryuk image not found in cache, pulling from Docker Hub..."
-            docker pull testcontainers/ryuk:${{ env.RYUK_VERSION }}
-          
-            echo "Saving Ryuk image to cache..."
-            mkdir -p ~/.docker-cache/ryuk
-            docker save testcontainers/ryuk:${{ env.RYUK_VERSION }} -o ~/.docker-cache/ryuk/ryuk.tar
-          fi
+          mvn package -Pnative -DskipTests
 
-      - name: Start LocalStack container
+      # Package the native image as a zip file
+      - name: Package Native Image as Zip
         run: |
-          echo "Starting LocalStack container..."
-          docker run -d --name localstack \
-            -p 127.0.0.1:4566:4566 \
-            -e SERVICES=dynamodb \
-            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-
-      # Run mvn verify to build and test the project, which also packages the JAR
-      - name: Build, run tests, and package
-        run: mvn verify --batch-mode --fail-at-end
+          zip -j target/${{ env.NATIVE_ZIP_NAME }} target/bank-account-recipients-0.1-native
 
       # Configure AWS credentials for deployment
       - name: Configure AWS credentials
@@ -96,9 +50,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Deploy the JAR to AWS Lambda
-      - name: Deploy to AWS Lambda
+      # Deploy the native image zip to AWS Lambda (Linux 2023 runtime)
+      - name: Deploy Native Image to AWS Lambda
         run: |
           aws lambda update-function-code \
-            --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://target/${{ env.ARTIFACT_NAME }}
+            --function-name ${{ env.LINUX_2023_LAMBDA_NAME }} \
+            --zip-file fileb://target/${{ env.NATIVE_ZIP_NAME }}
