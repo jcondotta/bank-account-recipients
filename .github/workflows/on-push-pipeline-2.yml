@@ -1,0 +1,58 @@
+name: Linux 2023 Lambda Deployment
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      LINUX_2023_LAMBDA_FUNCTION_NAME: "bank-account-recipients-java-17-graalvm"
+      AWS_REGION: "eu-west-3"
+      ARTIFACT_NAME: "function.zip"
+      DOCKER_IMAGE_TAG: "bank-account-recipients-linux-2023"
+      GRAALVM_VERSION: "17"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up GraalVM JDK with Maven cache
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest' # Or specify a version like '17'
+          java-version: '17'
+          distribution: 'oracle' # This specifies Oracle GraalVM
+          components: 'native-image' # To include GraalVM native-image support
+          cache: maven
+
+      # Build the native Docker image for Linux 2023 Lambda using GraalVM
+      - name: Build Native Docker Image for Linux 2023 Lambda
+        run: |
+          ./mvnw package -Dpackaging=docker-native
+
+      # Package the native Docker image as a zip for AWS Lambda deployment
+      - name: Package Native Docker Image as Zip
+        run: |
+          docker save ${DOCKER_IMAGE_TAG} | gzip > target/${ARTIFACT_NAME}
+
+      # Configure AWS credentials for deployment
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Deploy to AWS Lambda
+      - name: Deploy to Linux 2023 AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ env.LINUX_2023_LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://target/${ARTIFACT_NAME}

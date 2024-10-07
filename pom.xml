@@ -5,7 +5,7 @@
     <groupId>com.blitzar.bank_account_recipient</groupId>
     <artifactId>bank-account-recipients</artifactId>
     <version>0.1</version>
-    <packaging>${packaging}</packaging>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>io.micronaut.platform</groupId>
@@ -14,12 +14,9 @@
     </parent>
 
     <properties>
-        <packaging>jar</packaging>
         <jdk.version>17</jdk.version>
         <release.version>17</release.version>
         <micronaut.runtime>lambda</micronaut.runtime>
-        <micronaut.aot.enabled>false</micronaut.aot.enabled>
-        <micronaut.aot.packageName>com.blitzar.bank_account_recipient.aot.generated</micronaut.aot.packageName>
         <exec.mainClass>io.micronaut.function.aws.runtime.MicronautLambdaRuntime</exec.mainClass>
 
 <!--        test dependency versions -->
@@ -59,11 +56,6 @@
         </dependency>
         <dependency>
             <groupId>io.micronaut.aws</groupId>
-            <artifactId>micronaut-function-aws-api-proxy-test</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut.aws</groupId>
             <artifactId>micronaut-function-aws-custom-runtime</artifactId>
             <scope>compile</scope>
         </dependency>
@@ -81,11 +73,6 @@
         <dependency>
             <groupId>io.micronaut.validation</groupId>
             <artifactId>micronaut-validation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>7.0.5.Final</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -158,6 +145,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-function-aws-api-proxy-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
@@ -167,6 +159,12 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>localstack</artifactId>
             <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>7.0.5.Final</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -179,19 +177,6 @@
                 <version>${micronaut-maven-plugin.version}</version>
                 <configuration>
                     <configFile>aot-${packaging}.properties</configFile>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.41.1</version>
-                <configuration>
-                    <java>
-                        <licenseHeader>
-                            <file>${project.basedir}/LICENSEHEADER</file>
-                        </licenseHeader>
-                    </java>
                 </configuration>
             </plugin>
 
