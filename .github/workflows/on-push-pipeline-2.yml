@@ -21,14 +21,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '17'  # Default GraalVM version for JDK 17
+          distribution: 'graalvm'
           java-version: '17'
-          components: 'native-image'
           cache: maven
 
       # Build the GraalVM native image and package it as a ZIP for AWS Lambda
