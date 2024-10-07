@@ -5,7 +5,7 @@
     <groupId>com.blitzar.bank_account_recipient</groupId>
     <artifactId>bank-account-recipients</artifactId>
     <version>0.1</version>
-    <packaging>jar</packaging>
+    <packaging>${packaging}</packaging>
 
     <parent>
         <groupId>io.micronaut.platform</groupId>
@@ -14,6 +14,7 @@
     </parent>
 
     <properties>
+        <packaging>jar</packaging>
         <jdk.version>17</jdk.version>
         <release.version>17</release.version>
         <micronaut.runtime>lambda</micronaut.runtime>
