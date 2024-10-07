@@ -23,15 +23,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up GraalVM JDK with Maven cache
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '17'  # Ensure GraalVM version matches your local setup
+          version: '17.0.10'  # Use the exact version you need
           java-version: '17'
           components: 'native-image'
+          architecture: 'amd64'  # Adjust this if necessary
           cache: maven
-          architecture: 'aarch64'  # Set to aarch64 if you want to force this architecture
 
       # Build the GraalVM native image and package it as a ZIP for AWS Lambda
       - name: Build Native Image and Package as Zip
@@ -42,18 +41,3 @@ jobs:
       - name: List the target directory
         run: |
           ls -al target
-
-      # Configure AWS credentials for deployment
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      # Deploy to AWS Lambda
-      - name: Deploy to Linux 2023 AWS Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name ${{ env.LINUX_2023_LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://target/${{ env.ARTIFACT_NAME }}
