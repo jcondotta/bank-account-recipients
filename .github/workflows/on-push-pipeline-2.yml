@@ -16,13 +16,13 @@ jobs:
       LINUX_2023_LAMBDA_FUNCTION_NAME: "bank-account-recipients-java-17-graalvm"
       AWS_REGION: "eu-west-3"
       ARTIFACT_NAME: "function.zip"
-      DOCKER_IMAGE_TAG: "bank-account-recipients-linux-2023"
       GRAALVM_VERSION: "17"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up GraalVM JDK with Maven cache
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
@@ -31,15 +31,10 @@ jobs:
           components: 'native-image'
           cache: maven
 
-      # Build the native Docker image for Linux 2023 Lambda using GraalVM
-      - name: Build Native Docker Image for Linux 2023 Lambda
+      # Build the GraalVM native image and package it as a ZIP for AWS Lambda
+      - name: Build Native Image and Package as Zip
         run: |
-          docker build -t ${DOCKER_IMAGE_TAG} .
-
-      # Package the native Docker image as a zip for AWS Lambda deployment
-      - name: Package Native Docker Image as Zip
-        run: |
-          docker save ${DOCKER_IMAGE_TAG} | gzip > target/${ARTIFACT_NAME}
+          ./mvnw package -Dpackaging=native-image
 
       # Configure AWS credentials for deployment
       - name: Configure AWS credentials
