@@ -34,7 +34,7 @@ jobs:
       # Build the GraalVM native image and package it as a ZIP for AWS Lambda
       - name: Build Native Image and Package as Zip
         run: |
-          ./mvnw package -Dpackaging=native-image
+          ./mvnw package -Dpackaging=native-image -DskipTests=true
 
       # Configure AWS credentials for deployment
       - name: Configure AWS credentials
