@@ -23,13 +23,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+          # Correct GraalVM setup
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
-          version: 'latest' # Or specify a version like '17'
+          version: 'latest'  # Use specific GraalVM version if needed, like '22.3.0'
           java-version: '17'
-          distribution: 'oracle' # This specifies Oracle GraalVM
-          components: 'native-image' # To include GraalVM native-image support
+          components: 'native-image'  # This adds native-image support
           cache: maven
 
       # Build the native Docker image for Linux 2023 Lambda using GraalVM
