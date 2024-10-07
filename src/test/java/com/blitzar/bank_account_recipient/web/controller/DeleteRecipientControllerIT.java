@@ -1,13 +1,13 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.LocalStackTestContainer;
-import com.blitzar.bank_account_recipient.MessageResolver;
-import com.blitzar.bank_account_recipient.argumentprovider.malicious.MaliciousInputArgumentProvider;
+import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
+import com.blitzar.bank_account_recipient.helper.TestMessageResolver;
+import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -48,7 +48,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private RequestSpecification requestSpecification;
 
-    private MessageResolver messageResolver;
+    private TestMessageResolver testMessageResolver;
 
     @BeforeAll
     public static void beforeAll(){
@@ -57,7 +57,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
-        this.messageResolver = new MessageResolver(exceptionMessageSource);
+        this.testMessageResolver = new TestMessageResolver(exceptionMessageSource);
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
                 .basePath(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
@@ -113,7 +113,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(MaliciousInputArgumentProvider.class)
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
     public void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
         given()
             .spec(requestSpecification)
@@ -125,7 +125,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.recipientName.invalid",
+                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientName.invalid",
                         TestBankAccount.BRAZIL.getBankAccountId(), invalidRecipientName)));
     }
 
@@ -144,7 +144,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.NOT_FOUND.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(messageResolver.getMessage("recipient.notFound",
+                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.notFound",
                         jeffersonRecipientDTO.bankAccountId(), nonExistentRecipientName)));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()

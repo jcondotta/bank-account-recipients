@@ -1,13 +1,13 @@
 package com.blitzar.bank_account_recipient.service;
 
-import com.blitzar.bank_account_recipient.argumentprovider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.malicious.MaliciousInputArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.validation.BlankAndNonPrintableCharactersArgumentProvider;
+import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.request.DeleteRecipientRequest;
-import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
+import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ class DeleteRecipientServiceTest {
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
 
-    private static final Validator VALIDATOR = ValidatorBuilder.getValidator();
+    private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
 
     @BeforeEach
     public void setup() {
@@ -91,7 +91,7 @@ class DeleteRecipientServiceTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(MaliciousInputArgumentProvider.class)
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
     public void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 

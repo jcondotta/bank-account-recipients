@@ -1,6 +1,6 @@
 package com.blitzar.bank_account_recipient.service.request;
 
-import com.blitzar.bank_account_recipient.validation.SecureInput;
+import com.blitzar.bank_account_recipient.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

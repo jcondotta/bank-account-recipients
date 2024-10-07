@@ -1,13 +1,13 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.LocalStackTestContainer;
+import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
-import com.blitzar.bank_account_recipient.validation.RecipientValidator;
+import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
@@ -48,8 +48,8 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
 
-    private RecipientValidator recipientValidator;
     private RequestSpecification requestSpecification;
+    private RecipientsValidator recipientsValidator = new RecipientsValidator();
 
     @BeforeAll
     public static void beforeAll(){
@@ -58,7 +58,6 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
-        this.recipientValidator = new RecipientValidator();
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
                 .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING);
@@ -87,7 +86,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
                     .extract()
                         .as(RecipientsDTO.class);
 
-        recipientValidator.validateRecipients(expectedRecipients, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
     }
 
     @Test
@@ -111,7 +110,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
                         .extract()
                             .as(RecipientsDTO.class);
 
-        recipientValidator.validateRecipients(expectedRecipients, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
     }
 
     @Test
@@ -186,7 +185,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
                     .extract()
                         .as(RecipientsDTO.class);
 
-        recipientValidator.validateRecipients(expectedRecipientsPage1, recipientsDTOPage1.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage1, recipientsDTOPage1.recipients());
 
         logger.debug("Fetching page 2 recipients for bank account ID: {} with last evaluated key: {}", brazilBankAccountId, TestRecipient.JEFFERSON.getRecipientName());
         var recipientsDTOPage2 = given()
@@ -206,7 +205,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
                     .extract()
                         .as(RecipientsDTO.class);
 
-        recipientValidator.validateRecipients(expectedRecipientsPage2, recipientsDTOPage2.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage2, recipientsDTOPage2.recipients());
 
         logger.debug("Fetching page 3 recipients for bank account ID: {} with last evaluated key: {}", brazilBankAccountId, TestRecipient.PATRIZIO.getRecipientName());
         var recipientsDTOPage3 = given()
@@ -225,6 +224,6 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
                     .extract()
                         .as(RecipientsDTO.class);
 
-        recipientValidator.validateRecipients(expectedRecipientsPage3, recipientsDTOPage3.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage3, recipientsDTOPage3.recipients());
     }
 }

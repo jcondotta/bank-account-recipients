@@ -8,7 +8,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class RecipientDTOFactory {
+public class RecipientDTOTestFactory {
 
     private static final Clock TEST_CLOCK_FIXED_INSTANT = ClockTestFactory.testClockFixedInstant;
 

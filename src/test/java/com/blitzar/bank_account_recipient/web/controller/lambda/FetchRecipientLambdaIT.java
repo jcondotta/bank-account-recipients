@@ -3,13 +3,13 @@ package com.blitzar.bank_account_recipient.web.controller.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.blitzar.bank_account_recipient.LocalStackTestContainer;
+import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.service.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
-import com.blitzar.bank_account_recipient.validation.RecipientValidator;
+import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,9 +35,10 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     private static Context mockLambdaContext = new MockLambdaContext();
 
+    private RecipientsValidator recipientsValidator = new RecipientsValidator();
+
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
-    private RecipientValidator recipientValidator;
 
     @Inject
     private AddRecipientServiceFacade addRecipientService;
@@ -58,7 +59,6 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach() {
-        recipientValidator = new RecipientValidator();
         requestEvent = new APIGatewayProxyRequestEvent()
                 .withHttpMethod(HttpMethod.GET.name())
                 .withHeaders(Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
@@ -91,7 +91,7 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
         assertThat(recipientsDTO.count()).isEqualTo(expectedRecipients.size());
         assertThat(recipientsDTO.lastEvaluatedKey()).isNull();
 
-        recipientValidator.validateRecipients(expectedRecipients, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
     }
 
     @Test

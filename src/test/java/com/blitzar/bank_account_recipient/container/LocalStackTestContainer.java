@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient;
+package com.blitzar.bank_account_recipient.container;
 
 import io.micronaut.test.support.TestPropertyProvider;
 import org.slf4j.Logger;

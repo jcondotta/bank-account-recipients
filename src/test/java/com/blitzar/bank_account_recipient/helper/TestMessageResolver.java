@@ -1,14 +1,14 @@
-package com.blitzar.bank_account_recipient;
+package com.blitzar.bank_account_recipient.helper;
 
 import io.micronaut.context.MessageSource;
 
 import java.util.Locale;
 
-public class MessageResolver {
+public class TestMessageResolver {
 
     private final MessageSource messageSource;
 
-    public MessageResolver(MessageSource messageSource) {
+    public TestMessageResolver(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 

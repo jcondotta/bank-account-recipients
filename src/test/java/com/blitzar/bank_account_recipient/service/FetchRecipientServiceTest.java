@@ -1,14 +1,14 @@
 package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
-import com.blitzar.bank_account_recipient.factory.RecipientFactory;
+import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.LastEvaluatedKey;
 import com.blitzar.bank_account_recipient.service.request.QueryParams;
-import com.blitzar.bank_account_recipient.validation.RecipientValidator;
-import com.blitzar.bank_account_recipient.validation.ValidatorBuilder;
+import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
+import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FetchRecipientServiceTest {
 
-    private static final Validator VALIDATOR = ValidatorBuilder.getValidator();
+    private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
+    private RecipientsValidator recipientsValidator = new RecipientsValidator();
 
     private FetchRecipientService fetchRecipientService;
 
@@ -51,12 +52,10 @@ class FetchRecipientServiceTest {
     @Mock
     private QueryParams queryParams;
 
-    private RecipientValidator recipientValidator;
 
     @BeforeEach
     public void beforeEach(){
         fetchRecipientService = new FetchRecipientService(dynamoDbTable, VALIDATOR);
-        recipientValidator = new RecipientValidator();
 
         when(dynamoDbTable.query(any(QueryEnhancedRequest.class))).thenReturn(pageIterable);
         when(pageIterable.stream()).thenReturn(Stream.of(recipientPage));
@@ -64,7 +63,7 @@ class FetchRecipientServiceTest {
 
     @Test
     void shouldReturnRecipientList_whenBankAccountIdProvidedWithoutQueryParams() {
-        var recipients = RecipientFactory.createRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JESSICA);
+        var recipients = RecipientTestFactory.createRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JESSICA);
 
         when(recipientPage.items()).thenReturn(recipients);
 
@@ -77,12 +76,12 @@ class FetchRecipientServiceTest {
         );
 
         var expectedRecipientsDTO = recipients.stream().map(RecipientDTO::new).toList();
-        recipientValidator.validateRecipients(expectedRecipientsDTO, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
     }
 
     @Test
     void shouldReturnRecipientListWithRecipientNamePrefix_whenRecipientNameIsProvided() {
-        var recipients = RecipientFactory.createRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.PATRIZIO);
+        var recipients = RecipientTestFactory.createRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.PATRIZIO);
 
         final var prefixRecipientName = "Je";
 
@@ -98,7 +97,7 @@ class FetchRecipientServiceTest {
         );
 
         var expectedRecipientsDTO = recipients.stream().map(RecipientDTO::new).toList();
-        recipientValidator.validateRecipients(expectedRecipientsDTO, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
     }
 
     @Test
@@ -132,8 +131,8 @@ class FetchRecipientServiceTest {
 
     @Test
     void shouldReturnPagedRecipientList_whenLimitIsProvided() {
-        var recipientJefferson = RecipientFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
-        var recipientPatrizio = RecipientFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.PATRIZIO);
+        var recipientJefferson = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
+        var recipientPatrizio = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.PATRIZIO);
 
         var recipientsPage1 = List.of(recipientJefferson, recipientPatrizio);
 
@@ -155,14 +154,14 @@ class FetchRecipientServiceTest {
         );
 
         var expectedRecipientsDTO = recipientsPage1.stream().map(RecipientDTO::new).toList();
-        recipientValidator.validateRecipients(expectedRecipientsDTO, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
     }
 
     @Test
     void shouldReturnPagedRecipientList_whenLastEvaluatedKeyIsProvided() {
-        var recipientJefferson = RecipientFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
-        var recipientPatrizio = RecipientFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.PATRIZIO);
-        var recipientVirginio = RecipientFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.VIRGINIO);
+        var recipientJefferson = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
+        var recipientPatrizio = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.PATRIZIO);
+        var recipientVirginio = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.VIRGINIO);
 
         var recipientsPage1 = List.of(recipientPatrizio, recipientVirginio);
 
@@ -181,6 +180,6 @@ class FetchRecipientServiceTest {
         );
 
         var expectedRecipientsDTO = recipientsPage1.stream().map(RecipientDTO::new).toList();
-        recipientValidator.validateRecipients(expectedRecipientsDTO, recipientsDTO.recipients());
+        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
     }
 }

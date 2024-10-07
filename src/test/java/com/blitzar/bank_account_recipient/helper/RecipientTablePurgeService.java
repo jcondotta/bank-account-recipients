@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.service;
+package com.blitzar.bank_account_recipient.helper;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import jakarta.inject.Inject;
