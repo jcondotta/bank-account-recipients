@@ -17,6 +17,7 @@ jobs:
       AWS_REGION: "eu-west-3"
       ARTIFACT_NAME: "function.zip"
       GRAALVM_VERSION: "17"
+      GRAALVM_ARCH: "aarch64"  # Ensure the correct architecture if required
 
     steps:
       - name: Checkout code
@@ -26,15 +27,21 @@ jobs:
       - name: Set up GraalVM JDK with Maven cache
         uses: graalvm/setup-graalvm@v1
         with:
-          version: 'latest'
+          version: '17'  # Ensure GraalVM version matches your local setup
           java-version: '17'
           components: 'native-image'
           cache: maven
+          architecture: 'aarch64'  # Set to aarch64 if you want to force this architecture
 
       # Build the GraalVM native image and package it as a ZIP for AWS Lambda
       - name: Build Native Image and Package as Zip
         run: |
-          ./mvnw package -Dpackaging=native-image -DskipTests=true
+          ./mvnw package -Dpackaging=docker-native
+
+      # Verify the zip file is created
+      - name: List the target directory
+        run: |
+          ls -al target
 
       # Configure AWS credentials for deployment
       - name: Configure AWS credentials
@@ -49,4 +56,4 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name ${{ env.LINUX_2023_LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://target/${ARTIFACT_NAME}
+            --zip-file fileb://target/${{ env.ARTIFACT_NAME }}
