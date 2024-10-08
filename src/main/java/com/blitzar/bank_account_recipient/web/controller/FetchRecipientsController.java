@@ -7,6 +7,8 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +23,7 @@ import java.util.UUID;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
 public class FetchRecipientsController {
 

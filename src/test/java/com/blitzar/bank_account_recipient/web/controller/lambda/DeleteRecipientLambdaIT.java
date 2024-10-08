@@ -8,6 +8,7 @@ import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.function.aws.proxy.MockLambdaContext;
@@ -34,6 +35,7 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
+    private APIGatewayProxyRequestEvent.ProxyRequestContext proxyRequestContext;
 
     @Inject
     private AddRecipientServiceFacade addRecipientService;
@@ -44,6 +46,9 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
 
+    @Inject
+    private AuthenticationService authenticationService;
+
     @BeforeAll
     public void beforeAll() {
         requestEventFunction = new ApiGatewayProxyRequestEventFunction(applicationContext);
@@ -51,9 +56,15 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach() {
+        var authenticationResponseDTO = authenticationService.authenticate();
+        proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
+
         requestEvent = new APIGatewayProxyRequestEvent()
                 .withHttpMethod(HttpMethod.DELETE.name())
-                .withHeaders(Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+                .withHeaders(Map.of(
+                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON,
+                        HttpHeaders.AUTHORIZATION, authenticationResponseDTO.buildAuthorizationHeader()))
+                .withRequestContext(proxyRequestContext);
     }
 
     @AfterEach

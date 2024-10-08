@@ -6,6 +6,7 @@ import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import io.micronaut.http.HttpStatus;
@@ -48,6 +49,9 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
 
+    @Inject
+    private AuthenticationService authenticationService;
+
     private RequestSpecification requestSpecification;
     private RecipientsValidator recipientsValidator = new RecipientsValidator();
 
@@ -59,8 +63,10 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
+                .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING);
+                .auth()
+                    .oauth2(authenticationService.authenticate().access_token());
     }
 
     @AfterEach

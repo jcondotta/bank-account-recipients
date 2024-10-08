@@ -1,25 +1,26 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
-import com.blitzar.bank_account_recipient.helper.TestMessageResolver;
 import com.blitzar.bank_account_recipient.argumentprovider.validation.BlankAndNonPrintableCharactersArgumentProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.validation.iban.InvalidIbanArgumentsProvider;
 import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
+import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.domain.Recipient;
+import com.blitzar.bank_account_recipient.factory.MessageSourceResolver;
+import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
-import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.uri.UriBuilder;
+import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,6 +42,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @MicronautTest(transactional = false)
 public class AddRecipientControllerIT implements LocalStackTestContainer {
 
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
+    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
+    private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
+
     @Inject
     private DynamoDbTable<Recipient> dynamoDbTable;
 
@@ -48,8 +53,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     private Clock testClockUTC;
 
     @Inject
-    @Named("exceptionMessageSource")
-    private MessageSource exceptionMessageSource;
+    private MessageSourceResolver messageSourceResolver;
 
     @Inject
     private RequestSpecification requestSpecification;
@@ -57,11 +61,8 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
 
-    private TestMessageResolver testMessageResolver;
-
-    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
-    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
-    private static final String RECIPIENT_Iban_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
+    @Inject
+    private AuthenticationService authenticationService;
 
     @BeforeAll
     public static void beforeAll() {
@@ -70,10 +71,11 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
-        this.testMessageResolver = new TestMessageResolver(exceptionMessageSource);
         this.requestSpecification = requestSpecification
+                .basePath(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
-                .basePath(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING);
+                .auth()
+                    .oauth2(authenticationService.authenticate().access_token());
     }
 
     @AfterEach
@@ -83,7 +85,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void shouldReturn201Created_whenRequestIsValid() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         var expectedLocation = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
                 .expand(Map.of("bank-account-id", BANK_ACCOUNT_ID_BRAZIL))
@@ -126,7 +128,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     public void shouldReturn400BadRequest_whenBankAccountIdIsNull() {
-        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -137,13 +139,13 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.bankAccountId.notNull")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.bankAccountId.notNull")));
     }
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
     public void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -154,13 +156,13 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientName.notBlank")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientName.notBlank")));
     }
 
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
     public void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -171,12 +173,12 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientName.invalid")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientName.invalid")));
     }
 
     @Test
     public void shouldReturn400BadRequest_whenRecipientNameIsLongerThan50Characters() {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, "J".repeat(51), RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, "J".repeat(51), RECIPIENT_IBAN_JEFFERSON);
 
         given()
             .spec(requestSpecification)
@@ -187,7 +189,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientName.tooLong")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientName.tooLong")));
     }
 
     @ParameterizedTest
@@ -204,7 +206,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientIban.invalid")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientIban.invalid")));
     }
 
     @ParameterizedTest
@@ -221,7 +223,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientIban.invalid")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientIban.invalid")));
     }
 
     @ParameterizedTest
@@ -238,7 +240,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.BAD_REQUEST.getCode())
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(testMessageResolver.getMessage("recipient.recipientIban.invalid")));
+                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientIban.invalid")));
     }
 
     @Test
@@ -255,9 +257,9 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
             .rootPath("_embedded")
                 .body("errors", hasSize(3))
                 .body("errors.message", containsInAnyOrder(
-                        testMessageResolver.getMessage("recipient.bankAccountId.notNull"),
-                        testMessageResolver.getMessage("recipient.recipientName.notBlank"),
-                        testMessageResolver.getMessage("recipient.recipientIban.invalid"))
+                        messageSourceResolver.getMessage("recipient.bankAccountId.notNull"),
+                        messageSourceResolver.getMessage("recipient.recipientName.notBlank"),
+                        messageSourceResolver.getMessage("recipient.recipientIban.invalid"))
                 );
 
     }

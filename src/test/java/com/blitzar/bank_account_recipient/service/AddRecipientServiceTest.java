@@ -38,7 +38,7 @@ class AddRecipientServiceTest {
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
-    private static final String RECIPIENT_Iban_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
+    private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
     private static final Clock TEST_CLOCK_FIXED_INSTANT = ClockTestFactory.testClockFixedInstant;
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
@@ -71,7 +71,7 @@ class AddRecipientServiceTest {
 
     @Test
     public void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
-        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
         assertThat(exception.getConstraintViolations())
@@ -88,7 +88,7 @@ class AddRecipientServiceTest {
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
     public void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
         assertThat(exception.getConstraintViolations())
@@ -105,7 +105,7 @@ class AddRecipientServiceTest {
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
     public void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
         assertThat(exception.getConstraintViolations())
@@ -122,7 +122,7 @@ class AddRecipientServiceTest {
     @Test
     public void shouldThrowConstraintViolationException_whenRecipientNameIsTooLong() {
         final var veryLongRecipientName = "J".repeat(51);
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName, RECIPIENT_Iban_JEFFERSON);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
         assertThat(exception.getConstraintViolations())

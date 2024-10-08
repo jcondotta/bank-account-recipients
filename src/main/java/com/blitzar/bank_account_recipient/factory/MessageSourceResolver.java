@@ -1,14 +1,17 @@
-package com.blitzar.bank_account_recipient.helper;
+package com.blitzar.bank_account_recipient.factory;
 
 import io.micronaut.context.MessageSource;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import java.util.Locale;
 
-public class TestMessageResolver {
+public class MessageSourceResolver {
 
     private final MessageSource messageSource;
 
-    public TestMessageResolver(MessageSource messageSource) {
+    public MessageSourceResolver(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
@@ -21,12 +24,10 @@ public class TestMessageResolver {
     }
 
     public String getMessage(String key, Locale locale) {
-        return messageSource.getMessage(key, locale).orElseThrow(() -> 
-            new IllegalArgumentException("Message not found for key: " + key));
+        return messageSource.getMessage(key, locale).orElseThrow(() -> new IllegalArgumentException("Message not found for key: " + key));
     }
 
     public String getMessage(String key, Locale locale, Object... args) {
-        return messageSource.getMessage(key, locale, args).orElseThrow(() -> 
-            new IllegalArgumentException("Message not found for key: " + key));
+        return messageSource.getMessage(key, locale, args).orElseThrow(() -> new IllegalArgumentException("Message not found for key: " + key));
     }
 }

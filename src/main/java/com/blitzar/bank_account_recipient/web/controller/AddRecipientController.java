@@ -3,15 +3,14 @@ package com.blitzar.bank_account_recipient.web.controller;
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
+import io.micronaut.http.*;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Status;
 import io.micronaut.http.uri.UriBuilder;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Validated
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
 public class AddRecipientController {
 
@@ -60,9 +60,7 @@ public class AddRecipientController {
             @ApiResponse(responseCode = "400", description = "Invalid bank account ID, recipient name, or IBAN. Ensure that all required fields are valid."),
             @ApiResponse(responseCode = "500", description = "Internal server error. This may occur due to system issues, failed database connections, or unexpected runtime exceptions.")
     })
-    public HttpResponse<RecipientDTO> addRecipient(
-            @Body AddRecipientRequest addRecipientRequest,
-            HttpRequest<?> request) {
+    public HttpResponse<RecipientDTO> addRecipient(@Body AddRecipientRequest addRecipientRequest, HttpRequest<?> request) {
 
         logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Incoming request to add recipient",
                 addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
@@ -70,8 +68,7 @@ public class AddRecipientController {
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
         var locationUri = buildLocationUri(addRecipientRequest.bankAccountId());
 
-        return HttpResponse.created(locationUri)
-                .body(recipientDTO);
+        return HttpResponse.created(recipientDTO, locationUri);
     }
 
     private URI buildLocationUri(UUID bankAccountId) {

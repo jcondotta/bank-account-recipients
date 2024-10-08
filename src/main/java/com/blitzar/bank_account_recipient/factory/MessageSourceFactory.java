@@ -16,4 +16,9 @@ public class MessageSourceFactory {
     public MessageSource exceptionMessageSource() {
         return new ResourceBundleMessageSource("i18n/exceptions/exceptions", Locale.ENGLISH);
     }
+
+    @Singleton
+    public MessageSourceResolver exceptionMessageSourceResolver(@Named("exceptionMessageSource") MessageSource exceptionMessageSource) {
+        return new MessageSourceResolver(exceptionMessageSource);
+    }
 }

@@ -8,6 +8,7 @@ import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
+import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
@@ -39,6 +40,7 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
+    private APIGatewayProxyRequestEvent.ProxyRequestContext proxyRequestContext;
 
     @Inject
     private AddRecipientServiceFacade addRecipientService;
@@ -52,6 +54,9 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
 
+    @Inject
+    private AuthenticationService authenticationService;
+
     @BeforeAll
     public void beforeAll() {
         requestEventFunction = new ApiGatewayProxyRequestEventFunction(applicationContext);
@@ -59,9 +64,15 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     @BeforeEach
     public void beforeEach() {
+        var authenticationResponseDTO = authenticationService.authenticate();
+        proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
+
         requestEvent = new APIGatewayProxyRequestEvent()
                 .withHttpMethod(HttpMethod.GET.name())
-                .withHeaders(Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+                .withHeaders(Map.of(
+                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON,
+                        HttpHeaders.AUTHORIZATION, authenticationResponseDTO.buildAuthorizationHeader()))
+                .withRequestContext(proxyRequestContext);
     }
 
     @AfterEach
