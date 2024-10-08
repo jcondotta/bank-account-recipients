@@ -1,17 +1,12 @@
 micronaut:
-  router:
-    static-resources:
-      swagger:
-        paths: 'classpath:META-INF/swagger'
-        mapping: '/swagger/**'
-      swagger-ui:
-        paths: 'classpath:META-INF/swagger/views/swagger-ui'
-        mapping: '/swagger-ui/**'
+  environments:
+    - dev
 
 aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID:test}
-  secret-key: ${AWS_SECRET_ACCESS_KEY:test}
-  region: ${AWS_DEFAULT_REGION:us-east-1}
+  access-key-id: test
+  secret-key: test
+  region: us-east-1
   dynamodb:
-    endpoint: ${AWS_DYNAMODB_ENDPOINT:`http://127.0.0.1:4566`}
+    table-name: ${AWS_DYNAMODB_RECIPIENTS_TABLE_NAME}
+    endpoint: 'http://127.0.0.1:4566'
 

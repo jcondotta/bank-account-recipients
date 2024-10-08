@@ -4,15 +4,16 @@ resource "aws_lambda_function" "recipients_lambda" {
   runtime       = var.lambda_runtime
   handler       = var.lambda_handler
   role          = aws_iam_role.recipients_lambda_role_exec.arn
-  filename      = "${path.module}/../../../target/bank-account-recipients-0.1.jar" #var.lambda_jar_file
+  filename      = var.lambda_file
   memory_size   = var.lambda_memory_size
   timeout       = var.lambda_timeout
   architectures = ["arm64"]
 
   environment {
-    variables = {
-      AWS_DYNAMODB_RECIPIENTS_TABLE_NAME = "recipients-${var.environment}"
-    }
+    variables = merge({
+        AWS_DYNAMODB_RECIPIENTS_TABLE_NAME = "recipients-${var.environment}" },
+      var.lambda_environment_variables
+    )
   }
 
   tags = var.tags

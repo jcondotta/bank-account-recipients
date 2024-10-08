@@ -4,8 +4,30 @@ micronaut:
   server:
     port: 8086
 
+#  security:
+#    enabled: true
+#    token:
+#      jwt:
+#        signatures:
+#          secret:
+#            generator: "your-super-secret-key"
+#            validation: "your-super-secret-key"
+  security:
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+        generator:
+          refresh-token:
+            secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+
 i18n:
   default-locale: en_US
+
+locale: en_US
 
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}

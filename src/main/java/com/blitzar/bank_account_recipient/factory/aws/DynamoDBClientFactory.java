@@ -31,7 +31,7 @@ public class DynamoDBClientFactory {
 
         return DynamoDbClient.builder()
                 .region(region)
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .credentialsProvider(environmentVariableCredentialsProvider)
                 .build();
     }
 

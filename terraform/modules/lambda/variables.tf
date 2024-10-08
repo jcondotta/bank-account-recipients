@@ -56,6 +56,7 @@ variable "lambda_handler" {
 variable "lambda_file" {
   description = "The path to the file(jar, zip) for the Lambda function"
   type        = string
+  default     = "../target/bank-account-recipients-0.1.jar"
 }
 
 variable "dynamodb_table_arn" {
@@ -66,6 +67,12 @@ variable "dynamodb_table_arn" {
     condition     = can(regex("^arn:aws:dynamodb:[a-z0-9-]+:[0-9]{12}:table/.+", var.dynamodb_table_arn))
     error_message = "The value for dynamodb_table_arn must be a valid DynamoDB table ARN."
   }
+}
+
+variable "lambda_environment_variables" {
+  description = "A key-value map of environment variables for the Lambda function, used to configure dynamic runtime settings."
+  type        = map(string)
+  default     = {}
 }
 
 variable "tags" {

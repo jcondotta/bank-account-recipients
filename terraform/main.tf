@@ -44,7 +44,7 @@ module "lambda" {
   lambda_timeout                  = var.lambda_timeout
   lambda_runtime                  = var.lambda_runtime
   lambda_handler                  = var.lambda_handler
-  lambda_file                     = var.lambda_file
+  lambda_environment_variables    = var.lambda_environment_variables
 }
 
 module "apigateway" {
