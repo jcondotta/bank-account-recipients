@@ -84,7 +84,7 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
-      # Run mvn verify to build and test the project, which also packages the JAR
+      # Run mvn verify to build and test the project
       - name: Build, run tests, and package
         run: mvn verify --batch-mode --fail-at-end
 
