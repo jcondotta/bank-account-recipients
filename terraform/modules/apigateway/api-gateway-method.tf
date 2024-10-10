@@ -20,8 +20,7 @@ resource "aws_api_gateway_method" "post_recipients" {
   rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
   resource_id   = aws_api_gateway_resource.recipients.id
   http_method   = "POST"
-  authorization = "CUSTOM"
-  authorizer_id = aws_api_gateway_authorizer.jwt_authorizer.id
+  authorization = "NONE"
 }
 
 # POST method integration with Lambda function

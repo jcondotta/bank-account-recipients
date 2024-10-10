@@ -10,7 +10,7 @@ output "lambda_function_name" {
 
 output "lambda_invoke_uri" {
   description = "The ARN for invoking the Lambda function via API Gateway"
-  value       = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.recipients_lambda.function_name}/invocations"
+  value       = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.recipients_lambda.arn}/invocations"
 }
 
 output "lambda_filename" {
