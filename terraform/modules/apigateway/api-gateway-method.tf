@@ -1,7 +1,3 @@
-locals {
-  lambda_invoke_uri = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${var.lambda_function_arn}/invocations"
-}
-
 # Define the POST method for /login
 resource "aws_api_gateway_method" "post_login" {
   rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
@@ -16,7 +12,7 @@ resource "aws_api_gateway_integration" "post_login_integration" {
   http_method             = aws_api_gateway_method.post_login.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = local.lambda_invoke_uri
+  uri                     = var.lambda_invoke_uri
 }
 
 # Define the POST method for /api/v1/recipients
@@ -35,7 +31,7 @@ resource "aws_api_gateway_integration" "post_recipients_integration" {
   http_method             = aws_api_gateway_method.post_recipients.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = local.lambda_invoke_uri
+  uri                     = var.lambda_invoke_uri
 }
 
 # Define the GET method for /api/v1/recipients/bank-account-id/{bank-account-id}
@@ -58,7 +54,7 @@ resource "aws_api_gateway_integration" "get_bank_account_recipients_integration"
   http_method             = aws_api_gateway_method.get_bank_account_recipients.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = local.lambda_invoke_uri
+  uri                     = var.lambda_invoke_uri
 
   # Map the path parameters to the Lambda function
   request_parameters = {
@@ -87,7 +83,7 @@ resource "aws_api_gateway_integration" "delete_recipients_integration" {
   http_method             = aws_api_gateway_method.delete_recipients.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = local.lambda_invoke_uri
+  uri                     = var.lambda_invoke_uri
 
   # Map the path parameters to the Lambda function
   request_parameters = {

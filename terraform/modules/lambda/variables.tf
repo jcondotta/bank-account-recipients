@@ -13,12 +13,12 @@ variable "current_aws_account_id" {
   type        = string
 }
 
-variable "recipients_lambda_function_name" {
+variable "lambda_function_name" {
   description = "The name of the recipients Lambda function"
   type        = string
 
   validation {
-    condition     = length(var.recipients_lambda_function_name) > 0
+    condition     = length(var.lambda_function_name) > 0
     error_message = "recipients_lambda_function_name must be a non-empty string."
   }
 }
@@ -69,6 +69,11 @@ variable "dynamodb_table_arn" {
   }
 }
 
+variable "dynamodb_table_name" {
+  description = "The name of the DynamoDB recipients table the Lambda will interact with"
+  type        = string
+}
+
 variable "lambda_environment_variables" {
   description = "A key-value map of environment variables for the Lambda function, used to configure dynamic runtime settings."
   type        = map(string)
@@ -77,6 +82,16 @@ variable "lambda_environment_variables" {
 
 variable "jwt_signature_secret_arn" {
   description = "The ARN of the SSM parameter for JWT signature secret"
+  type        = string
+
+  validation {
+    condition     = can(regex("^arn:aws:ssm:[a-z\\-0-9]+:\\d{12}:parameter/[a-zA-Z0-9_.-/]+$", var.jwt_signature_secret_arn))
+    error_message = "The value provided is not a valid SSM parameter ARN. Ensure it follows the pattern 'arn:aws:ssm:<region>:<account_id>:parameter/<parameter-name>'."
+  }
+}
+
+variable "jwt_signature_secret_name" {
+  description = "The name of the SSM parameter for JWT signature secret"
   type        = string
 }
 

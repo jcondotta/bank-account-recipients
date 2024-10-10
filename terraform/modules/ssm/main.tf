@@ -7,4 +7,6 @@ resource "aws_ssm_parameter" "jwt_signature_secret" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = var.tags
 }

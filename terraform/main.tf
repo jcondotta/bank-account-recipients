@@ -29,7 +29,7 @@ module "ssm" {
   environment = var.environment
   tags        = merge(var.tags, { "environment" = var.environment })
 
-  jwt_signature_secret_name        = var.jwt_signature_secret_name
+  jwt_signature_secret_name        = "/jwt/signature/${var.environment}/secret"
   jwt_signature_secret_value       = var.jwt_signature_secret_value
   jwt_signature_secret_description = var.jwt_signature_secret_description
 }
@@ -54,15 +54,19 @@ module "lambda" {
   environment            = var.environment
   tags                   = merge(var.tags, { "environment" = var.environment })
 
-  recipients_lambda_function_name = "recipients-lambda-${var.environment}"
-  dynamodb_table_arn              = module.dynamodb.recipients_table_arn # Reference the DynamoDB table ARN from the dynamodb module
-  lambda_memory_size              = var.lambda_memory_size
-  lambda_timeout                  = var.lambda_timeout
-  lambda_runtime                  = var.lambda_runtime
-  lambda_handler                  = var.lambda_handler
-  lambda_environment_variables    = var.lambda_environment_variables
 
-  jwt_signature_secret_arn = module.ssm.jwt_signature_secret_arn
+  dynamodb_table_arn  = module.dynamodb.recipients_table_arn
+  dynamodb_table_name = module.dynamodb.recipients_table_name
+
+  lambda_function_name         = "recipients-lambda-${var.environment}"
+  lambda_memory_size           = var.lambda_memory_size
+  lambda_timeout               = var.lambda_timeout
+  lambda_runtime               = var.lambda_runtime
+  lambda_handler               = var.lambda_handler
+  lambda_environment_variables = var.lambda_environment_variables
+
+  jwt_signature_secret_arn  = module.ssm.jwt_signature_secret_arn
+  jwt_signature_secret_name = module.ssm.jwt_signature_secret_name
 }
 
 module "apigateway" {
@@ -74,4 +78,5 @@ module "apigateway" {
 
   lambda_function_arn  = module.lambda.lambda_function_arn
   lambda_function_name = module.lambda.lambda_function_name
+  lambda_invoke_uri    = module.lambda.lambda_invoke_uri
 }

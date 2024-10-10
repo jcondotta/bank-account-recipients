@@ -9,12 +9,12 @@ variable "aws_profile" {
 }
 
 variable "environment" {
-  description = "The environment to deploy to (e.g., dev, staging, prod)"
+  description = "The environment to deploy to (e.g., dev, localstack, staging, prod)"
   type        = string
 
   validation {
-    condition     = contains(["dev", "dev-localstack", "staging", "prod"], var.environment)
-    error_message = "Environment must be one of 'dev', 'dev-localstack', 'staging', or 'prod'."
+    condition     = contains(["dev", "localstack", "staging", "prod"], var.environment)
+    error_message = "Environment must be one of 'dev', 'localstack', 'staging', or 'prod'."
   }
 }
 
