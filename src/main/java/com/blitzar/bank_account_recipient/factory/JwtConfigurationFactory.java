@@ -27,7 +27,6 @@ public class JwtConfigurationFactory {
         String maskedSecret = StringUtils.left(jwtSignatureSecret, 4) + "***************";
         logger.info("Configuring JWT secret from SSM Parameter Store: {}", maskedSecret);
 
-        // Create and configure the SecretSignatureConfiguration
         SecretSignatureConfiguration secretSignatureConfiguration = new SecretSignatureConfiguration("JWT Signature Secret Configuration");
         secretSignatureConfiguration.setSecret(jwtSignatureSecret);
 

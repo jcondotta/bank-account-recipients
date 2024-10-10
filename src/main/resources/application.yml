@@ -19,5 +19,5 @@ aws:
     endpoint: ${AWS_DYNAMODB_ENDPOINT:}
   ssm:
     jwt-signature-secret:
-      name: '/jwt/signature/secret'
+      name: ${JWT_SIGNATURE_SECRET_NAME}
     endpoint: ${AWS_SSM_ENDPOINT:}

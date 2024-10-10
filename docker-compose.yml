@@ -12,6 +12,8 @@ services:
       AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-east-1
       AWS_DYNAMODB_ENDPOINT: 'http://localstack:4566'
+      AWS_SSM_ENDPOINT: 'http://localstack:4566'
+      AWS_DYNAMODB_RECIPIENTS_TABLE_NAME: 'recipients-dev-localstack'
       LS_LOG: ${LS_LOG:-debug}
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'

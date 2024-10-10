@@ -8,12 +8,6 @@ import org.testcontainers.containers.localstack.LocalStackContainer.Service;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.services.ssm.model.ParameterType;
-import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
 import java.util.Map;
 
@@ -22,12 +16,15 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
 
     Logger logger = LoggerFactory.getLogger(LocalStackTestContainer.class);
 
-    String localStackImageName = "localstack/localstack:3.7.0";
-    DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(localStackImageName);
+    String LOCAL_STACK_IMAGE_NAME = "localstack/localstack:3.7.0";
+    DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(LOCAL_STACK_IMAGE_NAME);
+
+    String JWT_SIGNATURE_SECRET_NAME = "/jwt/signature/test/secret";
+    String DYNAMODB_RECIPIENTS_TABLE_NAME = "recipients-test";
 
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
             .withServices(Service.DYNAMODB, Service.SSM)
-            .withLogConsumer(outputFrame -> logger.debug(outputFrame.getUtf8StringWithoutLineEnding()));
+            .withLogConsumer(outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding()));
 
     @Override
     default Map<String, String> getProperties() {
@@ -51,7 +48,9 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 "AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey(),
                 "AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion(),
                 "AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString(),
-                "AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString());
+                "AWS_DYNAMODB_RECIPIENTS_TABLE_NAME", DYNAMODB_RECIPIENTS_TABLE_NAME,
+                "AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString(),
+                "JWT_SIGNATURE_SECRET_NAME", JWT_SIGNATURE_SECRET_NAME);
     }
 
     default void logContainerConfiguration() {
@@ -61,10 +60,10 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 .append(String.format("  Secret Key: %s%n", LOCALSTACK_CONTAINER.getSecretKey()))
                 .append(String.format("  Region: %s%n", LOCALSTACK_CONTAINER.getRegion()))
                 .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
-                .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)));
+                .append(String.format("  DynamoDB Recipients table name: %s%n", DYNAMODB_RECIPIENTS_TABLE_NAME))
+                .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)))
+                .append(String.format("  SSM JWT Signature Secret name: %s%n", JWT_SIGNATURE_SECRET_NAME));
 
         logger.info(sbConfig.toString());
     }
 }
-
-

@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
 public class Application {
 
     public static void main(String[] args) {
-        System.setProperty("logback.configurationFile", "logback-dev.xml");
         Micronaut.build(args)
                 .mainClass(Application.class)
                 .defaultEnvironments(Environment.DEVELOPMENT)

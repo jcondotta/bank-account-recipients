@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Validated
-@Secured(SecurityRule.IS_ANONYMOUS)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
 public class AddRecipientController {
 

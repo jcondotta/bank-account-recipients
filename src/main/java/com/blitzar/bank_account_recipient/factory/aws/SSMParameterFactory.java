@@ -28,7 +28,7 @@ public class SSMParameterFactory {
 
         Parameter parameter = parameterResponse.parameter();
 
-        logger.info("Successfully fetched JWT secret from SSM: {}", parameter.name());
+        logger.debug("Successfully fetched JWT secret from SSM: {}", parameter.name());
 
         return parameterResponse.parameter();
     }
