@@ -4,10 +4,10 @@ import com.blitzar.bank_account_recipient.argumentprovider.validation.BlankAndNo
 import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.exception.RecipientNotFoundException;
+import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.request.DeleteRecipientRequest;
-import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;

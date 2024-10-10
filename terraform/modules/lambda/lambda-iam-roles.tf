@@ -46,6 +46,11 @@ resource "aws_iam_role_policy" "lambda_policy" {
           ],
           "Effect" : "Allow",
           "Resource" : var.dynamodb_table_arn
+        },
+        {
+          "Effect": "Allow",
+          "Action": "ssm:GetParameter",
+          "Resource": var.jwt_signature_secret_arn
         }
       ]
     }

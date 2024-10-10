@@ -2,10 +2,19 @@ micronaut:
   server:
     port: 8186
 
+  security:
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: 'pleaseChangeThisSecretForANewOne'
+
 aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: ${AWS_DEFAULT_REGION}
   dynamodb:
     table-name: 'recipients'
     endpoint: ${AWS_DYNAMODB_ENDPOINT}
+  ssm:
+    jwt-signature-secret:
+      name: '/jwt/signature/secret'

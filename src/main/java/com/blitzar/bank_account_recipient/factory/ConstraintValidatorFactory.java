@@ -4,7 +4,6 @@ import com.blitzar.bank_account_recipient.validation.annotation.Iban;
 import com.blitzar.bank_account_recipient.validation.annotation.SecureInput;
 import com.blitzar.bank_account_recipient.validation.annotation.validator.IbanValidator;
 import com.blitzar.bank_account_recipient.validation.annotation.validator.SecureInputValidator;
-import com.blitzar.bank_account_recipient.validation.security.ThreatInputPatternDetector;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import jakarta.inject.Singleton;

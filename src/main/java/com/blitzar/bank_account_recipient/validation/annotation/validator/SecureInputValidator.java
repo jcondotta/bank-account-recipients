@@ -7,8 +7,6 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import software.amazon.awssdk.utils.StringUtils;
 
 public class SecureInputValidator implements ConstraintValidator<SecureInput, String> {

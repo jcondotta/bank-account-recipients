@@ -1,0 +1,9 @@
+micronaut:
+  application:
+    name: bank-account-recipients
+  config-client:
+    enabled: true
+
+aws:
+  parameterstore:
+    enabled: true

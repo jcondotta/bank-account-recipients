@@ -75,6 +75,11 @@ variable "lambda_environment_variables" {
   default     = {}
 }
 
+variable "jwt_signature_secret_arn" {
+  description = "The ARN of the SSM parameter for JWT signature secret"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags applied to all resources for organization and cost tracking across environments and projects."
   type        = map(string)

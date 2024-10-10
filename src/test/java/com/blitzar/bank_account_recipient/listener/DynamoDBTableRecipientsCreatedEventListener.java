@@ -1,6 +1,7 @@
 package com.blitzar.bank_account_recipient.listener;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.NonNull;

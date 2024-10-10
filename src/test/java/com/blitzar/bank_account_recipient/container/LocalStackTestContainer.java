@@ -8,6 +8,12 @@ import org.testcontainers.containers.localstack.LocalStackContainer.Service;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.model.ParameterType;
+import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
 import java.util.Map;
 
@@ -20,7 +26,7 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(localStackImageName);
 
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
-            .withServices(Service.DYNAMODB)
+            .withServices(Service.DYNAMODB, Service.SSM)
             .withLogConsumer(outputFrame -> logger.debug(outputFrame.getUtf8StringWithoutLineEnding()));
 
     @Override
@@ -44,18 +50,20 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 "AWS_ACCESS_KEY_ID", LOCALSTACK_CONTAINER.getAccessKey(),
                 "AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey(),
                 "AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion(),
-                "AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString());
+                "AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString(),
+                "AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString());
     }
 
     default void logContainerConfiguration() {
-        logger.info("LocalStack container configuration: " +
-                String.format("{Access Key: %s, Secret Key: %s, Region: %s, DynamoDB Endpoint: %s}",
-                        LOCALSTACK_CONTAINER.getAccessKey(),
-                        LOCALSTACK_CONTAINER.getSecretKey(),
-                        LOCALSTACK_CONTAINER.getRegion(),
-                        LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)
-                )
-        );
+        StringBuilder sbConfig = new StringBuilder();
+        sbConfig.append("LocalStack container configuration:\n")
+                .append(String.format("  Access Key: %s%n", LOCALSTACK_CONTAINER.getAccessKey()))
+                .append(String.format("  Secret Key: %s%n", LOCALSTACK_CONTAINER.getSecretKey()))
+                .append(String.format("  Region: %s%n", LOCALSTACK_CONTAINER.getRegion()))
+                .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
+                .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)));
+
+        logger.info(sbConfig.toString());
     }
 }
 

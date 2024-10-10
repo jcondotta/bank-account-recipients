@@ -2,12 +2,30 @@ locals {
   lambda_invoke_uri = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${var.lambda_function_arn}/invocations"
 }
 
+# Define the POST method for /login
+resource "aws_api_gateway_method" "post_login" {
+  rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
+  resource_id   = aws_api_gateway_resource.login.id
+  http_method   = "POST"
+  authorization = "NONE"  # No authentication required for login
+}
+
+resource "aws_api_gateway_integration" "post_login_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.recipients_api.id
+  resource_id             = aws_api_gateway_resource.login.id
+  http_method             = aws_api_gateway_method.post_login.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = local.lambda_invoke_uri
+}
+
 # Define the POST method for /api/v1/recipients
 resource "aws_api_gateway_method" "post_recipients" {
   rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
   resource_id   = aws_api_gateway_resource.recipients.id
   http_method   = "POST"
-  authorization = "NONE"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.jwt_authorizer.id
 }
 
 # POST method integration with Lambda function

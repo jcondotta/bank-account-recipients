@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-class AuthenticationProviderUserPassword<B> implements HttpRequestAuthenticationProvider<B> {
+public class AuthenticationProviderUserPassword<B> implements HttpRequestAuthenticationProvider<B> {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderUserPassword.class);
 

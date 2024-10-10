@@ -21,5 +21,4 @@ public record AuthenticationResponseDTO(
         public String buildAuthorizationHeader() {
                 return token_type + " " + access_token;
         }
-
 }

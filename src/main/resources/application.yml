@@ -1,17 +1,6 @@
 micronaut:
-  application:
-    name: bank-account-recipients
   server:
     port: 8086
-
-#  security:
-#    enabled: true
-#    token:
-#      jwt:
-#        signatures:
-#          secret:
-#            generator: "your-super-secret-key"
-#            validation: "your-super-secret-key"
   security:
     authentication: bearer
     token:
@@ -19,15 +8,7 @@ micronaut:
         signatures:
           secret:
             generator:
-              secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
-        generator:
-          refresh-token:
-            secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
-
-i18n:
-  default-locale: en_US
-
-locale: en_US
+              secret: ${aws.ssm.jwt-signature-secret.value}
 
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
@@ -36,9 +17,7 @@ aws:
   dynamodb:
     table-name: ${AWS_DYNAMODB_RECIPIENTS_TABLE_NAME}
     endpoint: ${AWS_DYNAMODB_ENDPOINT:}
-
-jackson:
-  mapper:
-    accept-case-insensitive-enums: true
-    accept-single-value-as-array: true
-
+  ssm:
+    jwt-signature-secret:
+      name: '/jwt/signature/secret'
+    endpoint: ${AWS_SSM_ENDPOINT:}

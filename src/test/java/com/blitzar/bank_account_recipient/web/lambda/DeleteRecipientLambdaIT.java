@@ -1,13 +1,13 @@
-package com.blitzar.bank_account_recipient.web.controller.lambda;
+package com.blitzar.bank_account_recipient.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
+import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
 import io.micronaut.context.ApplicationContext;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @MicronautTest(transactional = false)
 public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
-    private static Context mockLambdaContext = new MockLambdaContext();
+    private static final Context mockLambdaContext = new MockLambdaContext();
     private static final UriBuilder DELETE_RECIPIENT_URI_BUILDER = UriBuilder.of(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;

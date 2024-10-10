@@ -45,6 +45,10 @@
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
+            <artifactId>micronaut-http-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut</groupId>
             <artifactId>micronaut-http-server-netty</artifactId>
             <version>${micronaut.version}</version>
         </dependency>
@@ -59,12 +63,19 @@
         <dependency>
             <groupId>io.micronaut.aws</groupId>
             <artifactId>micronaut-function-aws-custom-runtime</artifactId>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-aws-parameter-store</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ssm</artifactId>
+            <version>2.20.30</version>
         </dependency>
         <dependency>
             <groupId>io.micronaut.serde</groupId>
             <artifactId>micronaut-serde-jackson</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
@@ -87,15 +98,14 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.jlib</groupId>
-            <artifactId>jlib-awslambda-logback</artifactId>
-            <version>1.0.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>${commons-validator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.12.0</version>
         </dependency>
         <dependency>
             <groupId>io.micronaut.openapi</groupId>
@@ -105,8 +115,8 @@
         <dependency>
             <groupId>io.micronaut.security</groupId>
             <artifactId>micronaut-security-jwt</artifactId>
-            <scope>compile</scope>
         </dependency>
+
 
         <!-- Test dependencies -->
         <dependency>

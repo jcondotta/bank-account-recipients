@@ -4,7 +4,6 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -13,7 +12,6 @@ import jakarta.inject.Singleton;
 public class AuthenticationService {
 
     public static final String LOGIN_ENDPOINT_PATH = "/login";
-
 
     private RequestSpecification requestSpecification;
 

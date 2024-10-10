@@ -2,12 +2,12 @@ package com.blitzar.bank_account_recipient.service;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;
+import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.LastEvaluatedKey;
 import com.blitzar.bank_account_recipient.service.request.QueryParams;
-import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 class FetchRecipientServiceTest {
 
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
-    private RecipientsValidator recipientsValidator = new RecipientsValidator();
+    private final RecipientsValidator recipientsValidator = new RecipientsValidator();
 
     private FetchRecipientService fetchRecipientService;
 
@@ -102,7 +102,7 @@ class FetchRecipientServiceTest {
 
     @Test
     void shouldReturnEmptyRecipientList_whenNonExistentBankAccountIdIsProvided() {
-        when(recipientPage.items()).thenReturn(Collections.EMPTY_LIST);
+        when(recipientPage.items()).thenReturn(Collections.emptyList());
 
         var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.ITALY.getBankAccountId(), queryParams);
 
@@ -117,7 +117,7 @@ class FetchRecipientServiceTest {
     public void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName(){
         final var nonExistentPrefixRecipientName = "Z";
 
-        when(recipientPage.items()).thenReturn(Collections.EMPTY_LIST);
+        when(recipientPage.items()).thenReturn(Collections.emptyList());
         when(queryParams.recipientName()).thenReturn(Optional.of(nonExistentPrefixRecipientName));
 
         var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.BRAZIL.getBankAccountId(), queryParams);

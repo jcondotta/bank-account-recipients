@@ -13,10 +13,26 @@
 provider "aws" {
   region  = var.aws_region
   profile = var.aws_profile
+
+  #  endpoints {
+  #    ssm = "http://localhost:4566"
+  #  }
 }
 
 # Use data source to fetch the AWS account ID dynamically
 data "aws_caller_identity" "current" {}
+
+module "ssm" {
+  source = "./modules/ssm"
+
+  aws_region  = var.aws_region
+  environment = var.environment
+  tags        = merge(var.tags, { "environment" = var.environment })
+
+  jwt_signature_secret_name        = var.jwt_signature_secret_name
+  jwt_signature_secret_value       = var.jwt_signature_secret_value
+  jwt_signature_secret_description = var.jwt_signature_secret_description
+}
 
 module "dynamodb" {
   source = "./modules/dynamodb"
@@ -45,6 +61,8 @@ module "lambda" {
   lambda_runtime                  = var.lambda_runtime
   lambda_handler                  = var.lambda_handler
   lambda_environment_variables    = var.lambda_environment_variables
+
+  jwt_signature_secret_arn = module.ssm.jwt_signature_secret_arn
 }
 
 module "apigateway" {

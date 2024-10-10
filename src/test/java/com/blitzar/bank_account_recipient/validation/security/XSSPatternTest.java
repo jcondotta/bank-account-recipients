@@ -1,6 +1,5 @@
 package com.blitzar.bank_account_recipient.validation.security;
 
-import com.blitzar.bank_account_recipient.validation.security.XSSPattern;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -1,9 +1,6 @@
 package com.blitzar.bank_account_recipient.factory;
 
 import io.micronaut.context.MessageSource;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 
 import java.util.Locale;
 

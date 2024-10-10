@@ -1,0 +1,14 @@
+micronaut:
+  config-client:
+    enabled: true
+
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${AWS_DEFAULT_REGION}
+
+  parameterstore:
+    enabled: true  # Enable SSM parameter store
+    ssm-client-configuration:
+      region: us-east-1
+      endpoint-override: http://localhost:4566  # LocalStack SSM endpoint

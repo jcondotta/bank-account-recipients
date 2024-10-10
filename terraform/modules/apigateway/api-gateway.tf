@@ -6,6 +6,13 @@ resource "aws_api_gateway_rest_api" "recipients_api" {
   tags = var.tags
 }
 
+# Define the /login resource for retrieving access token
+resource "aws_api_gateway_resource" "login" {
+  rest_api_id = aws_api_gateway_rest_api.recipients_api.id
+  parent_id   = aws_api_gateway_rest_api.recipients_api.root_resource_id
+  path_part   = "login"
+}
+
 # Define the /api resource
 resource "aws_api_gateway_resource" "api" {
   rest_api_id = aws_api_gateway_rest_api.recipients_api.id

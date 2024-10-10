@@ -1,4 +1,4 @@
-package com.blitzar.bank_account_recipient.web.controller.lambda;
+package com.blitzar.bank_account_recipient.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -10,7 +10,6 @@ import com.blitzar.bank_account_recipient.factory.MessageSourceResolver;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.security.AuthenticationResponseDTO;
 import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
@@ -22,8 +21,6 @@ import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.uri.UriBuilder;
-import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.*;
@@ -33,7 +30,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -42,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @MicronautTest(transactional = false)
 public class AddRecipientLambdaIT implements LocalStackTestContainer {
 
-    private static Context mockLambdaContext = new MockLambdaContext();
+    private static final Context mockLambdaContext = new MockLambdaContext();
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
@@ -66,9 +65,9 @@ public class AddRecipientLambdaIT implements LocalStackTestContainer {
     @Inject
     private RecipientTablePurgeService recipientTablePurgeService;
 
-    private UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
-    private String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
-    private String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
+    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
+    private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
     @BeforeAll
     public void beforeAll() {

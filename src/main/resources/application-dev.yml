@@ -1,12 +1,23 @@
 micronaut:
-  environments:
-    - dev
+  server:
+    port: 8086
+  security:
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: ${aws.ssm.jwt-signature-secret.value}
 
 aws:
   access-key-id: test
   secret-key: test
   region: us-east-1
   dynamodb:
-    table-name: ${AWS_DYNAMODB_RECIPIENTS_TABLE_NAME}
+    table-name: 'recipients-dev'
     endpoint: 'http://127.0.0.1:4566'
-
+  ssm:
+    jwt-signature-secret:
+      name: '/jwt/signature/secret'
+    endpoint: 'http://127.0.0.1:4566'

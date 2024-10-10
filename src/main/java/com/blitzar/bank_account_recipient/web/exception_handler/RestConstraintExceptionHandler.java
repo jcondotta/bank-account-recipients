@@ -18,7 +18,10 @@ import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Produces
 @Singleton
@@ -58,11 +61,10 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
                 "message", "Bad Request" // Include the standard message
         );
 
-        // Return the processed response
         return errorResponseProcessor.processResponse(
                 ErrorContext.builder(request)
                         .cause(exception)
-                        .errorMessages(errorMessages) // Pass the list of error messages directly
+                        .errorMessages(errorMessages)
                         .build(),
                 HttpResponse.badRequest().body(responseBody)
         );
