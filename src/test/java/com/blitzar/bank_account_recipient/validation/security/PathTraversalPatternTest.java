@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PathTraversalPatternTest {
+class PathTraversalPatternTest {
 
     private final PathTraversalPattern pathTraversalPattern = new PathTraversalPattern();
 
