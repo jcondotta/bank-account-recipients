@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.Optional;
 
 @Produces
 @Singleton
@@ -37,9 +38,7 @@ public class RecipientNotFoundExceptionHandler implements ExceptionHandler<Recip
     @Override
     @Status(value = HttpStatus.NOT_FOUND)
     public HttpResponse<?> handle(HttpRequest request, RecipientNotFoundException exception) {
-        var locale = (Locale) request.getLocale().orElse(Locale.getDefault());
-
-        var errorMessage = messageSource.getMessage(exception.getMessage(), locale, exception.getBankAccountId(), exception.getRecipientName())
+        var errorMessage = messageSource.getMessage(exception.getMessage(), Locale.getDefault(), exception.getBankAccountId(), exception.getRecipientName())
                 .orElse(exception.getMessage());
 
         logger.error(errorMessage);

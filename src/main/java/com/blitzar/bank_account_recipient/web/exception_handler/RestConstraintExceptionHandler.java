@@ -42,18 +42,17 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
     @Override
     @Status(value = HttpStatus.BAD_REQUEST)
     public HttpResponse<?> handle(HttpRequest request, ConstraintViolationException exception) {
-        var locale = (Locale) request.getLocale().orElse(Locale.getDefault());
+        var locale = Locale.getDefault();
 
         List<String> errorMessages = new ArrayList<>();
         for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
             String message = violation.getMessage();
 
             String localizedMessage = messageSource.getMessage(message, locale).orElse(message);
-            errorMessages.add(localizedMessage); // Add each localized message to the list
-            logger.error(localizedMessage); // Log each error message
+            errorMessages.add(localizedMessage);
+            logger.error(localizedMessage);
         }
 
-        // Build the response body in the desired format
         var responseBody = Map.of(
                 "_embedded", Map.of("errors", errorMessages.stream()
                         .map(msg -> Map.of("message", msg))

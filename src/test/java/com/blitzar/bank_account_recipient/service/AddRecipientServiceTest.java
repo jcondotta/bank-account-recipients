@@ -240,7 +240,7 @@ class AddRecipientServiceTest {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(addRecipientRequest);
 
         doThrow(ConditionalCheckFailedException.class)
-                .when(dynamoDbTable).putItem(any(PutItemEnhancedRequest.class));
+                .when(dynamoDbTable).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
 
         var existentRecipient = RecipientTestFactory.createRecipient(addRecipientRequest);
         when(dynamoDbTable.getItem(any(Key.class))).thenReturn(existentRecipient);
@@ -248,7 +248,7 @@ class AddRecipientServiceTest {
         var existentRecipientDTO = addRecipientService.addRecipient(addRecipientRequest);
         assertThat(existentRecipientDTO).isExactlyInstanceOf(ExistentRecipientDTO.class);
 
-        verify(dynamoDbTable, times(2)).putItem(any(PutItemEnhancedRequest.class));
+        verify(dynamoDbTable, times(2)).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
         verify(dynamoDbTable, times(1)).getItem(any(Key.class));
 
         assertAll(
