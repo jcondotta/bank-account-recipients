@@ -84,7 +84,7 @@ class AddRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
+                    assertThat(violation.getMessage()).hasToString("recipient.bankAccountId.notNull");
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("bankAccountId");
                 });
 

@@ -11,7 +11,7 @@ import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
-import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
+import com.blitzar.bank_account_recipient.web.controller.RecipientAPIUriBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
@@ -85,11 +85,9 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
         var expectedRecipients = addRecipientService.addRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
         addRecipientService.addRecipient(TestBankAccount.ITALY, TestRecipient.PATRIZIO);
 
-        var fetchRecipientsAPIPath = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
-                .expand(Map.of("bank-account-id", TestBankAccount.BRAZIL.getBankAccountId()))
-                .getRawPath();
+        var fetchRecipientsAPIPath = RecipientAPIUriBuilder.fetchRecipientsURI(TestBankAccount.BRAZIL.getBankAccountId());
 
-        requestEvent.withPath(fetchRecipientsAPIPath);
+        requestEvent.withPath(fetchRecipientsAPIPath.getRawPath());
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
         assertThat(response)
@@ -107,13 +105,11 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     @Test
     void shouldReturn204NoContent_whenNonExistentBankAccountIdIsProvided() {
-        var nonExistentBankAccountId = TestBankAccount.BRAZIL.getBankAccountId().toString();
+        var nonExistentBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
 
-        var fetchRecipientsAPIPath = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
-                .expand(Map.of("bank-account-id", nonExistentBankAccountId))
-                .getRawPath();
+        var fetchRecipientsAPIPath = RecipientAPIUriBuilder.fetchRecipientsURI(nonExistentBankAccountId);
 
-        requestEvent.withPath(fetchRecipientsAPIPath);
+        requestEvent.withPath(fetchRecipientsAPIPath.getRawPath());
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
         assertThat(response)

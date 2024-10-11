@@ -57,7 +57,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
-                .basePath(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING)
+                .basePath(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
                 .auth()
                     .oauth2(authenticationService.authenticate().access_token());

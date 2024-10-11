@@ -73,7 +73,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
-                .basePath(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
+                .basePath(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
                 .auth()
                     .oauth2(authenticationService.authenticate().access_token());
@@ -88,11 +88,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     public void shouldReturn201Created_whenRequestIsValid() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
-        var expectedLocation = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
-                .expand(Map.of("bank-account-id", BANK_ACCOUNT_ID_BRAZIL))
-                .getRawPath();
-
-
+        var expectedLocation = RecipientAPIUriBuilder.fetchRecipientsURI(BANK_ACCOUNT_ID_BRAZIL);
         var expectedCreatedAt = LocalDateTime.now(testClockUTC);
 
         var recipientDTO = given()
@@ -269,9 +265,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     public void shouldNotCreateDuplicateRecipient_whenSameApiRequestIsSentTwice() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
-        var expectedLocation = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
-                .expand(Map.of("bank-account-id", BANK_ACCOUNT_ID_BRAZIL))
-                .getRawPath();
+        var expectedLocation = RecipientAPIUriBuilder.fetchRecipientsURI(BANK_ACCOUNT_ID_BRAZIL).getRawPath();
 
         // First API call: Recipient should be created
         var createdRecipientDTO = given()

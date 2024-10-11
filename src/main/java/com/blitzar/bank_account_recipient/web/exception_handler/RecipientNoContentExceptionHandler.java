@@ -19,15 +19,6 @@ import org.slf4j.LoggerFactory;
 @Requires(classes = { RecipientNoContentException.class })
 public class RecipientNoContentExceptionHandler implements ExceptionHandler<RecipientNoContentException, HttpResponse<?>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecipientNoContentExceptionHandler.class);
-
-    private final ErrorResponseProcessor<?> errorResponseProcessor;
-
-    @Inject
-    public RecipientNoContentExceptionHandler(ErrorResponseProcessor<?> errorResponseProcessor) {
-        this.errorResponseProcessor = errorResponseProcessor;
-    }
-
     @Override
     @Status(value = HttpStatus.NO_CONTENT)
     public HttpResponse<?> handle(HttpRequest request, RecipientNoContentException exception) {

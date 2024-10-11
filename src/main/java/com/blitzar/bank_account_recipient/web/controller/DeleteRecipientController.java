@@ -22,7 +22,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING)
+@Controller(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING)
 public class DeleteRecipientController {
 
     private final DeleteRecipientService deleteRecipientService;

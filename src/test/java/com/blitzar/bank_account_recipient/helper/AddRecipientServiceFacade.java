@@ -46,7 +46,7 @@ public class AddRecipientServiceFacade {
         return Arrays.stream(testRecipients).collect(Collectors.toSet())
                 .stream()
                 .map(testRecipient -> addRecipient(bankAccountId, testRecipient))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<RecipientDTO> addRecipients(TestBankAccount testBankAccount, TestRecipient... testRecipients) {

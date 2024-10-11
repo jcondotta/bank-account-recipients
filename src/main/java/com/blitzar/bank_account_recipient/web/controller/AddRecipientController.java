@@ -33,16 +33,15 @@ import java.util.UUID;
 
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
+@Controller(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
 public class AddRecipientController {
 
     private static final Logger logger = LoggerFactory.getLogger(AddRecipientController.class);
 
     private final AddRecipientService addRecipientService;
-
-    @Inject
     private final Validator validator;
 
+    @Inject
     public AddRecipientController(AddRecipientService addRecipientService, Validator validator) {
         this.addRecipientService = addRecipientService;
         this.validator = validator;
@@ -81,13 +80,8 @@ public class AddRecipientController {
             return HttpResponse.ok(recipientDTO);
         }
         else {
-            var locationUri = buildLocationUri(addRecipientRequest.bankAccountId());
+            var locationUri = RecipientAPIUriBuilder.fetchRecipientsURI(recipientDTO.getBankAccountId());
             return HttpResponse.created(recipientDTO, locationUri);  // 201 Created for new recipients
         }
-    }
-
-    private URI buildLocationUri(UUID bankAccountId) {
-        return UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
-                .expand(Map.of("bank-account-id", bankAccountId));
     }
 }

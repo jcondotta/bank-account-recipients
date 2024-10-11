@@ -24,7 +24,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
+@Controller(RecipientAPIUriBuilder.BANK_ACCOUNT_API_V1_MAPPING)
 public class FetchRecipientsController {
 
     private final FetchRecipientService fetchRecipientService;

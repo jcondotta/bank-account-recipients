@@ -63,7 +63,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
-                .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
+                .basePath(RecipientAPIUriBuilder.BANK_ACCOUNT_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
                 .auth()
                     .oauth2(authenticationService.authenticate().access_token());

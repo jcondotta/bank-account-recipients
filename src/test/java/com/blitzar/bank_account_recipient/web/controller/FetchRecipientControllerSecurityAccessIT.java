@@ -50,7 +50,7 @@ public class FetchRecipientControllerSecurityAccessIT implements LocalStackTestC
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
-                .basePath(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
+                .basePath(RecipientAPIUriBuilder.BANK_ACCOUNT_API_V1_MAPPING)
                 .contentType(ContentType.JSON);
     }
 

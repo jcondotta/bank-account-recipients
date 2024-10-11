@@ -8,6 +8,8 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import static io.restassured.RestAssured.*;
+
 @Singleton
 public class AuthenticationService {
 
@@ -21,7 +23,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponseDTO authenticate(UsernamePasswordCredentials usernamePasswordCredentials) {
-        var authenticationResponseDTO = RestAssured.given()
+        return given()
             .spec(requestSpecification)
                 .contentType(ContentType.JSON)
                 .body(usernamePasswordCredentials)
@@ -31,8 +33,6 @@ public class AuthenticationService {
             .statusCode(HttpStatus.OK.getCode())
                 .extract()
                     .as(AuthenticationResponseDTO.class);
-
-        return authenticationResponseDTO;
     }
 
     public AuthenticationResponseDTO authenticate(String identity, String secret) {

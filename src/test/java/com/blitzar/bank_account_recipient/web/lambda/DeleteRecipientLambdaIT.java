@@ -9,7 +9,7 @@ import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.security.AuthenticationService;
-import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
+import com.blitzar.bank_account_recipient.web.controller.RecipientAPIUriBuilder;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.function.aws.proxy.MockLambdaContext;
 import io.micronaut.function.aws.proxy.payload1.ApiGatewayProxyRequestEventFunction;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
     private static final Context mockLambdaContext = new MockLambdaContext();
-    private static final UriBuilder DELETE_RECIPIENT_URI_BUILDER = UriBuilder.of(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING);
+    private static final UriBuilder DELETE_RECIPIENT_URI_BUILDER = UriBuilder.of(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING);
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
@@ -76,13 +76,10 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     public void shouldReturn204NoContent_whenRecipientExists() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
-        var deleteRecipientURI = DELETE_RECIPIENT_URI_BUILDER.expand(
-                Map.of(
-                        "bank-account-id", jeffersonRecipientDTO.getBankAccountId().toString(),
-                        "recipient-name", jeffersonRecipientDTO.getRecipientName())
-                );
+        var deleteRecipientsURI = RecipientAPIUriBuilder
+                .deleteRecipientsURI(jeffersonRecipientDTO.getBankAccountId(), jeffersonRecipientDTO.getRecipientName());
 
-        requestEvent.withPath(deleteRecipientURI.getRawPath());
+        requestEvent.withPath(deleteRecipientsURI.getRawPath());
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
         assertThat(response)
@@ -95,13 +92,10 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     public void shouldReturn404NotFound_whenRecipientDoesNotExist() {
         var nonExistentRecipientName = "nonExistentRecipientName";
 
-        var deleteRecipientURI = DELETE_RECIPIENT_URI_BUILDER.expand(
-                Map.of(
-                        "bank-account-id", TestBankAccount.BRAZIL.getBankAccountId(),
-                        "recipient-name", nonExistentRecipientName)
-                );
+        var deleteRecipientsURI = RecipientAPIUriBuilder
+                .deleteRecipientsURI(TestBankAccount.BRAZIL.getBankAccountId(), nonExistentRecipientName);
 
-        requestEvent.withPath(deleteRecipientURI.getRawPath());
+        requestEvent.withPath(deleteRecipientsURI.getRawPath());
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
         assertThat(response)

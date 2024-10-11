@@ -7,7 +7,7 @@ import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
+import com.blitzar.bank_account_recipient.web.controller.RecipientAPIUriBuilder;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.function.aws.proxy.MockLambdaContext;
 import io.micronaut.function.aws.proxy.payload1.ApiGatewayProxyRequestEventFunction;
@@ -70,8 +70,10 @@ public class DeleteRecipientLambdaSecurityAccessIT implements LocalStackTestCont
     public void shouldReturn401Unauthorized_whenNoTokenProvided() throws IOException {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
-        var deleteRecipientURI = buildDeleteURIPath(jeffersonRecipientDTO.getBankAccountId(), jeffersonRecipientDTO.getRecipientName());
-        requestEvent.withPath(deleteRecipientURI.getRawPath());
+        var deleteRecipientsURI = RecipientAPIUriBuilder
+                .deleteRecipientsURI(jeffersonRecipientDTO.getBankAccountId(), jeffersonRecipientDTO.getRecipientName());
+
+        requestEvent.withPath(deleteRecipientsURI.getRawPath());
 
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
@@ -85,7 +87,7 @@ public class DeleteRecipientLambdaSecurityAccessIT implements LocalStackTestCont
     }
 
     private URI buildDeleteURIPath(UUID bankAccountId, String recipientName){
-        return UriBuilder.of(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING)
+        return UriBuilder.of(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING)
                 .expand(Map.of(
                         "bank-account-id", bankAccountId.toString(),
                         "recipient-name", recipientName)

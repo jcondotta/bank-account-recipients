@@ -40,6 +40,6 @@ public class RecipientTestFactory {
         return Arrays.stream(testRecipients).collect(Collectors.toSet())
                 .stream()
                 .map(testRecipient -> createRecipient(testBankAccount.getBankAccountId(), testRecipient))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -7,7 +7,7 @@ import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
-import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
+import com.blitzar.bank_account_recipient.web.controller.RecipientAPIUriBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
@@ -62,7 +62,7 @@ public class AddRecipientLambdaSecurityAccessIT implements LocalStackTestContain
         proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
 
         requestEvent = new APIGatewayProxyRequestEvent()
-                .withPath(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
+                .withPath(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
                 .withHttpMethod(HttpMethod.POST.name())
                 .withHeaders(Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .withRequestContext(proxyRequestContext);

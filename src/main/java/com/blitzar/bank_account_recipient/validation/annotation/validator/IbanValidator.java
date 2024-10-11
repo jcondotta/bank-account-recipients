@@ -10,7 +10,7 @@ import org.apache.commons.validator.routines.IBANValidator;
 
 public class IbanValidator implements ConstraintValidator<Iban, String> {
 
-    private final IBANValidator ibanValidator = new IBANValidator();
+    private final IBANValidator apacheIbanValidator = new IBANValidator();
 
     @Override
     public boolean isValid(@Nullable String value, @NonNull AnnotationValue<Iban> annotationMetadata, @NonNull ConstraintValidatorContext context) {
@@ -18,7 +18,7 @@ public class IbanValidator implements ConstraintValidator<Iban, String> {
 
         var sanitizedIban = value == null ? "" : value.replaceAll("\\s+", "").trim();
 
-        if (ibanValidator.isValid(sanitizedIban)) {
+        if (apacheIbanValidator.isValid(sanitizedIban)) {
             return true;
         }
 

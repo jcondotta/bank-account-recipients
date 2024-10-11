@@ -51,7 +51,7 @@ public class AddRecipientControllerSecurityAccessIT implements LocalStackTestCon
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
-                .basePath(RecipientAPIConstants.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
+                .basePath(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
                 .contentType(ContentType.JSON);
     }
 

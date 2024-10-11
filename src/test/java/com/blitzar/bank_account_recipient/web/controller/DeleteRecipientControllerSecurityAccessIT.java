@@ -50,7 +50,7 @@ public class DeleteRecipientControllerSecurityAccessIT implements LocalStackTest
     @BeforeEach
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
-                .basePath(RecipientAPIConstants.RECIPIENT_NAME_API_V1_MAPPING)
+                .basePath(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING)
                 .contentType(ContentType.JSON);
     }
 
