@@ -86,7 +86,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     public void shouldReturn201Created_whenRequestIsValid() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
-        var expectedLocation = RecipientAPIUriBuilder.fetchRecipientsURI(BANK_ACCOUNT_ID_BRAZIL);
+        var expectedLocation = RecipientAPIUriBuilder.fetchRecipientsURI(BANK_ACCOUNT_ID_BRAZIL).getRawPath();
         var expectedCreatedAt = LocalDateTime.now(testClockUTC);
 
         var recipientDTO = given()

@@ -2,7 +2,6 @@ package com.blitzar.bank_account_recipient.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
@@ -17,7 +16,6 @@ import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.*;
@@ -31,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
     private static final Context mockLambdaContext = new MockLambdaContext();
-    private static final UriBuilder DELETE_RECIPIENT_URI_BUILDER = UriBuilder.of(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING);
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
@@ -80,12 +77,9 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
                 .deleteRecipientsURI(jeffersonRecipientDTO.getBankAccountId(), jeffersonRecipientDTO.getRecipientName());
 
         requestEvent.withPath(deleteRecipientsURI.getRawPath());
-        var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
+        var responseEvent = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
-        assertThat(response)
-                .as("Verify the response has the correct status code")
-                .extracting(APIGatewayProxyResponseEvent::getStatusCode)
-                .isEqualTo(HttpStatus.NO_CONTENT.getCode());
+        assertThat(responseEvent.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.getCode());
     }
 
     @Test
@@ -96,12 +90,9 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
                 .deleteRecipientsURI(TestBankAccount.BRAZIL.getBankAccountId(), nonExistentRecipientName);
 
         requestEvent.withPath(deleteRecipientsURI.getRawPath());
-        var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
-        assertThat(response)
-                .as("Verify the response has the correct status code")
-                .extracting(APIGatewayProxyResponseEvent::getStatusCode)
-                .isEqualTo(HttpStatus.NOT_FOUND.getCode());
+        var responseEvent = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
+        assertThat(responseEvent.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.getCode());
     }
 }
 

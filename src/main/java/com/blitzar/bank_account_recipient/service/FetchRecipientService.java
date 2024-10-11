@@ -78,7 +78,7 @@ public class FetchRecipientService {
 
         if (queryParams.recipientName().isPresent()) {
             recipientKeyBuilder.sortValue(queryParams.recipientName().get());
-            logger.debug("[BankAccountId={}] Using recipient name for sorting: {}", bankAccountId, queryParams.recipientName().get());
+            logger.debug("[BankAccountId={}] Using recipient name for sorting: {}", bankAccountId, queryParams.recipientName());
             return QueryConditional.sortBeginsWith(recipientKeyBuilder.build());
         }
 
@@ -91,7 +91,7 @@ public class FetchRecipientService {
         logger.debug("[BankAccountId={}] Query limit set to: {}", queryParams);
 
         Map<String, AttributeValue> exclusiveStartKey = queryParams.lastEvaluatedKey()
-                .map(lastEvaluatedKey -> lastEvaluatedKey.toExclusiveStartKey())
+                .map(LastEvaluatedKey::toExclusiveStartKey)
                 .orElse(null);
 
         return QueryEnhancedRequest.builder()

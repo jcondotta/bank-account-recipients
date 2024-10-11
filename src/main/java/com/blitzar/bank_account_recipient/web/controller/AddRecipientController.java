@@ -34,12 +34,10 @@ public class AddRecipientController {
     private static final Logger logger = LoggerFactory.getLogger(AddRecipientController.class);
 
     private final AddRecipientService addRecipientService;
-    private final Validator validator;
 
     @Inject
-    public AddRecipientController(AddRecipientService addRecipientService, Validator validator) {
+    public AddRecipientController(AddRecipientService addRecipientService) {
         this.addRecipientService = addRecipientService;
-        this.validator = validator;
     }
 
     @Status(HttpStatus.CREATED)
