@@ -75,23 +75,8 @@ public class DeleteRecipientLambdaSecurityAccessIT implements LocalStackTestCont
 
         requestEvent.withPath(deleteRecipientsURI.getRawPath());
 
-        var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
-
-        assertThat(response.getStatusCode())
-                .isEqualTo(HttpStatus.UNAUTHORIZED.getCode())
-                .withFailMessage(() -> String.format(
-                        "Expected status code to be %d (Unauthorized), but was %d.",
-                        HttpStatus.UNAUTHORIZED.getCode(),
-                        response.getStatusCode()
-                ));
-    }
-
-    private URI buildDeleteURIPath(UUID bankAccountId, String recipientName){
-        return UriBuilder.of(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING)
-                .expand(Map.of(
-                        "bank-account-id", bankAccountId.toString(),
-                        "recipient-name", recipientName)
-                );
+        var responseEvent = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
+        assertThat(responseEvent.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.getCode());
     }
 }
 
