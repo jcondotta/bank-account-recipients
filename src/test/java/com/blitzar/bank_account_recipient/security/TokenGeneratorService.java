@@ -12,7 +12,7 @@ import java.util.Map;
 @Singleton
 public class TokenGeneratorService {
 
-    public static final String DEFAULT_AUTH_USERNAME = AuthenticationProviderUserPassword.DEFAULT_AUTH_USERNAME;
+    public static final String DEFAULT_AUTH_USERNAME = AuthenticationProviderUserPassword.DEFAULT_AUTH;
 
     // Default token expiration in seconds (e.g., 1 hour = 3600 seconds)
     private static final int DEFAULT_TOKEN_EXPIRATION_IN_SECONDS = 3600;

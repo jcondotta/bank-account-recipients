@@ -16,8 +16,7 @@ public class AuthenticationProviderUserPassword<B> implements HttpRequestAuthent
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderUserPassword.class);
 
-    public static final String DEFAULT_AUTH_USERNAME = "default";
-    public static final String DEFAULT_AUTH_PASSWORD = "default";
+    public static final String DEFAULT_AUTH = "default";
 
     @Override
     public AuthenticationResponse authenticate(@Nullable HttpRequest<B> httpRequest,
@@ -26,7 +25,7 @@ public class AuthenticationProviderUserPassword<B> implements HttpRequestAuthent
         String username = authenticationRequest.getIdentity();
         String password = authenticationRequest.getSecret();
 
-        if (DEFAULT_AUTH_USERNAME.equals(username) && DEFAULT_AUTH_PASSWORD.equals(password)) {
+        if (DEFAULT_AUTH.equals(username) && DEFAULT_AUTH.equals(password)) {
             return AuthenticationResponse.success(username);
         }
         else {

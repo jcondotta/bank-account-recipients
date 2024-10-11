@@ -40,8 +40,8 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponseDTO authenticate() {
-        String username = AuthenticationProviderUserPassword.DEFAULT_AUTH_USERNAME;
-        String password = AuthenticationProviderUserPassword.DEFAULT_AUTH_PASSWORD;
+        String username = AuthenticationProviderUserPassword.DEFAULT_AUTH;
+        String password = AuthenticationProviderUserPassword.DEFAULT_AUTH;
 
         return authenticate(username, password);
     }
