@@ -1,25 +1,17 @@
 package com.blitzar.bank_account_recipient.validation.recipient.test;
 
-import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
-import com.blitzar.bank_account_recipient.helper.TestBankAccount;
-import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
-
-import java.time.Clock;
-import java.util.UUID;
-
 public class RecipientsValidatorTest {
 
-    private final RecipientsValidator recipientsValidator = new RecipientsValidator();
-
-    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
-    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
-    private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
-
-    private static final String RECIPIENT_NAME_PATRIZIO = TestRecipient.PATRIZIO.getRecipientName();
-    private static final String RECIPIENT_IBAN_PATRIZIO = TestRecipient.PATRIZIO.getRecipientIban();
-
-    private static final Clock TEST_CLOCK_FIXED_INSTANT = ClockTestFactory.testClockFixedInstant;
+//    private final RecipientsValidator recipientsValidator = new RecipientsValidator();
+//
+//    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
+//    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
+//    private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
+//
+//    private static final String RECIPIENT_NAME_PATRIZIO = TestRecipient.PATRIZIO.getRecipientName();
+//    private static final String RECIPIENT_IBAN_PATRIZIO = TestRecipient.PATRIZIO.getRecipientIban();
+//
+//    private static final Clock TEST_CLOCK_FIXED_INSTANT = ClockTestFactory.testClockFixedInstant;
 
 
     // TODO finish the tests for this class

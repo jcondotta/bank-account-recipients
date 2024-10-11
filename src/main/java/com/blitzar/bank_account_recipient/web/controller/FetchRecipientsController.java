@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class FetchRecipientsController {
     })
     public HttpResponse<?> findRecipients(
             @Schema(description = "The unique identifier of the bank account.", requiredMode = RequiredMode.REQUIRED)
-            @PathVariable("bank-account-id") UUID bankAccountId,
+            @NotNull @PathVariable("bank-account-id") UUID bankAccountId,
 
             @Schema(description = "Query parameters for filtering and pagination.", implementation = QueryParams.class)
             @QueryValue("queryParams") Optional<QueryParams> queryParams) {
