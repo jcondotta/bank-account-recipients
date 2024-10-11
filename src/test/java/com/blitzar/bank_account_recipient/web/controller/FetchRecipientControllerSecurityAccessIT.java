@@ -65,7 +65,7 @@ public class FetchRecipientControllerSecurityAccessIT implements LocalStackTestC
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
         .when()
             .delete()
         .then()
@@ -81,7 +81,7 @@ public class FetchRecipientControllerSecurityAccessIT implements LocalStackTestC
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
             .auth()
                 .oauth2(expiredToken)
         .when()
@@ -102,7 +102,7 @@ public class FetchRecipientControllerSecurityAccessIT implements LocalStackTestC
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
                     .auth()
                         .oauth2(tamperedToken)
         .when()
@@ -121,7 +121,7 @@ public class FetchRecipientControllerSecurityAccessIT implements LocalStackTestC
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
                 .auth()
                     .oauth2(shortLivedToken)
         .when()
@@ -136,7 +136,7 @@ public class FetchRecipientControllerSecurityAccessIT implements LocalStackTestC
 
             given()
                 .spec(requestSpecification)
-                    .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                    .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
                     .auth()
                         .oauth2(shortLivedToken)
             .when()

@@ -2,14 +2,12 @@ package com.blitzar.bank_account_recipient.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.helper.AddRecipientServiceFacade;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.security.TokenGeneratorService;
-import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.web.controller.RecipientAPIConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.ApplicationContext;
@@ -80,7 +78,7 @@ public class FetchRecipientLambdaSecurityAccessIT implements LocalStackTestConta
     public void shouldReturn401Unauthorized_whenNoTokenProvided() throws IOException {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
-        var fetchRecipientsAPIPath = buildFetchURIPath(jeffersonRecipientDTO.bankAccountId());
+        var fetchRecipientsAPIPath = buildFetchURIPath(jeffersonRecipientDTO.getBankAccountId());
 
         requestEvent.withPath(fetchRecipientsAPIPath.getRawPath());
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);

@@ -3,6 +3,7 @@ package com.blitzar.bank_account_recipient.factory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
+import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -26,5 +27,9 @@ public class RecipientDTOTestFactory {
 
     public static RecipientDTO createRecipientDTO(TestBankAccount testBankAccount, TestRecipient testRecipient) {
         return createRecipientDTO(testBankAccount.getBankAccountId(), testRecipient);
+    }
+
+    public static RecipientDTO createRecipientDTO(AddRecipientRequest addRecipientRequest) {
+        return createRecipientDTO(addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
     }
 }

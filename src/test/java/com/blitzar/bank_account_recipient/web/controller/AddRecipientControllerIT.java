@@ -12,7 +12,7 @@ import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.security.AuthenticationService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
-import io.micronaut.context.annotation.Property;
+import com.blitzar.bank_account_recipient.validation.recipient.RecipientDTOValidator;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -26,8 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -47,6 +45,8 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
+    private static final RecipientDTOValidator RECIPIENT_DTO_VALIDATOR = new RecipientDTOValidator();
+
     @Inject
     private DynamoDbTable<Recipient> dynamoDbTable;
 
@@ -64,9 +64,6 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
     private AuthenticationService authenticationService;
-
-    @Inject
-    private SsmClient ssmClient;
 
     @BeforeAll
     public static void beforeAll() {
@@ -110,10 +107,10 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
                     .as(RecipientDTO.class);
 
         assertAll(
-                () -> assertThat(recipientDTO.bankAccountId()).isEqualTo(addRecipientRequest.bankAccountId()),
-                () -> assertThat(recipientDTO.recipientName()).isEqualTo(addRecipientRequest.recipientName()),
-                () -> assertThat(recipientDTO.recipientIban()).isEqualTo(addRecipientRequest.recipientIban()),
-                () -> assertThat(recipientDTO.createdAt()).isEqualTo(expectedCreatedAt)
+                () -> assertThat(recipientDTO.getBankAccountId()).isEqualTo(addRecipientRequest.bankAccountId()),
+                () -> assertThat(recipientDTO.getRecipientName()).isEqualTo(addRecipientRequest.recipientName()),
+                () -> assertThat(recipientDTO.getRecipientIban()).isEqualTo(addRecipientRequest.recipientIban()),
+                () -> assertThat(recipientDTO.getCreatedAt()).isEqualTo(expectedCreatedAt)
         );
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
@@ -266,5 +263,47 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
                         messageSourceResolver.getMessage("recipient.recipientIban.invalid"))
                 );
 
+    }
+
+    @Test
+    public void shouldNotCreateDuplicateRecipient_whenSameApiRequestIsSentTwice() {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
+
+        var expectedLocation = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
+                .expand(Map.of("bank-account-id", BANK_ACCOUNT_ID_BRAZIL))
+                .getRawPath();
+
+        // First API call: Recipient should be created
+        var createdRecipientDTO = given()
+            .spec(requestSpecification)
+            .body(addRecipientRequest)
+        .when()
+            .post()
+        .then()
+            .statusCode(HttpStatus.CREATED.getCode())
+                .header("location", equalTo(expectedLocation))
+                .extract()
+                    .as(RecipientDTO.class);
+
+        // Second API call: Should return the existing recipient (idempotency check)
+        var existingRecipientDTO = given()
+            .spec(requestSpecification)
+            .body(addRecipientRequest)
+        .when()
+            .post()
+        .then()
+            .statusCode(HttpStatus.OK.getCode())
+                .extract()
+                    .as(RecipientDTO.class);
+
+        RECIPIENT_DTO_VALIDATOR.validate(createdRecipientDTO, existingRecipientDTO);
+
+        Recipient fetchedRecipient = dynamoDbTable.getItem(Key.builder()
+                .partitionValue(addRecipientRequest.bankAccountId().toString())
+                .sortValue(addRecipientRequest.recipientName())
+                .build());
+
+        RECIPIENT_DTO_VALIDATOR.validate(createdRecipientDTO, fetchedRecipient);
+        RECIPIENT_DTO_VALIDATOR.validate(existingRecipientDTO, fetchedRecipient);
     }
 }

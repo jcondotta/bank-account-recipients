@@ -146,25 +146,25 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
 
         given()
             .spec(requestSpecification)
-            .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+            .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
             .queryParam("recipientName", nonExistentPrefixRecipientName)
         .when()
             .get()
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
-        final char existentPrefixRecipientName = jeffersonRecipientDTO.recipientName().charAt(0);
+        final char existentPrefixRecipientName = jeffersonRecipientDTO.getRecipientName().charAt(0);
         logger.debug("Searching for recipients with existent prefix name: {}", existentPrefixRecipientName);
 
         given()
             .spec(requestSpecification)
-            .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+            .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
             .queryParam("recipientName", existentPrefixRecipientName)
         .when()
             .get()
         .then()
             .statusCode(HttpStatus.OK.getCode())
-            .body("recipients[0].recipientName", equalTo(jeffersonRecipientDTO.recipientName()));
+            .body("recipients[0].recipientName", equalTo(jeffersonRecipientDTO.getRecipientName()));
     }
 
     @Test

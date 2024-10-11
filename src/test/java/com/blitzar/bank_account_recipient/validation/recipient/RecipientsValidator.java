@@ -66,7 +66,7 @@ public class RecipientsValidator {
 
     private UUID getBankAccountId(Object recipient) {
         if (recipient instanceof RecipientDTO dto) {
-            return dto.bankAccountId();
+            return dto.getBankAccountId();
         } else if (recipient instanceof Recipient entity) {
             return entity.getBankAccountId();
         }
@@ -75,7 +75,7 @@ public class RecipientsValidator {
 
     private String getRecipientName(Object recipient) {
         if (recipient instanceof RecipientDTO dto) {
-            return dto.recipientName();
+            return dto.getRecipientName();
         } else if (recipient instanceof Recipient entity) {
             return entity.getRecipientName();
         }

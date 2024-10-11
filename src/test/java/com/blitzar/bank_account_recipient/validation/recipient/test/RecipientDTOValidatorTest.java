@@ -32,7 +32,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldValidateRecipientDTOs_whenExpectedAndActualDataMatch() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.bankAccountId(), expectedRecipientDTO.recipientName(), expectedRecipientDTO.recipientIban(), expectedRecipientDTO.createdAt());
+        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.getBankAccountId(), expectedRecipientDTO.getRecipientName(), expectedRecipientDTO.getRecipientIban(), expectedRecipientDTO.getCreatedAt());
 
         recipientDTOValidator.validate(expectedRecipientDTO, actualRecipientDTO);
     }
@@ -40,7 +40,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldThrowAssertionError_whenExpectedRecipientDTONameDoesNotMatchActualRecipientDTOName() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.bankAccountId(), RECIPIENT_NAME_PATRIZIO, expectedRecipientDTO.recipientIban(), expectedRecipientDTO.createdAt());
+        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.getBankAccountId(), RECIPIENT_NAME_PATRIZIO, expectedRecipientDTO.getRecipientIban(), expectedRecipientDTO.getCreatedAt());
 
         assertThatThrownBy(() -> recipientDTOValidator.validate(expectedRecipientDTO, actualRecipientDTO))
                 .isInstanceOf(AssertionError.class);
@@ -49,7 +49,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldThrowAssertionError_whenExpectedRecipientDTOIbanDoesNotMatchActualRecipientDTOIban() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.bankAccountId(), expectedRecipientDTO.recipientName(), RECIPIENT_IBAN_PATRIZIO, expectedRecipientDTO.createdAt());
+        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.getBankAccountId(), expectedRecipientDTO.getRecipientName(), RECIPIENT_IBAN_PATRIZIO, expectedRecipientDTO.getCreatedAt());
 
         assertThatThrownBy(() -> recipientDTOValidator.validate(expectedRecipientDTO, actualRecipientDTO))
                 .isInstanceOf(AssertionError.class);
@@ -58,7 +58,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldThrowAssertionError_whenExpectedRecipientDTOCreatedAtDoesNotMatchActualRecipientDTOCreatedAt() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.bankAccountId(), expectedRecipientDTO.recipientName(), expectedRecipientDTO.recipientIban(), expectedRecipientDTO.createdAt().plusDays(1));
+        RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipientDTO.getBankAccountId(), expectedRecipientDTO.getRecipientName(), expectedRecipientDTO.getRecipientIban(), expectedRecipientDTO.getCreatedAt().plusDays(1));
 
         assertThatThrownBy(() -> recipientDTOValidator.validate(expectedRecipientDTO, actualRecipientDTO))
                 .isInstanceOf(AssertionError.class);
@@ -67,7 +67,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldValidateRecipientDTOAgainstRecipient_whenExpectedAndActualDataMatch() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.bankAccountId(), expectedRecipientDTO.recipientName(), expectedRecipientDTO.recipientIban(), expectedRecipientDTO.createdAt());
+        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.getBankAccountId(), expectedRecipientDTO.getRecipientName(), expectedRecipientDTO.getRecipientIban(), expectedRecipientDTO.getCreatedAt());
 
         recipientDTOValidator.validate(expectedRecipientDTO, actualRecipient);
     }
@@ -75,7 +75,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldThrowAssertionError_whenExpectedRecipientDTONameDoesNotMatchActualRecipientName() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.bankAccountId(), RECIPIENT_NAME_PATRIZIO, expectedRecipientDTO.recipientIban(), expectedRecipientDTO.createdAt());
+        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.getBankAccountId(), RECIPIENT_NAME_PATRIZIO, expectedRecipientDTO.getRecipientIban(), expectedRecipientDTO.getCreatedAt());
 
         assertThatThrownBy(() -> recipientDTOValidator.validate(expectedRecipientDTO, actualRecipient))
                 .isInstanceOf(AssertionError.class);
@@ -84,7 +84,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldThrowAssertionError_whenExpectedRecipientDTOIbanDoesNotMatchActualRecipientIban() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.bankAccountId(), expectedRecipientDTO.recipientName(), RECIPIENT_IBAN_PATRIZIO, expectedRecipientDTO.createdAt());
+        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.getBankAccountId(), expectedRecipientDTO.getRecipientName(), RECIPIENT_IBAN_PATRIZIO, expectedRecipientDTO.getCreatedAt());
 
         assertThatThrownBy(() -> recipientDTOValidator.validate(expectedRecipientDTO, actualRecipient))
                 .isInstanceOf(AssertionError.class);
@@ -93,7 +93,7 @@ public class RecipientDTOValidatorTest {
     @Test
     public void shouldThrowAssertionError_whenExpectedRecipientDTOCreatedAtDoesNotMatchActualRecipientCreatedAt() {
         RecipientDTO expectedRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
-        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.bankAccountId(), expectedRecipientDTO.recipientName(), expectedRecipientDTO.recipientIban(), expectedRecipientDTO.createdAt().plusDays(1));
+        Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipientDTO.getBankAccountId(), expectedRecipientDTO.getRecipientName(), expectedRecipientDTO.getRecipientIban(), expectedRecipientDTO.getCreatedAt().plusDays(1));
 
         assertThatThrownBy(() -> recipientDTOValidator.validate(expectedRecipientDTO, actualRecipient))
                 .isInstanceOf(AssertionError.class);

@@ -38,6 +38,10 @@ public class AddRecipientServiceFacade {
         return addRecipient(testBankAccount.getBankAccountId(), testRecipient.getRecipientName(), testRecipient.getRecipientIban());
     }
 
+    public RecipientDTO addRecipient(AddRecipientRequest addRecipientRequest) {
+        return addRecipient(addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
+    }
+
     public List<RecipientDTO> addRecipients(UUID bankAccountId, TestRecipient... testRecipients) {
         return Arrays.stream(testRecipients).collect(Collectors.toSet())
                 .stream()

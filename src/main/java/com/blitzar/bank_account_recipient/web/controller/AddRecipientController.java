@@ -1,6 +1,7 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
 import com.blitzar.bank_account_recipient.service.AddRecipientService;
+import com.blitzar.bank_account_recipient.service.dto.ExistentRecipientDTO;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import io.micronaut.http.HttpRequest;
@@ -18,6 +19,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.inject.Inject;
@@ -52,13 +54,15 @@ public class AddRecipientController {
             description = "Creates a new recipient for the specified bank account. "
                     + "The request body includes the bankAccountId, recipientName, and IBAN. "
                     + "This endpoint returns the created recipient's data along with the resource location.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            requestBody = @RequestBody(
                     description = "The request body containing the bankAccountId, recipientName, and IBAN.",
                     required = true,
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AddRecipientRequest.class))
             ))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Recipient successfully created.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class))),
+            @ApiResponse(responseCode = "200", description = "Recipient already exists, returning the existing data.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid bank account ID, recipient name, or IBAN. Ensure that all required fields are valid."),
             @ApiResponse(responseCode = "500", description = "Internal server error. This may occur due to system issues, failed database connections, or unexpected runtime exceptions.")
@@ -69,9 +73,17 @@ public class AddRecipientController {
                 addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
 
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
-        var locationUri = buildLocationUri(addRecipientRequest.bankAccountId());
 
-        return HttpResponse.created(recipientDTO, locationUri);
+        if (recipientDTO instanceof ExistentRecipientDTO) {
+            logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Returning existing recipient",
+                    addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
+
+            return HttpResponse.ok(recipientDTO);
+        }
+        else {
+            var locationUri = buildLocationUri(addRecipientRequest.bankAccountId());
+            return HttpResponse.created(recipientDTO, locationUri);  // 201 Created for new recipients
+        }
     }
 
     private URI buildLocationUri(UUID bankAccountId) {

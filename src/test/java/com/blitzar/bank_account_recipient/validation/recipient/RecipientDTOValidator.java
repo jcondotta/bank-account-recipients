@@ -10,19 +10,19 @@ public class RecipientDTOValidator {
 
     public void validate(RecipientDTO expected, RecipientDTO actual) {
         assertAll(
-                () -> assertThat(actual.recipientName()).isEqualTo(expected.recipientName()),
-                () -> assertThat(actual.recipientIban()).isEqualTo(expected.recipientIban()),
-                () -> assertThat(actual.bankAccountId()).isEqualTo(expected.bankAccountId()),
-                () -> assertThat(actual.createdAt()).isEqualTo(expected.createdAt())
+                () -> assertThat(actual.getRecipientName()).isEqualTo(expected.getRecipientName()),
+                () -> assertThat(actual.getRecipientIban()).isEqualTo(expected.getRecipientIban()),
+                () -> assertThat(actual.getBankAccountId()).isEqualTo(expected.getBankAccountId()),
+                () -> assertThat(actual.getCreatedAt()).isEqualTo(expected.getCreatedAt())
         );
     }
 
     public void validate(RecipientDTO expected, Recipient actual) {
         assertAll(
-                () -> assertThat(actual.getRecipientName()).isEqualTo(expected.recipientName()),
-                () -> assertThat(actual.getRecipientIban()).isEqualTo(expected.recipientIban()),
-                () -> assertThat(actual.getBankAccountId()).isEqualTo(expected.bankAccountId()),
-                () -> assertThat(actual.getCreatedAt()).isEqualTo(expected.createdAt())
+                () -> assertThat(actual.getRecipientName()).isEqualTo(expected.getRecipientName()),
+                () -> assertThat(actual.getRecipientIban()).isEqualTo(expected.getRecipientIban()),
+                () -> assertThat(actual.getBankAccountId()).isEqualTo(expected.getBankAccountId()),
+                () -> assertThat(actual.getCreatedAt()).isEqualTo(expected.getCreatedAt())
         );
     }
 }

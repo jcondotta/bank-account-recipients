@@ -19,10 +19,10 @@ public class RecipientValidator {
 
     public void validate(Recipient expected, RecipientDTO actual) {
         assertAll(
-                () -> assertThat(actual.recipientName()).isEqualTo(expected.getRecipientName()),
-                () -> assertThat(actual.recipientIban()).isEqualTo(expected.getRecipientIban()),
-                () -> assertThat(actual.bankAccountId()).isEqualTo(expected.getBankAccountId()),
-                () -> assertThat(actual.createdAt()).isEqualTo(expected.getCreatedAt())
+                () -> assertThat(actual.getRecipientName()).isEqualTo(expected.getRecipientName()),
+                () -> assertThat(actual.getRecipientIban()).isEqualTo(expected.getRecipientIban()),
+                () -> assertThat(actual.getBankAccountId()).isEqualTo(expected.getBankAccountId()),
+                () -> assertThat(actual.getCreatedAt()).isEqualTo(expected.getCreatedAt())
         );
     }
 }

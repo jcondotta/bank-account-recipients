@@ -74,16 +74,16 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
-                .pathParam("recipient-name", jeffersonRecipientDTO.recipientName())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
+                .pathParam("recipient-name", jeffersonRecipientDTO.getRecipientName())
         .when()
             .delete()
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(jeffersonRecipientDTO.bankAccountId().toString())
-                .sortValue(jeffersonRecipientDTO.recipientName())
+                .partitionValue(jeffersonRecipientDTO.getBankAccountId().toString())
+                .sortValue(jeffersonRecipientDTO.getRecipientName())
                 .build());
 
         assertThat(recipient).isNull();
@@ -95,8 +95,8 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
-                .pathParam("recipient-name", jeffersonRecipientDTO.recipientName())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
+                .pathParam("recipient-name", jeffersonRecipientDTO.getRecipientName())
         .when()
             .delete()
         .then()
@@ -104,8 +104,8 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
-                .pathParam("recipient-name", jeffersonRecipientDTO.recipientName())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
+                .pathParam("recipient-name", jeffersonRecipientDTO.getRecipientName())
         .when()
             .delete()
         .then()
@@ -136,7 +136,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
         var nonExistentRecipientName = "nonExistentRecipientName";
         given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", jeffersonRecipientDTO.bankAccountId())
+                .pathParam("bank-account-id", jeffersonRecipientDTO.getBankAccountId())
                 .pathParam("recipient-name", nonExistentRecipientName)
         .when()
             .delete()
@@ -145,11 +145,11 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
             .rootPath("_embedded")
                 .body("errors", hasSize(1))
                 .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.notFound",
-                        jeffersonRecipientDTO.bankAccountId(), nonExistentRecipientName)));
+                        jeffersonRecipientDTO.getBankAccountId(), nonExistentRecipientName)));
 
         Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(jeffersonRecipientDTO.bankAccountId().toString())
-                .sortValue(jeffersonRecipientDTO.recipientName())
+                .partitionValue(jeffersonRecipientDTO.getBankAccountId().toString())
+                .sortValue(jeffersonRecipientDTO.getRecipientName())
                 .build());
 
         assertThat(recipient).isNotNull();

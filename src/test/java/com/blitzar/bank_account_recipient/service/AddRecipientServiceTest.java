@@ -6,9 +6,11 @@ import com.blitzar.bank_account_recipient.argumentprovider.validation.iban.Inval
 import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
+import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;
 import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
+import com.blitzar.bank_account_recipient.service.dto.ExistentRecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -18,8 +20,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -30,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AddRecipientServiceTest {
@@ -49,7 +54,7 @@ class AddRecipientServiceTest {
     private AddRecipientService addRecipientService;
 
     @BeforeEach
-    public void setup() {
+    public void beforeEach() {
         addRecipientService = new AddRecipientService(dynamoDbTable, TEST_CLOCK_FIXED_INSTANT, VALIDATOR);
     }
 
@@ -59,13 +64,14 @@ class AddRecipientServiceTest {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, validIban);
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
 
-        verify(dynamoDbTable).putItem(any(Recipient.class));
+        verify(dynamoDbTable).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
 
         assertAll(
-                () -> assertThat(recipientDTO.bankAccountId()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL),
-                () -> assertThat(recipientDTO.recipientName()).isEqualTo(RECIPIENT_NAME_JEFFERSON),
-                () -> assertThat(recipientDTO.recipientIban()).isEqualTo(validIban),
-                () -> assertThat(recipientDTO.createdAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT))
+                () -> assertThat(recipientDTO.getBankAccountId()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL),
+                () -> assertThat(recipientDTO.getRecipientName()).isEqualTo(RECIPIENT_NAME_JEFFERSON),
+                () -> assertThat(recipientDTO.getRecipientIban()).isEqualTo(validIban),
+                () -> assertThat(recipientDTO.getCreatedAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT))
         );
     }
 
@@ -82,7 +88,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("bankAccountId");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @ParameterizedTest
@@ -99,7 +106,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @ParameterizedTest
@@ -116,7 +124,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @Test
@@ -133,7 +142,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @ParameterizedTest
@@ -150,7 +160,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @ParameterizedTest
@@ -167,7 +178,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @ParameterizedTest
@@ -184,7 +196,8 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
                 });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
     }
 
     @Test
@@ -217,6 +230,32 @@ class AddRecipientServiceTest {
                     .withFailMessage("Property path mismatch for message: %s", message);
         });
 
-        verify(dynamoDbTable, never()).putItem(any(Recipient.class));
+        verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
+        verify(dynamoDbTable, never()).getItem(any(Key.class));
+    }
+
+    @Test
+    public void shouldNotCreateDuplicateRecipient_whenSameRequestIsSentTwice() {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
+        var jeffersonRecipientDTO = addRecipientService.addRecipient(addRecipientRequest);
+
+        doThrow(ConditionalCheckFailedException.class)
+                .when(dynamoDbTable).putItem(any(PutItemEnhancedRequest.class));
+
+        var existentRecipient = RecipientTestFactory.createRecipient(addRecipientRequest);
+        when(dynamoDbTable.getItem(any(Key.class))).thenReturn(existentRecipient);
+
+        var existentRecipientDTO = addRecipientService.addRecipient(addRecipientRequest);
+        assertThat(existentRecipientDTO).isExactlyInstanceOf(ExistentRecipientDTO.class);
+
+        verify(dynamoDbTable, times(2)).putItem(any(PutItemEnhancedRequest.class));
+        verify(dynamoDbTable, times(1)).getItem(any(Key.class));
+
+        assertAll(
+                () -> assertThat(jeffersonRecipientDTO.getBankAccountId()).isEqualTo(existentRecipientDTO.getBankAccountId()),
+                () -> assertThat(jeffersonRecipientDTO.getRecipientName()).isEqualTo(existentRecipientDTO.getRecipientName()),
+                () -> assertThat(jeffersonRecipientDTO.getRecipientIban()).isEqualTo(existentRecipientDTO.getRecipientIban()),
+                () -> assertThat(jeffersonRecipientDTO.getCreatedAt()).isEqualTo(existentRecipientDTO.getCreatedAt())
+        );
     }
 }

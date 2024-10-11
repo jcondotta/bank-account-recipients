@@ -78,8 +78,8 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
         var deleteRecipientURI = DELETE_RECIPIENT_URI_BUILDER.expand(
                 Map.of(
-                        "bank-account-id", jeffersonRecipientDTO.bankAccountId().toString(),
-                        "recipient-name", jeffersonRecipientDTO.recipientName())
+                        "bank-account-id", jeffersonRecipientDTO.getBankAccountId().toString(),
+                        "recipient-name", jeffersonRecipientDTO.getRecipientName())
                 );
 
         requestEvent.withPath(deleteRecipientURI.getRawPath());
