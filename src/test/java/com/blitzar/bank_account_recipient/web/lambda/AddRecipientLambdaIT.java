@@ -32,6 +32,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,20 +101,10 @@ public class AddRecipientLambdaIT implements LocalStackTestContainer {
 
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
-//        var expectedLocation = UriBuilder.of(RecipientAPIConstants.BANK_ACCOUNT_API_V1_MAPPING)
-//                .expand(Map.of("bank-account-id", BANK_ACCOUNT_ID_BRAZIL))
-//                .getRawPath();
-
         assertThat(response)
                 .as("Verify the response has the correct status code")
                 .extracting(APIGatewayProxyResponseEvent::getStatusCode)
                 .isEqualTo(HttpStatus.CREATED.getCode());
-
-//        Optional<String> locationHeader = Optional.ofNullable(response.getHeaders().get(HttpHeaders.LOCATION));
-//        assertThat(locationHeader)
-//                .as("Check if the Location header is present")
-//                .isPresent()
-//                .hasValue(expectedLocation);
 
         var recipient = objectMapper.readValue(response.getBody(), Recipient.class);
         assertAll(

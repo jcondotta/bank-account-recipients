@@ -84,8 +84,8 @@ class AddRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).hasToString("recipient.bankAccountId.notNull");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("bankAccountId");
+                    assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
+                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
@@ -103,7 +103,7 @@ class AddRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.notBlank");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
@@ -121,7 +121,7 @@ class AddRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.invalid");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
@@ -139,7 +139,7 @@ class AddRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.tooLong");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
@@ -157,7 +157,7 @@ class AddRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientIban");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
@@ -175,7 +175,7 @@ class AddRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientIban");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());
@@ -193,7 +193,7 @@ class AddRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientIban");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientIban");
                 });
 
         verify(dynamoDbTable, never()).putItem(Mockito.<PutItemEnhancedRequest<Recipient>>any());

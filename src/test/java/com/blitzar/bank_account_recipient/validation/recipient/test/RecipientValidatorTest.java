@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class RecipientValidatorTest {
+class RecipientValidatorTest {
 
     private final RecipientValidator recipientValidator = new RecipientValidator();
 
@@ -30,7 +30,7 @@ public class RecipientValidatorTest {
     private static final Clock TEST_CLOCK_FIXED_INSTANT = ClockTestFactory.testClockFixedInstant;
 
     @Test
-    public void shouldValidateRecipients_whenExpectedAndActualDataMatch() {
+    void shouldValidateRecipients_whenExpectedAndActualDataMatch() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipient.getBankAccountId(), expectedRecipient.getRecipientName(), expectedRecipient.getRecipientIban(), expectedRecipient.getCreatedAt());
 
@@ -38,7 +38,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldThrowAssertionError_whenExpectedRecipientNameDoesNotMatchActualRecipientName() {
+    void shouldThrowAssertionError_whenExpectedRecipientNameDoesNotMatchActualRecipientName() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipient.getBankAccountId(), RECIPIENT_NAME_PATRIZIO, expectedRecipient.getRecipientIban(), expectedRecipient.getCreatedAt());
 
@@ -47,7 +47,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldThrowAssertionError_whenExpectedRecipientIbanDoesNotMatchActualRecipientIban() {
+    void shouldThrowAssertionError_whenExpectedRecipientIbanDoesNotMatchActualRecipientIban() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipient.getBankAccountId(), expectedRecipient.getRecipientName(), RECIPIENT_IBAN_PATRIZIO, expectedRecipient.getCreatedAt());
 
@@ -56,7 +56,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldThrowAssertionError_whenExpectedRecipientCreatedAtDoesNotMatchActualRecipientCreatedAt() {
+    void shouldThrowAssertionError_whenExpectedRecipientCreatedAtDoesNotMatchActualRecipientCreatedAt() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         Recipient actualRecipient = RecipientTestFactory.createRecipient(expectedRecipient.getBankAccountId(), expectedRecipient.getRecipientName(), expectedRecipient.getRecipientIban(), expectedRecipient.getCreatedAt().plusDays(1));
 
@@ -65,7 +65,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldValidateRecipientAgainstRecipientDTO_whenExpectedAndActualDataMatch() {
+    void shouldValidateRecipientAgainstRecipientDTO_whenExpectedAndActualDataMatch() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipient.getBankAccountId(), expectedRecipient.getRecipientName(), expectedRecipient.getRecipientIban(), expectedRecipient.getCreatedAt());
 
@@ -73,7 +73,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldThrowAssertionError_whenExpectedRecipientNameDoesNotMatchActualRecipientDTOName() {
+    void shouldThrowAssertionError_whenExpectedRecipientNameDoesNotMatchActualRecipientDTOName() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipient.getBankAccountId(), RECIPIENT_NAME_PATRIZIO, expectedRecipient.getRecipientIban(), expectedRecipient.getCreatedAt());
 
@@ -82,7 +82,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldThrowAssertionError_whenExpectedRecipientIbanDoesNotMatchActualRecipientDTOIban() {
+    void shouldThrowAssertionError_whenExpectedRecipientIbanDoesNotMatchActualRecipientDTOIban() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipient.getBankAccountId(), expectedRecipient.getRecipientName(), RECIPIENT_IBAN_PATRIZIO, expectedRecipient.getCreatedAt());
 
@@ -91,7 +91,7 @@ public class RecipientValidatorTest {
     }
 
     @Test
-    public void shouldThrowAssertionError_whenExpectedRecipientCreatedAtDoesNotMatchActualRecipientDTOCreatedAt() {
+    void shouldThrowAssertionError_whenExpectedRecipientCreatedAtDoesNotMatchActualRecipientDTOCreatedAt() {
         Recipient expectedRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON, LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT));
         RecipientDTO actualRecipientDTO = RecipientDTOTestFactory.createRecipientDTO(expectedRecipient.getBankAccountId(), expectedRecipient.getRecipientName(), expectedRecipient.getRecipientIban(), expectedRecipient.getCreatedAt().plusDays(1));
 

@@ -1,8 +1,15 @@
 package com.blitzar.bank_account_recipient.validation.security;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -11,28 +18,18 @@ class ThreatInputPatternDetectorTest {
 
     private final ThreatInputPatternDetector detector = new ThreatInputPatternDetector();
 
-    @Test
-    void shouldDetectXSSInDetector() {
-        String maliciousInput = "<script>alert('XSS')</script>";
-        assertTrue(detector.containsAnyPattern(maliciousInput));
+    static Stream<Arguments> provideMaliciousInputs() {
+        return Stream.of(
+                Arguments.of("<script>alert('XSS')</script>"), // XSS attack
+                Arguments.of("SELECT * FROM users WHERE id = 1 OR 1=1 --"), // SQL Injection
+                Arguments.of("rm -rf / && ls") // Command Injection
+        );
     }
 
-    @Test
-    void shouldDetectSQLInjectionInDetector() {
-        String maliciousInput = "SELECT * FROM users WHERE id = 1 OR 1=1 --";
+    @ParameterizedTest
+    @MethodSource("provideMaliciousInputs")
+    void shouldDetectThreatsInDetector(String maliciousInput) {
         assertTrue(detector.containsAnyPattern(maliciousInput));
-    }
-
-    @Test
-    void shouldDetectCommandInjectionInDetector() {
-        String maliciousInput = "rm -rf / && ls";
-        assertTrue(detector.containsAnyPattern(maliciousInput));
-    }
-
-    @Test
-    void shouldNotDetectSafeInput() {
-        String safeInput = "Hello World";
-        assertFalse(detector.containsAnyPattern(safeInput));
     }
 
     @Test

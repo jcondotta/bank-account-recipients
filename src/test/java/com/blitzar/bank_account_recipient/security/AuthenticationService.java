@@ -2,13 +2,12 @@ package com.blitzar.bank_account_recipient.security;
 
 import io.micronaut.http.HttpStatus;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 
 @Singleton
 public class AuthenticationService {

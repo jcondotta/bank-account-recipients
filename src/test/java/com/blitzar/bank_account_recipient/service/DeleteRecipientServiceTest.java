@@ -67,7 +67,7 @@ class DeleteRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("bankAccountId");
+                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
         verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
@@ -84,7 +84,7 @@ class DeleteRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.notBlank");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
         verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
@@ -101,7 +101,7 @@ class DeleteRecipientServiceTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.invalid");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("recipientName");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
         verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));

@@ -14,7 +14,6 @@ import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
 import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientDTOValidator;
 import io.micronaut.http.HttpStatus;
-import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -29,7 +28,6 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
