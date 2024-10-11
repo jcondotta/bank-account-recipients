@@ -12,7 +12,6 @@ import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsPro
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.services.ssm.SsmClientBuilder;
 
 import java.net.URI;
 

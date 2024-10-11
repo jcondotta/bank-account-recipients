@@ -42,12 +42,12 @@ class DeleteRecipientServiceTest {
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
 
     @BeforeEach
-    public void setup() {
+    void beforeEach() {
         deleteRecipientService = new DeleteRecipientService(dynamoDbTable, VALIDATOR);
     }
 
     @Test
-    public void shouldDeleteRecipient_whenRecipientExists() {
+    void shouldDeleteRecipient_whenRecipientExists() {
         Recipient recipientMock = mock(Recipient.class);
         when(dynamoDbTable.getItem(any(Key.class))).thenReturn(recipientMock);
 
@@ -58,7 +58,7 @@ class DeleteRecipientServiceTest {
     }
 
     @Test
-    public void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
+    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
         var deleteRecipientRequest = new DeleteRecipientRequest(null, RECIPIENT_NAME_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
@@ -75,7 +75,7 @@ class DeleteRecipientServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    public void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
+    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
@@ -92,7 +92,7 @@ class DeleteRecipientServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    public void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
+    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
@@ -108,7 +108,7 @@ class DeleteRecipientServiceTest {
     }
 
     @Test
-    public void shouldThrowRecipientNotFoundException_whenRecipientDoesNotExist() {
+    void shouldThrowRecipientNotFoundException_whenRecipientDoesNotExist() {
         when(dynamoDbTable.getItem(any(Key.class))).thenReturn(null);
 
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);

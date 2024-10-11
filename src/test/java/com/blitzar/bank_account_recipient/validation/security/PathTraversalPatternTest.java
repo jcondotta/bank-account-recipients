@@ -5,48 +5,48 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PathTraversalPatternTest {
+class PathTraversalPatternTest {
 
     private final PathTraversalPattern pathTraversalPattern = new PathTraversalPattern();
 
     @Test
-    public void shouldDetectPathTraversal() {
+    void shouldDetectPathTraversal() {
         String maliciousInput = "../../etc/passwd";
         assertTrue(pathTraversalPattern.containsPattern(maliciousInput));
     }
 
     @Test
-    public void shouldDetectEncodedPathTraversal() {
+    void shouldDetectEncodedPathTraversal() {
         String maliciousInput = "%2e%2e%2fetc/passwd";
         assertTrue(pathTraversalPattern.containsPattern(maliciousInput));
     }
 
     @Test
-    public void shouldDetectDoubleEncodedPathTraversal() {
+    void shouldDetectDoubleEncodedPathTraversal() {
         String maliciousInput = "%252e%252e%252fetc/passwd";
         assertTrue(pathTraversalPattern.containsPattern(maliciousInput));
     }
 
     @Test
-    public void shouldDetectWindowsPathTraversal() {
+    void shouldDetectWindowsPathTraversal() {
         String maliciousInput = "..\\windows\\system32";
         assertTrue(pathTraversalPattern.containsPattern(maliciousInput));
     }
 
     @Test
-    public void shouldNotDetectSafePath() {
+    void shouldNotDetectSafePath() {
         String safeInput = "/home/user/documents";
         assertFalse(pathTraversalPattern.containsPattern(safeInput));
     }
 
     @Test
-    public void shouldDetectEncodedWindowsPathTraversal() {
+    void shouldDetectEncodedWindowsPathTraversal() {
         String maliciousInput = "%2e%2e%5cwindows%5csystem32";
         assertTrue(pathTraversalPattern.containsPattern(maliciousInput));
     }
 
     @Test
-    public void shouldDetectDoubleEncodedWindowsPathTraversal() {
+    void shouldDetectDoubleEncodedWindowsPathTraversal() {
         String maliciousInput = "%252e%252e%255cwindows%255csystem32";
         assertTrue(pathTraversalPattern.containsPattern(maliciousInput));
     }

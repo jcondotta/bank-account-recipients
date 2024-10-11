@@ -54,7 +54,7 @@ class FetchRecipientServiceTest {
 
 
     @BeforeEach
-    public void beforeEach(){
+    void beforeEach(){
         fetchRecipientService = new FetchRecipientService(dynamoDbTable, VALIDATOR);
 
         when(dynamoDbTable.query(any(QueryEnhancedRequest.class))).thenReturn(pageIterable);
@@ -114,7 +114,7 @@ class FetchRecipientServiceTest {
     }
 
     @Test
-    public void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName(){
+    void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName(){
         final var nonExistentPrefixRecipientName = "Z";
 
         when(recipientPage.items()).thenReturn(Collections.emptyList());

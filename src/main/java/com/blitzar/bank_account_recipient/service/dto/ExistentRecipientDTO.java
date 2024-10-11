@@ -2,7 +2,6 @@ package com.blitzar.bank_account_recipient.service.dto;
 
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import io.micronaut.core.annotation.Introspected;
-import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;

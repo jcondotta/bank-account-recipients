@@ -2,7 +2,6 @@ package com.blitzar.bank_account_recipient.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.helper.RecipientTablePurgeService;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;

@@ -7,36 +7,36 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ThreatInputPatternDetectorTest {
+class ThreatInputPatternDetectorTest {
 
     private final ThreatInputPatternDetector detector = new ThreatInputPatternDetector();
 
     @Test
-    public void shouldDetectXSSInDetector() {
+    void shouldDetectXSSInDetector() {
         String maliciousInput = "<script>alert('XSS')</script>";
         assertTrue(detector.containsAnyPattern(maliciousInput));
     }
 
     @Test
-    public void shouldDetectSQLInjectionInDetector() {
+    void shouldDetectSQLInjectionInDetector() {
         String maliciousInput = "SELECT * FROM users WHERE id = 1 OR 1=1 --";
         assertTrue(detector.containsAnyPattern(maliciousInput));
     }
 
     @Test
-    public void shouldDetectCommandInjectionInDetector() {
+    void shouldDetectCommandInjectionInDetector() {
         String maliciousInput = "rm -rf / && ls";
         assertTrue(detector.containsAnyPattern(maliciousInput));
     }
 
     @Test
-    public void shouldNotDetectSafeInput() {
+    void shouldNotDetectSafeInput() {
         String safeInput = "Hello World";
         assertFalse(detector.containsAnyPattern(safeInput));
     }
 
     @Test
-    public void shouldUseCustomPatterns() {
+    void shouldUseCustomPatterns() {
         ThreatInputPattern customPattern = value -> value.contains("custom");
         ThreatInputPatternDetector customDetector = new ThreatInputPatternDetector(List.of(customPattern));
 

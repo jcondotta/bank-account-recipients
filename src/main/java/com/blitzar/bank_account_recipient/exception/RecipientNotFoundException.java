@@ -4,8 +4,8 @@ import java.util.UUID;
 
 public class RecipientNotFoundException extends RuntimeException{
 
-    private UUID bankAccountId;
-    private String recipientName;
+    private final UUID bankAccountId;
+    private final String recipientName;
 
     public RecipientNotFoundException(String message, UUID bankAccountId, String recipientName) {
         super(message);

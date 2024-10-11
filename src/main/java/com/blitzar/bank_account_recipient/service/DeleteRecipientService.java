@@ -20,10 +20,10 @@ public class DeleteRecipientService {
 
     private static final Logger logger = LoggerFactory.getLogger(DeleteRecipientService.class);
 
-    @Inject
     private final DynamoDbTable<Recipient> dynamoDbTable;
     private final Validator validator;
 
+    @Inject
     public DeleteRecipientService(DynamoDbTable<Recipient> dynamoDbTable, Validator validator) {
         this.dynamoDbTable = dynamoDbTable;
         this.validator = validator;
