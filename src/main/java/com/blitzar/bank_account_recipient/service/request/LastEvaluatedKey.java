@@ -29,16 +29,8 @@ public record LastEvaluatedKey(
 ) {
 
     public Map<String, AttributeValue> toExclusiveStartKey() {
-        Map<String, AttributeValue> exclusiveStartKey = new HashMap<>();
-
-        exclusiveStartKey.put("bankAccountId", AttributeValue.builder()
-                .s(this.bankAccountId.toString()) // UUID stored as a string
-                .build());
-
-        exclusiveStartKey.put("recipientName", AttributeValue.builder()
-                .s(this.recipientName)
-                .build());
-
-        return exclusiveStartKey;
+        return Map.of(
+                "bankAccountId", AttributeValue.fromS(bankAccountId.toString()),
+                "recipientName", AttributeValue.fromS(recipientName));
     }
 }
