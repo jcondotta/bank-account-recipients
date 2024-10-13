@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class FetchRecipientControllerIT implements LocalStackTestContainer {
+class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(FetchRecipientControllerIT.class);
     private static final int PAGE_LIMIT_2 = 2;
@@ -61,7 +61,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @BeforeEach
-    public void beforeEach(RequestSpecification requestSpecification) {
+    void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .basePath(RecipientAPIUriBuilder.BANK_ACCOUNT_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
@@ -70,7 +70,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
@@ -138,7 +138,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName(){
+    void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName(){
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         final var nonExistentPrefixRecipientName = "Z";
@@ -168,7 +168,7 @@ public class FetchRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturnPagedRecipients_whenLimitQueryParamIsSet_forSubsequentRequests(){
+    void shouldReturnPagedRecipients_whenLimitQueryParamIsSet_forSubsequentRequests(){
         final var brazilBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
 
         var expectedRecipientsPage1 = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);

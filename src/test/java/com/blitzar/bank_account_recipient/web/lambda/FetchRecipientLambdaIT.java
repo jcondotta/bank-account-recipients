@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class FetchRecipientLambdaIT implements LocalStackTestContainer {
+class FetchRecipientLambdaIT implements LocalStackTestContainer {
 
     private static final Context mockLambdaContext = new MockLambdaContext();
 
@@ -57,12 +57,12 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
     private AuthenticationService authenticationService;
 
     @BeforeAll
-    public void beforeAll() {
+    void beforeAll() {
         requestEventFunction = new ApiGatewayProxyRequestEventFunction(applicationContext);
     }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         var authenticationResponseDTO = authenticationService.authenticate();
         proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
 
@@ -75,7 +75,7 @@ public class FetchRecipientLambdaIT implements LocalStackTestContainer {
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddRecipientControllerIT implements LocalStackTestContainer {
+class AddRecipientControllerIT implements LocalStackTestContainer {
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
@@ -69,7 +69,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @BeforeEach
-    public void beforeEach(RequestSpecification requestSpecification) {
+    void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .basePath(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
@@ -78,12 +78,12 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldReturn201Created_whenRequestIsValid() {
+    void shouldReturn201Created_whenRequestIsValid() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         var expectedLocation = RecipientAPIUriBuilder.fetchRecipientsURI(BANK_ACCOUNT_ID_BRAZIL).getRawPath();
@@ -122,7 +122,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn400BadRequest_whenBankAccountIdIsNull() {
+    void shouldReturn400BadRequest_whenBankAccountIdIsNull() {
         var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -139,7 +139,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) {
+    void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -156,7 +156,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
+    void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -172,7 +172,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn400BadRequest_whenRecipientNameIsLongerThan50Characters() {
+    void shouldReturn400BadRequest_whenRecipientNameIsLongerThan50Characters() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, "J".repeat(51), RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -189,7 +189,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientIbanIsBlank(String invalidRecipientIban) {
+    void shouldReturn400BadRequest_whenRecipientIbanIsBlank(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
 
         given()
@@ -206,7 +206,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientIbanIsMalicious(String invalidRecipientIban) {
+    void shouldReturn400BadRequest_whenRecipientIbanIsMalicious(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
 
         given()
@@ -223,7 +223,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(InvalidIbanArgumentsProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
+    void shouldReturn400BadRequest_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
 
         given()
@@ -260,7 +260,7 @@ public class AddRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldNotCreateDuplicateRecipient_whenSameApiRequestIsSentTwice() {
+    void shouldNotCreateDuplicateRecipient_whenSameApiRequestIsSentTwice() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         var expectedLocation = RecipientAPIUriBuilder.fetchRecipientsURI(BANK_ACCOUNT_ID_BRAZIL).getRawPath();

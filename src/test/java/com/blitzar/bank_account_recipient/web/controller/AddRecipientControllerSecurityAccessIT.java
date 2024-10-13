@@ -26,7 +26,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddRecipientControllerSecurityAccessIT implements LocalStackTestContainer {
+class AddRecipientControllerSecurityAccessIT implements LocalStackTestContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(AddRecipientControllerSecurityAccessIT.class);
 
@@ -49,19 +49,19 @@ public class AddRecipientControllerSecurityAccessIT implements LocalStackTestCon
     }
 
     @BeforeEach
-    public void beforeEach(RequestSpecification requestSpecification) {
+    void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .basePath(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
                 .contentType(ContentType.JSON);
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldReturn401Unauthorized_whenNoTokenProvided() {
+    void shouldReturn401Unauthorized_whenNoTokenProvided() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         given()
@@ -75,7 +75,7 @@ public class AddRecipientControllerSecurityAccessIT implements LocalStackTestCon
     }
 
     @Test
-    public void shouldReturn401Unauthorized_whenTokenIsExpired() {
+    void shouldReturn401Unauthorized_whenTokenIsExpired() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         var expiredToken = tokenGeneratorService.generateExpiredToken();
@@ -93,7 +93,7 @@ public class AddRecipientControllerSecurityAccessIT implements LocalStackTestCon
     }
 
     @Test
-    public void shouldReturn401Unauthorized_whenTokenSignatureIsTampered() {
+    void shouldReturn401Unauthorized_whenTokenSignatureIsTampered() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         var generatedToken = tokenGeneratorService.generateToken(TokenGeneratorService.DEFAULT_AUTH_USERNAME, 3600);
@@ -114,7 +114,7 @@ public class AddRecipientControllerSecurityAccessIT implements LocalStackTestCon
     }
 
     @Test
-    public void shouldReturn401Unauthorized_whenTokenExpiresDuringRequest() {
+    void shouldReturn401Unauthorized_whenTokenExpiresDuringRequest() {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         var shortLivedToken = tokenGeneratorService.generateToken(TokenGeneratorService.DEFAULT_AUTH_USERNAME, 1);  // Token expires in 1 second
 

@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
+class DeleteRecipientLambdaIT implements LocalStackTestContainer {
 
     private static final Context mockLambdaContext = new MockLambdaContext();
 
@@ -47,12 +47,12 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     private AuthenticationService authenticationService;
 
     @BeforeAll
-    public void beforeAll() {
+    void beforeAll() {
         requestEventFunction = new ApiGatewayProxyRequestEventFunction(applicationContext);
     }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         var authenticationResponseDTO = authenticationService.authenticate();
         proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
 
@@ -65,12 +65,12 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldReturn204NoContent_whenRecipientExists() {
+    void shouldReturn204NoContent_whenRecipientExists() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         var deleteRecipientsURI = RecipientAPIUriBuilder
@@ -83,7 +83,7 @@ public class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn404NotFound_whenRecipientDoesNotExist() {
+    void shouldReturn404NotFound_whenRecipientDoesNotExist() {
         var nonExistentRecipientName = "nonExistentRecipientName";
 
         var deleteRecipientsURI = RecipientAPIUriBuilder

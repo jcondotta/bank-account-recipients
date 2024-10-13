@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddRecipientLambdaIT implements LocalStackTestContainer {
+class AddRecipientLambdaIT implements LocalStackTestContainer {
 
     private static final Context mockLambdaContext = new MockLambdaContext();
 
@@ -70,12 +70,12 @@ public class AddRecipientLambdaIT implements LocalStackTestContainer {
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
     @BeforeAll
-    public void beforeAll() {
+    void beforeAll() {
         requestEventFunction = new ApiGatewayProxyRequestEventFunction(applicationContext);
     }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         var authenticationResponseDTO = authenticationService.authenticate();
         proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
 
@@ -89,12 +89,12 @@ public class AddRecipientLambdaIT implements LocalStackTestContainer {
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldReturn201Created_whenRequestIsValid() throws IOException {
+    void shouldReturn201Created_whenRequestIsValid() throws IOException {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         requestEvent.setBody(objectMapper.writeValueAsString(addRecipientRequest));
 
@@ -116,7 +116,7 @@ public class AddRecipientLambdaIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(BlankValuesArgumentProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) throws IOException {
+    void shouldReturn400BadRequest_whenRecipientNameIsBlank(String invalidRecipientName) throws IOException {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
         requestEvent.setBody(objectMapper.writeValueAsString(addRecipientRequest));
 

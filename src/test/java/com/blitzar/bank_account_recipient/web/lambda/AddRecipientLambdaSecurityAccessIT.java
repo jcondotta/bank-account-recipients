@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class AddRecipientLambdaSecurityAccessIT implements LocalStackTestContainer {
+class AddRecipientLambdaSecurityAccessIT implements LocalStackTestContainer {
 
     private static final Context mockLambdaContext = new MockLambdaContext();
     
@@ -50,12 +50,12 @@ public class AddRecipientLambdaSecurityAccessIT implements LocalStackTestContain
     private RecipientTablePurgeService recipientTablePurgeService;
 
     @BeforeAll
-    public void beforeAll() {
+    void beforeAll() {
         requestEventFunction = new ApiGatewayProxyRequestEventFunction(applicationContext);
     }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
 
         requestEvent = new APIGatewayProxyRequestEvent()
@@ -66,12 +66,12 @@ public class AddRecipientLambdaSecurityAccessIT implements LocalStackTestContain
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldReturn401Unauthorized_whenNoTokenProvided() throws JsonProcessingException {
+    void shouldReturn401Unauthorized_whenNoTokenProvided() throws JsonProcessingException {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         requestEvent.setBody(objectMapper.writeValueAsString(addRecipientRequest));
 

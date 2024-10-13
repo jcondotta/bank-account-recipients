@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-public class DeleteRecipientControllerIT implements LocalStackTestContainer {
+class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
     private DynamoDbTable<Recipient> dynamoDbTable;
@@ -55,7 +55,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @BeforeEach
-    public void beforeEach(RequestSpecification requestSpecification) {
+    void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .basePath(RecipientAPIUriBuilder.RECIPIENT_NAME_API_V1_MAPPING)
                 .contentType(ContentType.JSON)
@@ -64,12 +64,12 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @AfterEach
-    public void afterEach(){
+    void afterEach(){
         recipientTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldReturn204NoContent_whenRecipientExists() {
+    void shouldReturn204NoContent_whenRecipientExists() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         given()
@@ -90,7 +90,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn404NotFound_whenRecipientIsDeleted() {
+    void shouldReturn404NotFound_whenRecipientIsDeleted() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         given()
@@ -114,7 +114,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    public void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
+    void shouldReturn400BadRequest_whenRecipientNameIsMalicious(String invalidRecipientName) {
         given()
             .spec(requestSpecification)
                 .pathParam("bank-account-id", TestBankAccount.BRAZIL.getBankAccountId())
@@ -130,7 +130,7 @@ public class DeleteRecipientControllerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldReturn404NotFound_whenRecipientDoesNotExist() {
+    void shouldReturn404NotFound_whenRecipientDoesNotExist() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         var nonExistentRecipientName = "nonExistentRecipientName";
