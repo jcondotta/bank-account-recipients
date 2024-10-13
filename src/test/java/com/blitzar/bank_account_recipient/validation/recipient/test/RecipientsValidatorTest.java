@@ -12,6 +12,7 @@ import com.blitzar.bank_account_recipient.validation.recipient.RecipientValidato
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,16 +24,18 @@ import static org.mockito.Mockito.*;
 class RecipientsValidatorTest {
 
     private RecipientsValidator recipientsValidator;
-    private RecipientValidator mockRecipientValidator;
-    private RecipientDTOValidator mockRecipientDTOValidator;
+
+    @Mock
+    private RecipientValidator recipientValidatorMock;
+
+    @Mock
+    private RecipientDTOValidator recipientDTOValidatorMock;
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
 
     @BeforeEach
-    void setUp() {
-        mockRecipientValidator = mock(RecipientValidator.class);
-        mockRecipientDTOValidator = mock(RecipientDTOValidator.class);
-        recipientsValidator = new RecipientsValidator(mockRecipientValidator, mockRecipientDTOValidator);
+    void beforeEach() {
+        recipientsValidator = new RecipientsValidator(recipientValidatorMock, recipientDTOValidatorMock);
     }
 
     @Test
@@ -84,7 +87,7 @@ class RecipientsValidatorTest {
         List<Recipient> actualRecipients = List.of(actualRecipient);
 
         assertDoesNotThrow(() -> recipientsValidator.validateDTOsAgainstEntities(expectedRecipients, actualRecipients));
-        verify(mockRecipientDTOValidator).validate(expectedRecipientDTO, actualRecipient);
+        verify(recipientDTOValidatorMock).validate(expectedRecipientDTO, actualRecipient);
     }
 
     @Test
@@ -96,7 +99,7 @@ class RecipientsValidatorTest {
         List<Recipient> actualRecipients = List.of(actualRecipient);
 
         assertDoesNotThrow(() -> recipientsValidator.validateEntitiesAgainstEntities(expectedRecipients, actualRecipients));
-        verify(mockRecipientValidator).validate(expectedRecipient, actualRecipient);
+        verify(recipientValidatorMock).validate(expectedRecipient, actualRecipient);
     }
 
     @Test
@@ -108,6 +111,6 @@ class RecipientsValidatorTest {
         List<Recipient> actualRecipients = List.of(actualRecipient);
 
         assertThrows(RecipientNotFoundException.class, () -> recipientsValidator.validateDTOsAgainstEntities(expectedRecipients, actualRecipients));
-        verify(mockRecipientDTOValidator, never()).validate(expectedRecipientDTO, actualRecipient);
+        verify(recipientDTOValidatorMock, never()).validate(expectedRecipientDTO, actualRecipient);
     }
 }
