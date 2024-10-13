@@ -1,5 +1,6 @@
 package com.blitzar.bank_account_recipient.factory;
 
+import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
@@ -7,7 +8,10 @@ import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class RecipientDTOTestFactory {
 
@@ -31,5 +35,16 @@ public class RecipientDTOTestFactory {
 
     public static RecipientDTO createRecipientDTO(AddRecipientRequest addRecipientRequest) {
         return createRecipientDTO(addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
+    }
+
+    public static List<RecipientDTO> createRecipientsDTO(UUID bankAccountId, TestRecipient... testRecipients) {
+        return Arrays.stream(testRecipients).collect(Collectors.toSet())
+                .stream()
+                .map(testRecipient -> createRecipientDTO(bankAccountId, testRecipient))
+                .toList();
+    }
+
+    public static List<RecipientDTO> createRecipientsDTO(TestBankAccount testBankAccount, TestRecipient... testRecipients) {
+        return createRecipientsDTO(testBankAccount.getBankAccountId(), testRecipients);
     }
 }
