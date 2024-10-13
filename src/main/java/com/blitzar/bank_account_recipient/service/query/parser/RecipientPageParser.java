@@ -8,7 +8,6 @@ import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RecipientPageParser {
 
@@ -22,7 +21,7 @@ public class RecipientPageParser {
         if (Objects.nonNull(recipientsPage) && Objects.nonNull(recipientsPage.items())) {
             List<RecipientDTO> recipients = recipientsPage.items().stream()
                     .map(RecipientDTO::new)
-                    .collect(Collectors.toList());
+                    .toList();
 
             var lastEvaluatedKey = lastEvaluatedKeyParser.parse(recipientsPage);
             return new RecipientsDTO(recipients, recipients.size(), lastEvaluatedKey);
