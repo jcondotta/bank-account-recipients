@@ -22,14 +22,14 @@ public class AuthenticationProviderUserPassword<B> implements HttpRequestAuthent
     public AuthenticationResponse authenticate(@Nullable HttpRequest<B> httpRequest,
                                                @NonNull AuthenticationRequest<String, String> authenticationRequest) {
 
-        String username = authenticationRequest.getIdentity();
-        String password = authenticationRequest.getSecret();
+        String identity = authenticationRequest.getIdentity();
+        String secret = authenticationRequest.getSecret();
 
-        if (DEFAULT_AUTH.equals(username) && DEFAULT_AUTH.equals(password)) {
-            return AuthenticationResponse.success(username);
+        if (DEFAULT_AUTH.equals(identity) && DEFAULT_AUTH.equals(secret)) {
+            return AuthenticationResponse.success(identity);
         }
         else {
-            logger.warn("Authentication failed for user: {}", username);
+            logger.warn("Authentication failed for user: {}", identity);
             return AuthenticationResponse.failure(AuthenticationFailureReason.CREDENTIALS_DO_NOT_MATCH);
         }
     }
