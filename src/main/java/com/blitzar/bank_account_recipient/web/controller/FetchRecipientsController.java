@@ -3,6 +3,7 @@ package com.blitzar.bank_account_recipient.web.controller;
 import com.blitzar.bank_account_recipient.service.FetchRecipientService;
 import com.blitzar.bank_account_recipient.service.dto.RecipientsDTO;
 import com.blitzar.bank_account_recipient.service.request.QueryParams;
+import com.blitzar.bank_account_recipient.service.request.QueryRecipientsRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -54,7 +55,8 @@ public class FetchRecipientsController {
             @Schema(description = "Query parameters for filtering and pagination.", implementation = QueryParams.class)
             @QueryValue("queryParams") Optional<QueryParams> queryParams) {
 
-        var recipientsDTO = fetchRecipientService.findRecipients(bankAccountId, queryParams.orElse(null));
+        var queryRecipientsRequest = new QueryRecipientsRequest(bankAccountId, queryParams);
+        var recipientsDTO = fetchRecipientService.findRecipients(queryRecipientsRequest);
 
         if (recipientsDTO.recipients().isEmpty()) {
             return HttpResponse.noContent();

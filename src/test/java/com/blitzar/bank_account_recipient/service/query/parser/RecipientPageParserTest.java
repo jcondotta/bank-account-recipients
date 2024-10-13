@@ -4,8 +4,6 @@ import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.service.query.parser.LastEvaluatedKeyParser;
-import com.blitzar.bank_account_recipient.service.query.parser.RecipientPageParser;
 import com.blitzar.bank_account_recipient.service.request.LastEvaluatedKey;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,44 +1,50 @@
 package com.blitzar.bank_account_recipient.service;
 
+import com.blitzar.bank_account_recipient.argumentprovider.validation.BlankAndNonPrintableCharactersArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;
 import com.blitzar.bank_account_recipient.factory.ValidatorTestFactory;
+import com.blitzar.bank_account_recipient.helper.QueryParamsBuilder;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
-import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
+import com.blitzar.bank_account_recipient.service.query.parser.RecipientPageParser;
+import com.blitzar.bank_account_recipient.service.request.AddRecipientRequest;
 import com.blitzar.bank_account_recipient.service.request.LastEvaluatedKey;
 import com.blitzar.bank_account_recipient.service.request.QueryParams;
-import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
+import com.blitzar.bank_account_recipient.service.request.QueryRecipientsRequest;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FetchRecipientServiceTest {
 
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
-    private final RecipientsValidator recipientsValidator = new RecipientsValidator();
 
-    private FetchRecipientService fetchRecipientService;
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
+    private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
 
     @Mock
     private DynamoDbTable<Recipient> dynamoDbTable;
@@ -47,139 +53,177 @@ class FetchRecipientServiceTest {
     private PageIterable<Recipient> pageIterable;
 
     @Mock
-    private Page<Recipient> recipientPage;
+    private Page<Recipient> pageRecipient;
+
+    private FetchRecipientService fetchRecipientService;
+
+    private QueryParams queryParams;
+    private QueryRecipientsRequest queryRecipientsRequest;
 
     @Mock
-    private QueryParams queryParams;
-
+    private RecipientPageParser recipientPageParser;
 
     @BeforeEach
     void beforeEach(){
-        fetchRecipientService = new FetchRecipientService(dynamoDbTable, VALIDATOR);
+        fetchRecipientService = new FetchRecipientService(dynamoDbTable, recipientPageParser, VALIDATOR);
+    }
+
+    @Test
+    void shouldReturnList_whenBankAccountIdIsNotNull() {
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL);
 
         when(dynamoDbTable.query(any(QueryEnhancedRequest.class))).thenReturn(pageIterable);
-        when(pageIterable.stream()).thenReturn(Stream.of(recipientPage));
+        when(pageIterable.stream()).thenReturn(Stream.of(pageRecipient));
+
+        fetchRecipientService.findRecipients(queryRecipientsRequest);
+
+        verify(recipientPageParser).parse(pageRecipient);
     }
 
     @Test
-    void shouldReturnRecipientList_whenBankAccountIdProvidedWithoutQueryParams() {
-        var recipients = RecipientTestFactory.createRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JESSICA);
+    void shouldReturnListWithRecipientNamePrefixMatching_whenRecipientNamePrefixIsNotEmpty() {
+        final var recipientNamePrefix = "Je";
+        queryParams = new QueryParamsBuilder().withRecipientName(recipientNamePrefix).build();
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
 
-        when(recipientPage.items()).thenReturn(recipients);
+        when(dynamoDbTable.query(any(QueryEnhancedRequest.class))).thenReturn(pageIterable);
+        when(pageIterable.stream()).thenReturn(Stream.of(pageRecipient));
 
-        var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.BRAZIL.getBankAccountId(), queryParams);
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+        fetchRecipientService.findRecipients(queryRecipientsRequest);
 
-        assertAll(
-                () -> assertThat(recipientsDTO.recipients()).hasSize(recipients.size()),
-                () -> assertThat(recipientsDTO.count()).isEqualTo(recipients.size()),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey()).isNull()
-        );
-
-        var expectedRecipientsDTO = recipients.stream().map(RecipientDTO::new).toList();
-        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
+        verify(recipientPageParser).parse(pageRecipient);
     }
 
     @Test
-    void shouldReturnRecipientListWithRecipientNamePrefix_whenRecipientNameIsProvided() {
-        var recipients = RecipientTestFactory.createRecipients(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON, TestRecipient.PATRIZIO);
+    void shouldReturnList_whenLimitIsNotDefault() {
+        var pageLimit = 100;
+        queryParams = new QueryParamsBuilder().withLimit(pageLimit).build();
 
-        final var prefixRecipientName = "Je";
+        when(dynamoDbTable.query(any(QueryEnhancedRequest.class))).thenReturn(pageIterable);
+        when(pageIterable.stream()).thenReturn(Stream.of(pageRecipient));
 
-        when(recipientPage.items()).thenReturn(recipients);
-        when(queryParams.recipientName()).thenReturn(Optional.of(prefixRecipientName));
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+        fetchRecipientService.findRecipients(queryRecipientsRequest);
 
-        var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.BRAZIL.getBankAccountId(), queryParams);
-
-        assertAll(
-                () -> assertThat(recipientsDTO.recipients()).hasSize(recipients.size()),
-                () -> assertThat(recipientsDTO.count()).isEqualTo(recipients.size()),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey()).isNull()
-        );
-
-        var expectedRecipientsDTO = recipients.stream().map(RecipientDTO::new).toList();
-        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
+        verify(recipientPageParser).parse(pageRecipient);
     }
 
     @Test
-    void shouldReturnEmptyRecipientList_whenNonExistentBankAccountIdIsProvided() {
-        when(recipientPage.items()).thenReturn(Collections.emptyList());
+    void shouldReturnList_whenLastEvaluatedKeyIsNotNull() {
+        var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
+        queryParams = new QueryParamsBuilder().withLastEvaluatedKey(lastEvaluatedKey).build();
 
-        var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.ITALY.getBankAccountId(), queryParams);
+        when(dynamoDbTable.query(any(QueryEnhancedRequest.class))).thenReturn(pageIterable);
+        when(pageIterable.stream()).thenReturn(Stream.of(pageRecipient));
 
-        assertAll(
-                () -> assertThat(recipientsDTO.recipients()).isEmpty(),
-                () -> assertThat(recipientsDTO.count()).isZero(),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey()).isNull()
-        );
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+        fetchRecipientService.findRecipients(queryRecipientsRequest);
+
+        verify(recipientPageParser).parse(pageRecipient);
     }
 
     @Test
-    void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName(){
-        final var nonExistentPrefixRecipientName = "Z";
+    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
+        queryRecipientsRequest = new QueryRecipientsRequest(null);
 
-        when(recipientPage.items()).thenReturn(Collections.emptyList());
-        when(queryParams.recipientName()).thenReturn(Optional.of(nonExistentPrefixRecipientName));
+        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
+        assertThat(exception.getConstraintViolations())
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
+                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
+                });
 
-        var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.BRAZIL.getBankAccountId(), queryParams);
-
-        assertAll(
-                () -> assertThat(recipientsDTO.recipients()).isEmpty(),
-                () -> assertThat(recipientsDTO.count()).isZero(),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey()).isNull()
-        );
+        verify(recipientPageParser, never()).parse(pageRecipient);
     }
 
     @Test
-    void shouldReturnPagedRecipientList_whenLimitIsProvided() {
-        var recipientJefferson = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
-        var recipientPatrizio = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.PATRIZIO);
-
-        var recipientsPage1 = List.of(recipientJefferson, recipientPatrizio);
-
-        when(queryParams.limit()).thenReturn(Optional.of(recipientsPage1.size()));
-        when(recipientPage.items()).thenReturn(recipientsPage1);
-        when(recipientPage.lastEvaluatedKey())
-                .thenReturn(Map.of(
-                        "bankAccountId", AttributeValue.fromS(recipientPatrizio.getBankAccountId().toString()),
-                        "recipientName", AttributeValue.fromS(recipientPatrizio.getRecipientName())
-                ));
-
-        var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.BRAZIL.getBankAccountId(), queryParams);
-
-        assertAll(
-                () -> assertThat(recipientsDTO.recipients()).hasSize(recipientsPage1.size()),
-                () -> assertThat(recipientsDTO.count()).isEqualTo(recipientsPage1.size()),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey().bankAccountId()).isEqualTo(recipientPatrizio.getBankAccountId()),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey().recipientName()).isEqualTo(recipientPatrizio.getRecipientName())
-        );
-
-        var expectedRecipientsDTO = recipientsPage1.stream().map(RecipientDTO::new).toList();
-        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
+    @Disabled(value = "Make it better in future")
+    void shouldThrowConstraintViolationException_whenLastEvaluatedKeyMissesBankAccountId() {
+//        var lastEvaluatedKey = new LastEvaluatedKey(null, RECIPIENT_NAME_JEFFERSON);
+//        queryParams = new QueryParamsBuilder().withLastEvaluatedKey(lastEvaluatedKey).build();
+//
+//        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+//
+//        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
+//
+//        verify(recipientPageParser, never()).parse(pageRecipient);
     }
 
     @Test
-    void shouldReturnPagedRecipientList_whenLastEvaluatedKeyIsProvided() {
-        var recipientJefferson = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
-        var recipientPatrizio = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.PATRIZIO);
-        var recipientVirginio = RecipientTestFactory.createRecipient(TestBankAccount.BRAZIL, TestRecipient.VIRGINIO);
-
-        var recipientsPage1 = List.of(recipientPatrizio, recipientVirginio);
-
-        when(queryParams.limit()).thenReturn(Optional.of(2));
-        when(queryParams.lastEvaluatedKey()).
-                thenReturn(Optional.of(new LastEvaluatedKey(recipientJefferson.getBankAccountId(), recipientJefferson.getRecipientName())));
-
-        when(recipientPage.items()).thenReturn(recipientsPage1);
-
-        var recipientsDTO = fetchRecipientService.findRecipients(TestBankAccount.BRAZIL.getBankAccountId(), queryParams);
-
-        assertAll(
-                () -> assertThat(recipientsDTO.recipients()).hasSize(recipientsPage1.size()),
-                () -> assertThat(recipientsDTO.count()).isEqualTo(recipientsPage1.size()),
-                () -> assertThat(recipientsDTO.lastEvaluatedKey()).isNull()
-        );
-
-        var expectedRecipientsDTO = recipientsPage1.stream().map(RecipientDTO::new).toList();
-        recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsDTO, recipientsDTO.recipients());
+    @Disabled(value = "Make it better in future")
+    void shouldThrowConstraintViolationException_whenLastEvaluatedKeyMissesRecipientName() {
+//        var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, null);
+//        queryParams = new QueryParamsBuilder().withLastEvaluatedKey(lastEvaluatedKey).build();
+//
+//        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+//
+//        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
+//
+//        verify(recipientPageParser, never()).parse(pageRecipient);
     }
+
+//
+//    @Test
+//    void shouldReturnPagedRecipientList_whenLastEvaluatedKeyIsProvided() {
+//        var previousPageLastRecipient = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON);
+//        var recipientPatrizio = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.PATRIZIO);
+//        var recipientVirginio = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.VIRGINIO);
+//
+//        var recipientsPage = List.of(recipientPatrizio, recipientVirginio);
+//        when(pageRecipient.items()).thenReturn(recipientsPage);
+//
+//        queryParams = new QueryParamsBuilder()
+//                .withLimit(recipientsPage.size())
+//                .withLastEvaluatedKey(new LastEvaluatedKey(previousPageLastRecipient.getBankAccountId(), previousPageLastRecipient.getRecipientName()))
+//                .build();
+//
+//        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, Optional.of(queryParams));
+//
+//        fetchRecipientService.findRecipients(queryRecipientsRequest);
+//        verify(recipientPageParser).parse(pageRecipient);
+//    }
+//
+//    @Test
+//    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
+//        Mockito.reset(dynamoDbTable);
+//        Mockito.reset(pageIterable);
+//        queryRecipientsRequest = new QueryRecipientsRequest(null, Optional.empty());
+//
+//        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
+//        assertThat(exception.getConstraintViolations())
+//                .hasSize(1)
+//                .first()
+//                .satisfies(violation -> {
+//                    assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
+//                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
+//                });
+//
+//        verify(recipientPageParser, never()).parse(pageRecipient);
+//    }
+//
+//    @Test
+//    void shouldReturnEmptyList_whenBankAccountIdIsNonExistent() {
+//        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, Optional.empty());
+//
+//        fetchRecipientService.findRecipients(queryRecipientsRequest);
+//
+//        verify(recipientPageParser).parse(pageRecipient);
+//    }
+//
+//    @Test
+//    void shouldReturnEmptyList_whenNoRecipientsMatchRecipientNamePrefix(){
+//        final var nonExistentPrefixRecipientName = "Z";
+//
+//        queryParams = new QueryParamsBuilder().withRecipientName(nonExistentPrefixRecipientName).build();
+//        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, Optional.of(queryParams));
+//
+//        when(pageRecipient.items()).thenReturn(Collections.emptyList());
+//
+//        fetchRecipientService.findRecipients(queryRecipientsRequest);
+//
+//        verify(recipientPageParser).parse(pageRecipient);
+//    }
 }

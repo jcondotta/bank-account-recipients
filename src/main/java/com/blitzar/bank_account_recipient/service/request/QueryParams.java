@@ -1,8 +1,11 @@
 package com.blitzar.bank_account_recipient.service.request;
 
+import com.blitzar.bank_account_recipient.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Serdeable
@@ -22,4 +25,9 @@ public record QueryParams(
                 "allowing the query to resume from where the previous one left off.")
         Optional<LastEvaluatedKey> lastEvaluatedKey
 ) {
+        public Map<String, AttributeValue> getExclusiveStartKey() {
+                return lastEvaluatedKey
+                        .map(LastEvaluatedKey::toExclusiveStartKey)
+                        .orElse(null);
+        }
 }
