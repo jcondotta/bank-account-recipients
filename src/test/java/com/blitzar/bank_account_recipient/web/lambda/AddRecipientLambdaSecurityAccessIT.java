@@ -36,9 +36,6 @@ public class AddRecipientLambdaSecurityAccessIT implements LocalStackTestContain
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
     
-    private static final Map.Entry<String, String> CONTENT_TYPE_JSON_ENTRY = Map
-            .entry(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
     private APIGatewayProxyRequestEvent.ProxyRequestContext proxyRequestContext;

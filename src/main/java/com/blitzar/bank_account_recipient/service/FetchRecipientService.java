@@ -49,7 +49,7 @@ public class FetchRecipientService {
                 .findFirst().orElse(null);
 
         var recipientsDTO = recipientPageParser.parse(recipientsPage);
-//        logger.info("[BankAccountId={}] {} recipient(s) found", queryRecipientsRequest.bankAccountId(), recipientsDTO.count());
+        logger.info("[BankAccountId={}] {} recipient(s) found", queryRecipientsRequest.bankAccountId(), recipientsDTO.count());
 
         return recipientsDTO;
     }

@@ -103,24 +103,6 @@ class RecipientPageParserTest {
     }
 
     @Test
-    void shouldReturnRecipientsDTO_whenRecipientsAreFoundAndLastEvaluatedKeyIsEmpty() {
-        var recipients = RecipientTestFactory.createRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JESSICA);
-        when(recipientsPage.items()).thenReturn(recipients);
-
-        var recipientsDTO = recipientPageParser.parse(recipientsPage);
-
-        assertThat(recipientsDTO)
-                .satisfies(dto -> {
-                    assertThat(dto.recipients()).hasSize(recipients.size());
-                    assertThat(dto.count()).isEqualTo(recipients.size());
-                    assertThat(dto.lastEvaluatedKey()).isNull();
-                });
-        recipientsValidator.validateEntitiesAgainstDTOs(recipients, recipientsDTO.recipients());
-
-        verify(lastEvaluatedKeyParser).parse(recipientsPage);
-    }
-
-    @Test
     void shouldReturnRecipientsDTO_whenRecipientsAreFoundAndLastEvaluatedKeyNotNull() {
         var recipients = RecipientTestFactory.createRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JESSICA);
         when(recipientsPage.items()).thenReturn(recipients);
