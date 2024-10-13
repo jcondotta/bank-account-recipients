@@ -32,7 +32,7 @@ class LastEvaluatedKeyParserTest {
             Map.entry("recipientName", AttributeValue.fromS(RECIPIENT_NAME_JEFFERSON));
 
     @Mock
-    private Page<Recipient> recipientsPage;
+    private Page<Recipient> pageRecipient;
 
     private LastEvaluatedKeyParser lastEvaluatedKeyParser;
 
@@ -44,11 +44,11 @@ class LastEvaluatedKeyParserTest {
     @Test
     void shouldReturnLastEvaluatedKey_whenPageContainsValidAttributes() {
         var lastEvaluatedKeyMap = Map.ofEntries(BANK_ACCOUNT_ID_BRAZIL_ENTRY, RECIPIENT_NAME_JEFFERSON_ENTRY);
-        when(recipientsPage.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
+        when(pageRecipient.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
 
         var expectedLastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
-        LastEvaluatedKey lastEvaluatedKey = lastEvaluatedKeyParser.parse(recipientsPage);
+        LastEvaluatedKey lastEvaluatedKey = lastEvaluatedKeyParser.parse(pageRecipient);
 
         assertThat(lastEvaluatedKey.bankAccountId()).isEqualTo(expectedLastEvaluatedKey.bankAccountId());
         assertThat(lastEvaluatedKey.recipientName()).isEqualTo(expectedLastEvaluatedKey.recipientName());
@@ -57,18 +57,18 @@ class LastEvaluatedKeyParserTest {
     @Test
     void shouldThrowException_whenBankAccountIdIsMissing() {
         var lastEvaluatedKeyMap = Map.ofEntries(RECIPIENT_NAME_JEFFERSON_ENTRY);
-        when(recipientsPage.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
+        when(pageRecipient.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
 
-        var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(recipientsPage));
+        var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(pageRecipient));
         assertThat(exception).hasMessage("Missing required attributes in last evaluated key.");
     }
 
     @Test
     void shouldThrowException_whenRecipientNameIsMissing() {
         var lastEvaluatedKeyMap = Map.ofEntries(BANK_ACCOUNT_ID_BRAZIL_ENTRY);
-        when(recipientsPage.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
+        when(pageRecipient.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
 
-        var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(recipientsPage));
+        var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(pageRecipient));
         assertThat(exception).hasMessage("Missing required attributes in last evaluated key.");
     }
 
@@ -78,25 +78,25 @@ class LastEvaluatedKeyParserTest {
                 Map.entry("bankAccountId", AttributeValue.fromS("invalidBankAccountId"));
 
         var lastEvaluatedKeyMap = Map.ofEntries(invalidBankAccountIdEntry, RECIPIENT_NAME_JEFFERSON_ENTRY);
-        when(recipientsPage.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
+        when(pageRecipient.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
 
-        var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(recipientsPage));
+        var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(pageRecipient));
         assertThat(exception).hasMessage("Invalid UUID format for bankAccountId in last evaluated key.");
     }
 
     @Test
     void shouldReturnNull_whenNoLastEvaluatedKeyIsFound() {
-        when(recipientsPage.lastEvaluatedKey()).thenReturn(Map.of());
+        when(pageRecipient.lastEvaluatedKey()).thenReturn(Map.of());
 
-        LastEvaluatedKey lastEvaluatedKey = lastEvaluatedKeyParser.parse(recipientsPage);
+        LastEvaluatedKey lastEvaluatedKey = lastEvaluatedKeyParser.parse(pageRecipient);
         assertThat(lastEvaluatedKey).isNull();
     }
 
     @Test
     void shouldReturnNull_whenLastEvaluatedKeyIsNull() {
-        when(recipientsPage.lastEvaluatedKey()).thenReturn(null);
+        when(pageRecipient.lastEvaluatedKey()).thenReturn(null);
 
-        LastEvaluatedKey lastEvaluatedKey = lastEvaluatedKeyParser.parse(recipientsPage);
+        LastEvaluatedKey lastEvaluatedKey = lastEvaluatedKeyParser.parse(pageRecipient);
         assertThat(lastEvaluatedKey).isNull();
     }
 }

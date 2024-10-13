@@ -36,10 +36,14 @@ public class RecipientTestFactory {
         return createRecipient(addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
     }
 
-    public static List<Recipient> createRecipients(TestBankAccount testBankAccount, TestRecipient... testRecipients) {
+    public static List<Recipient> createRecipients(UUID bankAccountId, TestRecipient... testRecipients) {
         return Arrays.stream(testRecipients).collect(Collectors.toSet())
                 .stream()
-                .map(testRecipient -> createRecipient(testBankAccount.getBankAccountId(), testRecipient))
+                .map(testRecipient -> createRecipient(bankAccountId, testRecipient))
                 .toList();
+    }
+
+    public static List<Recipient> createRecipients(TestBankAccount testBankAccount, TestRecipient... testRecipients) {
+        return createRecipients(testBankAccount.getBankAccountId(), testRecipients);
     }
 }
