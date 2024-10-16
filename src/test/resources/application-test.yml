@@ -4,9 +4,13 @@ micronaut:
 
 aws:
   dynamodb:
-    table-name: 'recipients-test'
     endpoint: ${AWS_DYNAMODB_ENDPOINT}
+    tables:
+      recipients:
+        table-name: 'recipients-test'
   ssm:
-    jwt-signature-secret:
-      name: '/jwt/signature/test/secret'
     endpoint: ${AWS_SSM_ENDPOINT}
+    parameters:
+      jwt-signature-secret:
+        name: '/jwt/signature/test/secret'
+

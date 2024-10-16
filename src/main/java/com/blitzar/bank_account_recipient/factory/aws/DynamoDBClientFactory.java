@@ -1,9 +1,9 @@
 package com.blitzar.bank_account_recipient.factory.aws;
 
+import com.blitzar.bank_account_recipient.configuration.dynamodb.DynamoDbConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class DynamoDBClientFactory {
 
     @Singleton
     @Replaces(DynamoDbClient.class)
-    @Requires(property = "aws.dynamodb.endpoint", pattern = "^$")
+    @Requires(missing = DynamoDbConfiguration.EndpointConfiguration.class)
     public DynamoDbClient dynamoDbClient(Region region){
         var environmentVariableCredentialsProvider = EnvironmentVariableCredentialsProvider.create();
         var awsCredentials = environmentVariableCredentialsProvider.resolveCredentials();
@@ -37,13 +37,13 @@ public class DynamoDBClientFactory {
 
     @Singleton
     @Replaces(DynamoDbClient.class)
-    @Requires(property = "aws.dynamodb.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
-    public DynamoDbClient dynamoDbClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.dynamodb.endpoint}") String endpoint){
-        logger.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpoint);
+    @Requires(bean = DynamoDbConfiguration.EndpointConfiguration.class)
+    public DynamoDbClient dynamoDbClientEndpointOverridden(AwsCredentials awsCredentials, Region region, DynamoDbConfiguration.EndpointConfiguration endpointConfiguration){
+        logger.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
 
         return DynamoDbClient.builder()
                 .region(region)
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(URI.create(endpointConfiguration.endpoint()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }

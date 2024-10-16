@@ -1,9 +1,9 @@
 package com.blitzar.bank_account_recipient.factory.aws;
 
+import com.blitzar.bank_account_recipient.configuration.ssm.SSMConfiguration.EndpointConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class SSMClientFactory {
 
     @Singleton
     @Replaces(SsmClient.class)
-    @Requires(property = "aws.ssm.endpoint", pattern = "^$")
+    @Requires(missing = EndpointConfiguration.class)
     public SsmClient ssmClient(Region region){
         var environmentVariableCredentialsProvider = EnvironmentVariableCredentialsProvider.create();
         var awsCredentials = environmentVariableCredentialsProvider.resolveCredentials();
@@ -37,14 +37,13 @@ public class SSMClientFactory {
 
     @Singleton
     @Replaces(SsmClient.class)
-    @Requires(property = "aws.ssm.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
-    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.ssm.endpoint}") String endpoint){
-
-        logger.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpoint);
+    @Requires(bean = EndpointConfiguration.class)
+    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, EndpointConfiguration endpointConfiguration){
+        logger.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
 
         return SsmClient.builder()
                 .region(region)
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(URI.create(endpointConfiguration.endpoint()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }

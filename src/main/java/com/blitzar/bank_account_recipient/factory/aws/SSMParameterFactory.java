@@ -1,6 +1,8 @@
 package com.blitzar.bank_account_recipient.factory.aws;
 
+import com.blitzar.bank_account_recipient.configuration.ssm.JwtSignatureSecretConfiguration;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -16,13 +18,13 @@ public class SSMParameterFactory {
 
     @Singleton
     @Named("jwtSignatureSecret")
-    public Parameter jwtSignatureSecretParameter(SsmClient ssmClient,
-                             @Value("${aws.ssm.jwt-signature-secret.name}") String jwtSignatureSecretParameterName){
+    @Requires(bean = JwtSignatureSecretConfiguration.class)
+    public Parameter jwtSignatureSecretParameter(SsmClient ssmClient, JwtSignatureSecretConfiguration jwtSignatureSecretConfiguration){
 
-        logger.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretParameterName);
+        logger.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretConfiguration.name());
 
         var parameterResponse = ssmClient
-                .getParameter(builder -> builder.name(jwtSignatureSecretParameterName)
+                .getParameter(builder -> builder.name(jwtSignatureSecretConfiguration.name())
                 .withDecryption(true)
                 .build());
 

@@ -1,8 +1,9 @@
 package com.blitzar.bank_account_recipient.factory.aws;
 
+import com.blitzar.bank_account_recipient.configuration.dynamodb.RecipientsTableConfiguration;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Value;
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -15,8 +16,15 @@ import java.util.UUID;
 @Factory
 public class DynamoDBTableFactory {
 
+    private RecipientsTableConfiguration recipientsTableConfiguration;
+
+    public DynamoDBTableFactory(RecipientsTableConfiguration recipientsTableConfiguration) {
+        this.recipientsTableConfiguration = recipientsTableConfiguration;
+    }
+
     @Singleton
-    public DynamoDbTable<Recipient> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, @Value("${aws.dynamodb.table-name}") String tableName){
+    @Requires(bean = RecipientsTableConfiguration.class)
+    public DynamoDbTable<Recipient> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient){
         StaticTableSchema<Recipient> staticTableSchema = StaticTableSchema.builder(Recipient.class)
                 .newItemSupplier(Recipient::new)
                 .addAttribute(UUID.class, attr -> attr.name("bankAccountId")
@@ -36,6 +44,6 @@ public class DynamoDBTableFactory {
                 .build();
 
 
-        return dynamoDbEnhancedClient.table(tableName, staticTableSchema);
+        return dynamoDbEnhancedClient.table(recipientsTableConfiguration.tableName(), staticTableSchema);
     }
 }
