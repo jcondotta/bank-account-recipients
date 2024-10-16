@@ -21,6 +21,12 @@ jobs:
         with:
           name: bank-account-recipients
 
+# Ensure the artifact is placed in the target directory
+      - name: Move Artifact to Target Directory
+        run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
+
+
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
