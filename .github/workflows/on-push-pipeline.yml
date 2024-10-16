@@ -15,7 +15,7 @@ jobs:
   docker:
     needs: build
     uses: ./.github/workflows/docker-build-and-push.yml
-    secrets: # Pass secrets explicitly to the reusable workflow
+    secrets: # Pass the secrets
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
