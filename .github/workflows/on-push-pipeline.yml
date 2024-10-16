@@ -29,6 +29,7 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
           cache: maven
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       # Cache LocalStack image
       - name: Cache LocalStack image
