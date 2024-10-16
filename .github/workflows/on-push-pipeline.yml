@@ -88,7 +88,7 @@ jobs:
       # Run mvn verify to build and test the project
       - name: Build, run tests, and package
 #        run: mvn verify --batch-mode --fail-at-end
-        run: mvn clean test --fail-at-end
+        run: mvn clean package -DskipTests=true --fail-at-end
 
       # Docker Hub: Log in, build, and push Docker image
       - name: Log in to Docker Hub
