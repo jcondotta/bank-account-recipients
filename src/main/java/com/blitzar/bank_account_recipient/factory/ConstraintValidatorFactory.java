@@ -12,12 +12,12 @@ import jakarta.inject.Singleton;
 public class ConstraintValidatorFactory {
 
     @Singleton
-    ConstraintValidator<Iban, String> ibanValidator() {
-        return (value, annotationMetadata, context) -> new IbanValidator().isValid(value, context);
+    ConstraintValidator<Iban, String> ibanValidator(IbanValidator ibanValidator) {
+        return (value, annotationMetadata, context) -> ibanValidator.isValid(value, context);
     }
 
     @Singleton
-    ConstraintValidator<SecureInput, String> secureInputValidator() {
-        return (value, annotationMetadata, context) -> new SecureInputValidator().isValid(value, context);
+    ConstraintValidator<SecureInput, String> secureInputValidator(SecureInputValidator secureInputValidator) {
+        return (value, annotationMetadata, context) -> secureInputValidator.isValid(value, context);
     }
 }

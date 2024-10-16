@@ -1,0 +1,12 @@
+micronaut:
+  server:
+    port: 8186
+
+aws:
+  dynamodb:
+    table-name: 'recipients-test'
+    endpoint: ${AWS_DYNAMODB_ENDPOINT}
+  ssm:
+    jwt-signature-secret:
+      name: '/jwt/signature/test/secret'
+    endpoint: ${AWS_SSM_ENDPOINT}

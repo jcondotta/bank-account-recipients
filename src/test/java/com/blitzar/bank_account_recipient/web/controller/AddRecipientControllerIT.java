@@ -1,8 +1,8 @@
 package com.blitzar.bank_account_recipient.web.controller;
 
-import com.blitzar.bank_account_recipient.argumentprovider.validation.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.validation.iban.InvalidIbanArgumentsProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.iban.InvalidIbanArgumentsProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.security.ThreatInputArgumentProvider;
 import com.blitzar.bank_account_recipient.container.LocalStackTestContainer;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.MessageSourceResolver;

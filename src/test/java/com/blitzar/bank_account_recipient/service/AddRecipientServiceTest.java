@@ -1,9 +1,9 @@
 package com.blitzar.bank_account_recipient.service;
 
-import com.blitzar.bank_account_recipient.argumentprovider.validation.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.validation.iban.EdgeCaseIbanArgumentsProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.validation.iban.InvalidIbanArgumentsProvider;
-import com.blitzar.bank_account_recipient.argumentprovider.validation.security.ThreatInputArgumentProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.iban.EdgeCaseIbanArgumentsProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.iban.InvalidIbanArgumentsProvider;
+import com.blitzar.bank_account_recipient.argument_provider.validation.security.ThreatInputArgumentProvider;
 import com.blitzar.bank_account_recipient.domain.Recipient;
 import com.blitzar.bank_account_recipient.factory.ClockTestFactory;
 import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;

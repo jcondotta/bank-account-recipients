@@ -16,8 +16,8 @@ aws:
   region: ${AWS_DEFAULT_REGION}
   dynamodb:
     table-name: ${AWS_DYNAMODB_RECIPIENTS_TABLE_NAME}
-    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
+#    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
   ssm:
     jwt-signature-secret:
       name: ${JWT_SIGNATURE_SECRET_NAME}
-    endpoint: ${AWS_SSM_ENDPOINT:}
+#    endpoint: ${AWS_SSM_ENDPOINT:}

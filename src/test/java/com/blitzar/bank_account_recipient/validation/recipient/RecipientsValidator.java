@@ -26,7 +26,6 @@ public class RecipientsValidator {
         this.recipientDTOValidator = recipientDTOValidator;
     }
 
-
     public void validateDTOsAgainstDTOs(List<RecipientDTO> expectedRecipients, List<RecipientDTO> actualRecipients) {
         validateRecipientsByKey(expectedRecipients, actualRecipients, recipientDTOValidator::validate);
     }
@@ -44,27 +43,35 @@ public class RecipientsValidator {
     }
 
     private <T, U> void validateRecipientsByKey(List<T> expectedRecipients, List<U> actualRecipients, BiConsumer<T, U> validationFunction) {
+        if (expectedRecipients == null) {
+            throw new IllegalArgumentException("Expected recipients list cannot be null");
+        }
+        if (actualRecipients == null) {
+            throw new IllegalArgumentException("Actual recipients list cannot be null");
+        }
+
         Map<RecipientKey, U> actualRecipientsMap = actualRecipients.stream()
                 .collect(Collectors.toMap(
                         recipient -> new RecipientKey(getBankAccountId(recipient), getRecipientName(recipient)),
                         recipient -> recipient
                 ));
 
-        expectedRecipients.forEach(expectedRecipient -> {
+        for (T expectedRecipient : expectedRecipients) {
             var recipientKey = new RecipientKey(getBankAccountId(expectedRecipient), getRecipientName(expectedRecipient));
             var actualRecipient = actualRecipientsMap.get(recipientKey);
 
             if (actualRecipient == null) {
-                // Recipient is not found, so we throw the RecipientNotFoundException
                 throw new RecipientNotFoundException("recipient.notFound", getBankAccountId(expectedRecipient), getRecipientName(expectedRecipient));
             }
 
-            // Recipient is found, now we proceed with field validation
             validationFunction.accept(expectedRecipient, actualRecipient);
-        });
+        }
     }
 
     private UUID getBankAccountId(Object recipient) {
+        if (recipient == null) {
+            throw new IllegalArgumentException("Recipient cannot be null");
+        }
         if (recipient instanceof RecipientDTO dto) {
             return dto.getBankAccountId();
         } else if (recipient instanceof Recipient entity) {
@@ -74,6 +81,9 @@ public class RecipientsValidator {
     }
 
     private String getRecipientName(Object recipient) {
+        if (recipient == null) {
+            throw new IllegalArgumentException("Recipient cannot be null");
+        }
         if (recipient instanceof RecipientDTO dto) {
             return dto.getRecipientName();
         } else if (recipient instanceof Recipient entity) {
@@ -82,5 +92,3 @@ public class RecipientsValidator {
         throw new IllegalArgumentException("Invalid recipient type");
     }
 }
-
-

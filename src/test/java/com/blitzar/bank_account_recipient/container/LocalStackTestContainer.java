@@ -19,9 +19,6 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     String LOCAL_STACK_IMAGE_NAME = "localstack/localstack:3.7.0";
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(LOCAL_STACK_IMAGE_NAME);
 
-    String JWT_SIGNATURE_SECRET_NAME = "/jwt/signature/test/secret";
-    String DYNAMODB_RECIPIENTS_TABLE_NAME = "recipients-test";
-
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
             .withServices(Service.DYNAMODB, Service.SSM)
             .withLogConsumer(outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding()));
@@ -48,21 +45,17 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 "AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey(),
                 "AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion(),
                 "AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString(),
-                "AWS_DYNAMODB_RECIPIENTS_TABLE_NAME", DYNAMODB_RECIPIENTS_TABLE_NAME,
-                "AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString(),
-                "JWT_SIGNATURE_SECRET_NAME", JWT_SIGNATURE_SECRET_NAME);
+                "AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString());
     }
 
     default void logContainerConfiguration() {
         StringBuilder sbConfig = new StringBuilder();
-        sbConfig.append("LocalStack container configuration:\n")
+        sbConfig.append("\nLocalStack container configuration:\n")
                 .append(String.format("  Access Key: %s%n", LOCALSTACK_CONTAINER.getAccessKey()))
                 .append(String.format("  Secret Key: %s%n", LOCALSTACK_CONTAINER.getSecretKey()))
                 .append(String.format("  Region: %s%n", LOCALSTACK_CONTAINER.getRegion()))
                 .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
-                .append(String.format("  DynamoDB Recipients table name: %s%n", DYNAMODB_RECIPIENTS_TABLE_NAME))
-                .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)))
-                .append(String.format("  SSM JWT Signature Secret name: %s%n", JWT_SIGNATURE_SECRET_NAME));
+                .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)));
 
         logger.info(sbConfig.toString());
     }
