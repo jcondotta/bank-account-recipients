@@ -9,16 +9,16 @@ on:
       - main
 
 jobs:
-  build:
-    uses: ./.github/workflows/build-and-test.yml
+  build-package:
+    uses: ./.github/workflows/build-package.yml
 
-  docker:
-    needs: build
-    uses: ./.github/workflows/docker-build-and-push.yml
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-  deploy:
-    needs: docker
-    uses: ./.github/workflows/lambda-deploy.yml
+#  docker:
+#    needs: build
+#    uses: ./.github/workflows/docker-build-and-push.yml
+#    secrets:
+#      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+#      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#
+#  deploy:
+#    needs: docker
+#    uses: ./.github/workflows/lambda-deploy.yml
