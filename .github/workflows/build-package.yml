@@ -4,6 +4,7 @@ on:
   workflow_call:
 
 jobs:
+  # Phase 1: Build, run unit tests and package artifact
   build-package:
     runs-on: ubuntu-latest
 
@@ -24,66 +25,10 @@ jobs:
           cache-dependency-path: '**/pom.xml'
 
       - name: Build and Package
-        run: mvn clean package --batch-mode  # Runs unit tests and packages the artifact
+        run: mvn clean package --batch-mode
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: bank-account-recipients
           path: target/bank-account-recipients-0.1.jar  # Upload the artifact for integration tests
-
-#      # Cache LocalStack image
-#      - name: Cache LocalStack image
-#        id: cache-localstack
-#        uses: actions/cache@v3
-#        with:
-#          path: ~/.docker-cache/localstack
-#          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
-#
-#      # Load or Pull LocalStack Docker image
-#      - name: Get LocalStack Docker Image
-#        run: |
-#          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
-#            echo "Loading LocalStack Docker image from cache..."
-#            docker load -i ~/.docker-cache/localstack/localstack.tar
-#          else
-#            echo "LocalStack image not found in cache, pulling from Docker Hub..."
-#            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-#            echo "Saving LocalStack image to cache..."
-#            mkdir -p ~/.docker-cache/localstack
-#            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
-#          fi
-#
-#      # Cache Ryuk image
-#      - name: Cache Ryuk image
-#        id: cache-ryuk
-#        uses: actions/cache@v3
-#        with:
-#          path: ~/.docker-cache/ryuk
-#          key: ${{ runner.os }}-ryuk-${{ env.RYUK_VERSION }}
-#
-#      # Load or Pull Ryuk Docker image
-#      - name: Get Ryuk Docker Image
-#        run: |
-#          if [ -f ~/.docker-cache/ryuk/ryuk.tar ]; then
-#            echo "Loading Ryuk Docker image from cache..."
-#            docker load -i ~/.docker-cache/ryuk/ryuk.tar
-#          else
-#            echo "Ryuk image not found in cache, pulling from Docker Hub..."
-#            docker pull testcontainers/ryuk:${{ env.RYUK_VERSION }}
-#            echo "Saving Ryuk image to cache..."
-#            mkdir -p ~/.docker-cache/ryuk
-#            docker save testcontainers/ryuk:${{ env.RYUK_VERSION }} -o ~/.docker-cache/ryuk/ryuk.tar
-#          fi
-#
-#      - name: Start LocalStack container
-#        run: |
-#          echo "Starting LocalStack container..."
-#          docker run -d --name localstack \
-#            -p 127.0.0.1:4566:4566 \
-#            -e SERVICES=dynamodb \
-#            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-#
-#      # Run mvn verify to build and test the project
-#      - name: Build, run tests, and package
-#        run: mvn clean verify --batch-mode --fail-at-end
