@@ -28,9 +28,9 @@ jobs:
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   # Phase 4: AWS Lambda Deploy
-  deploy:
+  aws-lambda-deploy:
     needs: docker-build-push
-    uses: ./.github/workflows/aws-lambda-deploy.yml
+    uses: ./.github/workflows/aws-aws-lambda-deploy.yml
 
 #  integration-tests:
 #    uses: ./.github/workflows/integration-tests.yml
@@ -44,4 +44,4 @@ jobs:
 #
 #  deploy:
 #    needs: docker
-#    uses: ./.github/workflows/lambda-deploy.yml
+#    uses: ./.github/workflows/aws-lambda-deploy.yml
