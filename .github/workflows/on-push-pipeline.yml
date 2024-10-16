@@ -30,7 +30,7 @@ jobs:
   # Phase 4: AWS Lambda Deploy
   aws-lambda-deploy:
     needs: docker-build-push
-    uses: ./.github/workflows/aws-aws-lambda-deploy.yml
+    uses: ./.github/workflows/aws-lambda-deploy.yml
 
 #  integration-tests:
 #    uses: ./.github/workflows/integration-tests.yml
