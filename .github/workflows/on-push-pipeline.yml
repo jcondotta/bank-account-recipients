@@ -12,12 +12,17 @@ jobs:
 
   # Phase 1: build and package
   build-package:
-    uses: ./.github/workflows/build-package.yml
+    uses: ./.github/workflows/build-and-package.yml
 
   # Phase 2: run integration tests
   integration-tests:
     needs: build-package
     uses: ./.github/workflows/integration-tests.yml
+
+  # Phase 3: Docker Build and Push
+  docker-build-push:
+    needs: integration-tests
+    uses: ./.github/workflows/docker-build-and-push.yml
 
 #  integration-tests:
 #    uses: ./.github/workflows/integration-tests.yml

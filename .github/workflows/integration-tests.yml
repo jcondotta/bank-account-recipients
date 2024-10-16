@@ -27,11 +27,6 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: bank-account-recipients
-
       # Cache LocalStack image
       - name: Cache LocalStack image
         id: cache-localstack
