@@ -86,19 +86,35 @@ jobs:
 
       # Run mvn verify to build and test the project
       - name: Build, run tests, and package
-        run: mvn verify --batch-mode --fail-at-end
+#        run: mvn verify --batch-mode --fail-at-end
+        run: mvn test --fail-at-end
 
-      # Configure AWS credentials for deployment
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      # Docker Hub: Log in, build, and push Docker image
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Deploy the JAR to AWS Lambda
-      - name: Deploy to AWS Lambda
+      - name: Build Docker image
         run: |
-          aws lambda update-function-code \
-            --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://target/${{ env.ARTIFACT_NAME }}
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest
+
+#      # Configure AWS credentials for deployment
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ env.AWS_REGION }}
+#
+#      # Deploy the JAR to AWS Lambda
+#      - name: Deploy to AWS Lambda
+#        run: |
+#          aws lambda update-function-code \
+#            --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+#            --zip-file fileb://target/${{ env.ARTIFACT_NAME }}

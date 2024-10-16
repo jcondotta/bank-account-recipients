@@ -40,12 +40,13 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     }
 
     default Map<String, String> getAWSProperties() {
-        return Map.of(
-                "AWS_ACCESS_KEY_ID", LOCALSTACK_CONTAINER.getAccessKey(),
-                "AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey(),
-                "AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion(),
-                "AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString(),
-                "AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString());
+        return Map.ofEntries(
+                Map.entry("AWS_ACCESS_KEY_ID", LOCALSTACK_CONTAINER.getAccessKey()),
+                Map.entry("AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey()),
+                Map.entry("AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion()),
+                Map.entry("AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString()),
+                Map.entry("AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString())
+        );
     }
 
     default void logContainerConfiguration() {
