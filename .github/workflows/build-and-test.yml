@@ -18,7 +18,7 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
           cache: maven
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          cache-dependency-path: '**/pom.xml'
 
       # Cache LocalStack image
       - name: Cache LocalStack image
@@ -37,7 +37,6 @@ jobs:
           else
             echo "LocalStack image not found in cache, pulling from Docker Hub..."
             docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-
             echo "Saving LocalStack image to cache..."
             mkdir -p ~/.docker-cache/localstack
             docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
@@ -60,7 +59,6 @@ jobs:
           else
             echo "Ryuk image not found in cache, pulling from Docker Hub..."
             docker pull testcontainers/ryuk:${{ env.RYUK_VERSION }}
-
             echo "Saving Ryuk image to cache..."
             mkdir -p ~/.docker-cache/ryuk
             docker save testcontainers/ryuk:${{ env.RYUK_VERSION }} -o ~/.docker-cache/ryuk/ryuk.tar

@@ -12,10 +12,10 @@ jobs:
   build:
     uses: ./.github/workflows/build-and-test.yml
 
-    docker:
-      needs: build
-      uses: ./.github/workflows/docker-build-and-push.yml
-
-    deploy:
-      needs: docker
-      uses: ./.github/workflows/lambda-deploy.yml
+#    docker:
+#      needs: build
+#      uses: ./.github/workflows/docker-build-and-push.yml
+#
+#    deploy:
+#      needs: docker
+#      uses: ./.github/workflows/lambda-deploy.yml
