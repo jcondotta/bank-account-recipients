@@ -23,6 +23,9 @@ jobs:
   docker-build-push:
     needs: integration-tests
     uses: ./.github/workflows/docker-build-and-push.yml
+    secrets: # Pass the required secrets to the called workflow
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
 #  integration-tests:
 #    uses: ./.github/workflows/integration-tests.yml
