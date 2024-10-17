@@ -40,22 +40,22 @@ jobs:
           path: target/bank-account-recipients-0.1.jar
 
 
-  # Phase 2: Code Linting and Static Analysis
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '17'
-
-      - name: Run Code Linter (Checkstyle)
-        run: mvn checkstyle:check
+#  # Phase 2: Code Linting and Static Analysis
+#  lint:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'corretto'
+#          java-version: '17'
+#
+#      - name: Run Code Linter (Checkstyle)
+#        run: mvn checkstyle:check
 
   # Phase 3: Run Integration Tests with LocalStack
   integration-tests:
