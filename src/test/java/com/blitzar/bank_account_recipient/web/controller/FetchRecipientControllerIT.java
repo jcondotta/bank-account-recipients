@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.nullValue;
 @MicronautTest(transactional = false)
 class FetchRecipientControllerIT implements LocalStackTestContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(FetchRecipientControllerIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FetchRecipientControllerIT.class);
     private static final int PAGE_LIMIT_2 = 2;
 
     @Inject
@@ -142,7 +142,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         final var nonExistentPrefixRecipientName = "Z";
-        logger.debug("Searching for recipients with non-existent prefix name: {}", nonExistentPrefixRecipientName);
+        LOGGER.debug("Searching for recipients with non-existent prefix name: {}", nonExistentPrefixRecipientName);
 
         given()
             .spec(requestSpecification)
@@ -154,7 +154,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         final char existentPrefixRecipientName = jeffersonRecipientDTO.getRecipientName().charAt(0);
-        logger.debug("Searching for recipients with existent prefix name: {}", existentPrefixRecipientName);
+        LOGGER.debug("Searching for recipients with existent prefix name: {}", existentPrefixRecipientName);
 
         given()
             .spec(requestSpecification)
@@ -175,7 +175,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
         var expectedRecipientsPage2 = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JESSICA, TestRecipient.PATRIZIO);
         var expectedRecipientsPage3 = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.VIRGINIO);
 
-        logger.debug("Fetching page 1 recipients for bank account ID: {}", brazilBankAccountId);
+        LOGGER.debug("Fetching page 1 recipients for bank account ID: {}", brazilBankAccountId);
         RecipientsDTO recipientsDTOPage1 = given()
             .spec(requestSpecification)
                 .pathParam("bank-account-id", brazilBankAccountId)
@@ -193,7 +193,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage1, recipientsDTOPage1.recipients());
 
-        logger.debug("Fetching page 2 recipients for bank account ID: {} with last evaluated key: {}", brazilBankAccountId, TestRecipient.JEFFERSON.getRecipientName());
+        LOGGER.debug("Fetching page 2 recipients for bank account ID: {} with last evaluated key: {}", brazilBankAccountId, TestRecipient.JEFFERSON.getRecipientName());
         var recipientsDTOPage2 = given()
             .spec(requestSpecification)
                 .pathParam("bank-account-id", brazilBankAccountId)
@@ -213,7 +213,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage2, recipientsDTOPage2.recipients());
 
-        logger.debug("Fetching page 3 recipients for bank account ID: {} with last evaluated key: {}", brazilBankAccountId, TestRecipient.PATRIZIO.getRecipientName());
+        LOGGER.debug("Fetching page 3 recipients for bank account ID: {} with last evaluated key: {}", brazilBankAccountId, TestRecipient.PATRIZIO.getRecipientName());
         var recipientsDTOPage3 = given()
             .spec(requestSpecification)
                 .pathParam("bank-account-id", brazilBankAccountId)

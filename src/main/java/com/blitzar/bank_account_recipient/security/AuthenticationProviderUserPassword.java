@@ -12,9 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class AuthenticationProviderUserPassword<B> implements HttpRequestAuthenticationProvider<B> {
+public final class AuthenticationProviderUserPassword<B> implements HttpRequestAuthenticationProvider<B> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderUserPassword.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationProviderUserPassword.class);
 
     public static final String DEFAULT_AUTH = "default";
 
@@ -29,7 +29,7 @@ public class AuthenticationProviderUserPassword<B> implements HttpRequestAuthent
             return AuthenticationResponse.success(identity);
         }
         else {
-            logger.warn("Authentication failed for user: {}", identity);
+            LOGGER.warn("Authentication failed for user: {}", identity);
             return AuthenticationResponse.failure(AuthenticationFailureReason.CREDENTIALS_DO_NOT_MATCH);
         }
     }

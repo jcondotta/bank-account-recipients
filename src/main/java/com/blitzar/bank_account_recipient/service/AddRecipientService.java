@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @Singleton
 public class AddRecipientService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddRecipientService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddRecipientService.class);
 
     private final DynamoDbTable<Recipient> dynamoDbTable;
     private final Clock currentInstant;
@@ -41,12 +41,12 @@ public class AddRecipientService {
         var recipientName = addRecipientRequest.recipientName();
         var recipientIban = addRecipientRequest.recipientIban();
 
-        logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Attempting to add a recipient",
+        LOGGER.info("[BankAccountId={}, RecipientName={}, IBAN={}] Attempting to add a recipient",
                 bankAccountId, recipientName, recipientIban);
 
         var constraintViolations = validator.validate(addRecipientRequest);
         if (!constraintViolations.isEmpty()) {
-            logger.warn("[BankAccountId={}, RecipientName={}, IBAN={}] Validation errors for request. Violations: {}",
+            LOGGER.warn("[BankAccountId={}, RecipientName={}, IBAN={}] Validation errors for request. Violations: {}",
                     bankAccountId, recipientName, recipientIban, constraintViolations);
             throw new ConstraintViolationException(constraintViolations);
         }
@@ -62,13 +62,13 @@ public class AddRecipientService {
 
             dynamoDbTable.putItem(putItemEnhancedRequest);
 
-            logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Recipient saved to DB", bankAccountId, recipientName, recipientIban);
-            logger.debug("Saved Recipient: {}", recipient);
+            LOGGER.info("[BankAccountId={}, RecipientName={}, IBAN={}] Recipient saved to DB", bankAccountId, recipientName, recipientIban);
+            LOGGER.debug("Saved Recipient: {}", recipient);
 
             return new RecipientDTO(recipient);
         }
         catch (ConditionalCheckFailedException e) {
-            logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Recipient found in DB, returning existing recipient",
+            LOGGER.info("[BankAccountId={}, RecipientName={}, IBAN={}] Recipient found in DB, returning existing recipient",
                     bankAccountId, recipientName, recipientIban);
 
             var existingRecipient = dynamoDbTable.getItem(Key.builder()

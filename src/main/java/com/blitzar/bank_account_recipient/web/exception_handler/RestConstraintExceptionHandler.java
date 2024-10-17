@@ -29,7 +29,7 @@ import java.util.Map;
 @Requires(classes = { ConstraintViolationException.class, ExceptionHandler.class })
 public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestConstraintExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestConstraintExceptionHandler.class);
     private final MessageSource messageSource;
     private final ErrorResponseProcessor<?> errorResponseProcessor;
 
@@ -50,7 +50,7 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
 
             String localizedMessage = messageSource.getMessage(message, locale).orElse(message);
             errorMessages.add(localizedMessage);
-            logger.error(localizedMessage);
+            LOGGER.error(localizedMessage);
         }
 
         var responseBody = Map.of(

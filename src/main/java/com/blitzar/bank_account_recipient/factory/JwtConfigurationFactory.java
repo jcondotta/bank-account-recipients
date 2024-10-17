@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.ssm.model.Parameter;
 @Factory
 public class JwtConfigurationFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtConfigurationFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtConfigurationFactory.class);
 
     @Singleton
     @Replaces(SecretSignatureConfiguration.class)
@@ -25,7 +25,7 @@ public class JwtConfigurationFactory {
         }
 
         String maskedSecret = StringUtils.left(jwtSignatureSecret, 4) + "***************";
-        logger.info("Configuring JWT secret from SSM Parameter Store: {}", maskedSecret);
+        LOGGER.info("Configuring JWT secret from SSM Parameter Store: {}", maskedSecret);
 
         SecretSignatureConfiguration secretSignatureConfiguration = new SecretSignatureConfiguration("JWT Signature Secret Configuration");
         secretSignatureConfiguration.setSecret(jwtSignatureSecret);

@@ -14,14 +14,14 @@ import java.util.Map;
 @Testcontainers
 public interface LocalStackTestContainer extends TestPropertyProvider {
 
-    Logger logger = LoggerFactory.getLogger(LocalStackTestContainer.class);
+    Logger LOGGER = LoggerFactory.getLogger(LocalStackTestContainer.class);
 
     String LOCAL_STACK_IMAGE_NAME = "localstack/localstack:3.7.0";
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(LOCAL_STACK_IMAGE_NAME);
 
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
             .withServices(Service.DYNAMODB, Service.SSM)
-            .withLogConsumer(outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding()));
+            .withLogConsumer(outputFrame -> LOGGER.info(outputFrame.getUtf8StringWithoutLineEnding()));
 
     @Override
     default Map<String, String> getProperties() {
@@ -29,7 +29,7 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
             Startables.deepStart(LOCALSTACK_CONTAINER).join();
         }
         catch (Exception e) {
-            logger.error("Failed to start LocalStack container: {}", e.getMessage());
+            LOGGER.error("Failed to start LocalStack container: {}", e.getMessage());
 
             throw new RuntimeException("Failed to start LocalStack container", e);
         }
@@ -58,6 +58,6 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
                 .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)));
 
-        logger.info(sbConfig.toString());
+        LOGGER.info(sbConfig.toString());
     }
 }

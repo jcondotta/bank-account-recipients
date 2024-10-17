@@ -10,7 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
 public class RecipientQueryConditionalBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecipientQueryConditionalBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientQueryConditionalBuilder.class);
 
     public QueryConditional build(QueryRecipientsRequest queryRecipientsRequest) {
         var bankAccountId = queryRecipientsRequest.bankAccountId().toString();
@@ -19,13 +19,13 @@ public class RecipientQueryConditionalBuilder {
         var recipientNamePrefix = getRecipientNamePrefix(queryRecipientsRequest);
 
         if (StringUtils.isBlank(recipientNamePrefix)) {
-            logger.info("[BankAccountId={}] Using primary key only", bankAccountId);
+            LOGGER.info("[BankAccountId={}] Using primary key only", bankAccountId);
             return QueryConditional.keyEqualTo(recipientKeyBuilder.build());
         }
 
         recipientKeyBuilder.sortValue(recipientNamePrefix);
 
-        logger.info("[BankAccountId={}] Using primary and sort key: {}", bankAccountId, recipientNamePrefix);
+        LOGGER.info("[BankAccountId={}] Using primary and sort key: {}", bankAccountId, recipientNamePrefix);
         return QueryConditional.sortBeginsWith(recipientKeyBuilder.build());
     }
 

@@ -10,7 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 @Singleton
 public class RecipientTablePurgeService {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecipientTablePurgeService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientTablePurgeService.class);
 
     private final DynamoDbTable<Recipient> dynamoDbTable;
 
@@ -20,7 +20,7 @@ public class RecipientTablePurgeService {
     }
 
     public void purgeTable() {
-        logger.info("Purging all items from {} DynamoDB table", dynamoDbTable.tableName());
+        LOGGER.info("Purging all items from {} DynamoDB table", dynamoDbTable.tableName());
 
         try {
             var recipients = dynamoDbTable.scan()
@@ -28,10 +28,10 @@ public class RecipientTablePurgeService {
                     .toList();
 
             recipients.forEach(dynamoDbTable::deleteItem);
-            logger.info("Successfully purged {} items.", recipients.size());
+            LOGGER.info("Successfully purged {} items.", recipients.size());
         }
         catch (Exception e) {
-            logger.error("Error purging recipient items from DynamoDB table", e);
+            LOGGER.error("Error purging recipient items from DynamoDB table", e);
         }
     }
 }

@@ -14,14 +14,14 @@ import software.amazon.awssdk.services.ssm.model.Parameter;
 @Factory
 public class SSMParameterFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(SSMParameterFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SSMParameterFactory.class);
 
     @Singleton
     @Named("jwtSignatureSecret")
     @Requires(bean = JwtSignatureSecretConfiguration.class)
     public Parameter jwtSignatureSecretParameter(SsmClient ssmClient, JwtSignatureSecretConfiguration jwtSignatureSecretConfiguration){
 
-        logger.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretConfiguration.name());
+        LOGGER.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretConfiguration.name());
 
         var parameterResponse = ssmClient
                 .getParameter(builder -> builder.name(jwtSignatureSecretConfiguration.name())
@@ -30,7 +30,7 @@ public class SSMParameterFactory {
 
         Parameter parameter = parameterResponse.parameter();
 
-        logger.debug("Successfully fetched JWT secret from SSM: {}", parameter.name());
+        LOGGER.debug("Successfully fetched JWT secret from SSM: {}", parameter.name());
 
         return parameterResponse.parameter();
     }

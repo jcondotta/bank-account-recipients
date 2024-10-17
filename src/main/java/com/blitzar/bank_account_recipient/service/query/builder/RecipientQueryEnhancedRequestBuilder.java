@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class RecipientQueryEnhancedRequestBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecipientQueryEnhancedRequestBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientQueryEnhancedRequestBuilder.class);
 
     private static final int DEFAULT_PAGE_LIMIT = 10;
 
@@ -29,7 +29,7 @@ public class RecipientQueryEnhancedRequestBuilder {
         final var queryParams = queryRecipientsRequest.queryParams();
         final var limit = queryParams.flatMap(QueryParams::limit).orElse(DEFAULT_PAGE_LIMIT);
 
-        logger.debug("[BankAccountId={}] Query limit set to: {}", queryRecipientsRequest.bankAccountId(), limit);
+        LOGGER.debug("[BankAccountId={}] Query limit set to: {}", queryRecipientsRequest.bankAccountId(), limit);
 
         final Map<String, AttributeValue> exclusiveStartKey = buildExclusiveStartKey(queryParams);
 

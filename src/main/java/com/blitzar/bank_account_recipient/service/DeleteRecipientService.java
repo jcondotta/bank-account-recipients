@@ -18,7 +18,7 @@ import java.util.UUID;
 @Singleton
 public class DeleteRecipientService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeleteRecipientService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteRecipientService.class);
 
     private final DynamoDbTable<Recipient> dynamoDbTable;
     private final Validator validator;
@@ -33,11 +33,11 @@ public class DeleteRecipientService {
         UUID bankAccountId = deleteRecipientRequest.bankAccountId();
         String recipientName = deleteRecipientRequest.recipientName();
 
-        logger.info("[BankAccountId={}, RecipientName={}] Attempting to delete a recipient", bankAccountId, recipientName);
+        LOGGER.info("[BankAccountId={}, RecipientName={}] Attempting to delete a recipient", bankAccountId, recipientName);
 
         var constraintViolations = validator.validate(deleteRecipientRequest);
         if (!constraintViolations.isEmpty()) {
-            logger.warn("[BankAccountId={}] Validation errors for recipientName {}: {}", bankAccountId, recipientName, constraintViolations);
+            LOGGER.warn("[BankAccountId={}] Validation errors for recipientName {}: {}", bankAccountId, recipientName, constraintViolations);
             throw new ConstraintViolationException(constraintViolations);
         }
 
@@ -48,9 +48,9 @@ public class DeleteRecipientService {
 
         if (recipient != null) {
             dynamoDbTable.deleteItem(recipient);
-            logger.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully: {}", bankAccountId, recipientName, recipient);
+            LOGGER.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully: {}", bankAccountId, recipientName, recipient);
         } else {
-            logger.warn("[BankAccountId={}, RecipientName={}] Attempted to delete a non-existent recipient", bankAccountId, recipientName);
+            LOGGER.warn("[BankAccountId={}, RecipientName={}] Attempted to delete a non-existent recipient", bankAccountId, recipientName);
             throw new RecipientNotFoundException("recipient.notFound", bankAccountId, recipientName);
         }
     }

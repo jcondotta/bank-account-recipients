@@ -20,7 +20,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 @Singleton
 public class FetchRecipientService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FetchRecipientService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FetchRecipientService.class);
 
     private final DynamoDbTable<Recipient> dynamoDbTable;
     private final RecipientPageParser recipientPageParser;
@@ -34,11 +34,11 @@ public class FetchRecipientService {
     }
 
     public RecipientsDTO findRecipients(@NotNull QueryRecipientsRequest queryRecipientsRequest) {
-        logger.info("[BankAccountId={}] Fetching recipients with params: {}", queryRecipientsRequest.bankAccountId(), queryRecipientsRequest.queryParams());
+        LOGGER.info("[BankAccountId={}] Fetching recipients with params: {}", queryRecipientsRequest.bankAccountId(), queryRecipientsRequest.queryParams());
 
         var constraintViolations = validator.validate(queryRecipientsRequest);
         if (!constraintViolations.isEmpty()) {
-            logger.warn("[BankAccountId={}] Constraint violations found: {}", queryRecipientsRequest.bankAccountId(), constraintViolations);
+            LOGGER.warn("[BankAccountId={}] Constraint violations found: {}", queryRecipientsRequest.bankAccountId(), constraintViolations);
 
             throw new ConstraintViolationException(constraintViolations);
         }
@@ -49,7 +49,7 @@ public class FetchRecipientService {
                 .findFirst().orElse(null);
 
         var recipientsDTO = recipientPageParser.parse(recipientsPage);
-        logger.info("[BankAccountId={}] {} recipient(s) found", queryRecipientsRequest.bankAccountId(), recipientsDTO.count());
+        LOGGER.info("[BankAccountId={}] {} recipient(s) found", queryRecipientsRequest.bankAccountId(), recipientsDTO.count());
 
         return recipientsDTO;
     }

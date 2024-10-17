@@ -4,7 +4,7 @@
         <!-- encoders are assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>%cyan(%d{HH:mm:ss.SSS}) %white([%thread]) %highlight(%-5level) %magenta(%logger{36}) - %msg%n</pattern>
+            <pattern>%cyan(%d{HH:mm:ss.SSS}) %white([%thread]) %highlight(%-5level) %magenta(%LOGGER{36}) - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -12,15 +12,15 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="org.testcontainers" level="DEBUG"/>
+    <LOGGER name="org.testcontainers" level="DEBUG"/>
 
 <!--    &lt;!&ndash; Enable DEBUG level logging for Testcontainers &ndash;&gt;-->
-<!--    <logger name="org.testcontainers" level="debug" additivity="false">-->
+<!--    <LOGGER name="org.testcontainers" level="debug" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
+<!--    </LOGGER>-->
 
 <!--    &lt;!&ndash; Optionally, enable DEBUG logs for Docker interactions as well &ndash;&gt;-->
-<!--    <logger name="com.github.dockerjava" level="debug" additivity="false">-->
+<!--    <LOGGER name="com.github.dockerjava" level="debug" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->
-<!--    </logger>-->
+<!--    </LOGGER>-->
 </configuration>

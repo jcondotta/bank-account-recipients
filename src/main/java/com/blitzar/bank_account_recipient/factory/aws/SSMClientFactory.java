@@ -18,7 +18,7 @@ import java.net.URI;
 @Factory
 public class SSMClientFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(SSMClientFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SSMClientFactory.class);
 
     @Singleton
     @Replaces(SsmClient.class)
@@ -27,7 +27,7 @@ public class SSMClientFactory {
         var environmentVariableCredentialsProvider = EnvironmentVariableCredentialsProvider.create();
         var awsCredentials = environmentVariableCredentialsProvider.resolveCredentials();
 
-        logger.info("Building SSMClient with params: awsCredentials: {}, region: {}", awsCredentials, region);
+        LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {}", awsCredentials, region);
 
         return SsmClient.builder()
                 .region(region)
@@ -39,7 +39,7 @@ public class SSMClientFactory {
     @Replaces(SsmClient.class)
     @Requires(bean = EndpointConfiguration.class)
     public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, EndpointConfiguration endpointConfiguration){
-        logger.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
+        LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
 
         return SsmClient.builder()
                 .region(region)

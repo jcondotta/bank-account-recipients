@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class LastEvaluatedKeyParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(LastEvaluatedKeyParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LastEvaluatedKeyParser.class);
 
     private static final String BANK_ACCOUNT_ID_KEY = "bankAccountId";
     private static final String RECIPIENT_NAME_KEY = "recipientName";
@@ -24,7 +24,7 @@ public class LastEvaluatedKeyParser {
             var recipientNameAttr = lastEvaluatedKey.get(RECIPIENT_NAME_KEY);
 
             if (bankAccountIdAttr == null || recipientNameAttr == null) {
-                logger.error("Missing required attributes in last evaluated key for recipient page.");
+                LOGGER.error("Missing required attributes in last evaluated key for recipient page.");
                 throw new IllegalStateException("Missing required attributes in last evaluated key.");
             }
 
@@ -32,15 +32,15 @@ public class LastEvaluatedKeyParser {
                 var bankAccountId = UUID.fromString(bankAccountIdAttr.s());
                 var recipientName = recipientNameAttr.s();
 
-                logger.debug("Last evaluated key retrieved - BankAccountId: {}, RecipientName: {}", bankAccountId, recipientName);
+                LOGGER.debug("Last evaluated key retrieved - BankAccountId: {}, RecipientName: {}", bankAccountId, recipientName);
                 return new LastEvaluatedKey(bankAccountId, recipientName);
             }
             catch (IllegalArgumentException e) {
-                logger.error("Invalid UUID format for bankAccountId in last evaluated key.");
+                LOGGER.error("Invalid UUID format for bankAccountId in last evaluated key.");
                 throw new IllegalStateException("Invalid UUID format for bankAccountId in last evaluated key.");
             }
         }
-        logger.debug("No last evaluated key found for recipient page.");
+        LOGGER.debug("No last evaluated key found for recipient page.");
         return null;
     }
 }

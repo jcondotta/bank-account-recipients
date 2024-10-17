@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @Controller(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
 public class AddRecipientController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddRecipientController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddRecipientController.class);
 
     private final AddRecipientService addRecipientService;
 
@@ -60,13 +60,13 @@ public class AddRecipientController {
     })
     public HttpResponse<RecipientDTO> addRecipient(@Body AddRecipientRequest addRecipientRequest, HttpRequest<?> request) {
 
-        logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Incoming request to add recipient",
+        LOGGER.info("[BankAccountId={}, RecipientName={}, IBAN={}] Incoming request to add recipient",
                 addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
 
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
 
         if (recipientDTO instanceof ExistentRecipientDTO) {
-            logger.info("[BankAccountId={}, RecipientName={}, IBAN={}] Returning existing recipient",
+            LOGGER.info("[BankAccountId={}, RecipientName={}, IBAN={}] Returning existing recipient",
                     addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
 
             return HttpResponse.ok(recipientDTO);

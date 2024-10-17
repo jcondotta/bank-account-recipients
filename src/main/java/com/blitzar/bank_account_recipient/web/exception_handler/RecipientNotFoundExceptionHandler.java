@@ -23,7 +23,7 @@ import java.util.Locale;
 @Requires(classes = { RecipientNotFoundException.class })
 public class RecipientNotFoundExceptionHandler implements ExceptionHandler<RecipientNotFoundException, HttpResponse<?>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecipientNotFoundExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientNotFoundExceptionHandler.class);
 
     private final MessageSource messageSource;
     private final ErrorResponseProcessor<?> errorResponseProcessor;
@@ -40,7 +40,7 @@ public class RecipientNotFoundExceptionHandler implements ExceptionHandler<Recip
         var errorMessage = messageSource.getMessage(exception.getMessage(), Locale.getDefault(), exception.getBankAccountId(), exception.getRecipientName())
                 .orElse(exception.getMessage());
 
-        logger.error(errorMessage);
+        LOGGER.error(errorMessage);
 
         return errorResponseProcessor.processResponse(ErrorContext.builder(request)
                 .cause(exception)

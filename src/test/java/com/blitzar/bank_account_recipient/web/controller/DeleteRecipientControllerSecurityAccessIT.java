@@ -121,7 +121,7 @@ class DeleteRecipientControllerSecurityAccessIT implements LocalStackTestContain
         var jeffersonRecipientDTO = addRecipientService.addRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         var shortLivedToken = tokenGeneratorService.generateToken(TokenGeneratorService.DEFAULT_AUTH_USERNAME, 1);  // Token expires in 1 second
 
-        logger.debug("Making the first request with valid token for bank account ID: {} and recipient name: {}",
+        LOGGER.debug("Making the first request with valid token for bank account ID: {} and recipient name: {}",
                 BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
         given()
@@ -135,10 +135,10 @@ class DeleteRecipientControllerSecurityAccessIT implements LocalStackTestContain
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
-        logger.debug("Waiting for the token to expire...");
+        LOGGER.debug("Waiting for the token to expire...");
 
         await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-            logger.debug("Making the second request with expired token for bank account ID: {} and recipient name: {}",
+            LOGGER.debug("Making the second request with expired token for bank account ID: {} and recipient name: {}",
                     BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
             given()

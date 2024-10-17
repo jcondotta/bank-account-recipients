@@ -18,7 +18,7 @@ import java.net.URI;
 @Factory
 public class DynamoDBClientFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamoDBClientFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBClientFactory.class);
 
     @Singleton
     @Replaces(DynamoDbClient.class)
@@ -27,7 +27,7 @@ public class DynamoDBClientFactory {
         var environmentVariableCredentialsProvider = EnvironmentVariableCredentialsProvider.create();
         var awsCredentials = environmentVariableCredentialsProvider.resolveCredentials();
 
-        logger.info("Building DynamoDbClient with params: awsCredentials: {} and region: {}", awsCredentials, region);
+        LOGGER.info("Building DynamoDbClient with params: awsCredentials: {} and region: {}", awsCredentials, region);
 
         return DynamoDbClient.builder()
                 .region(region)
@@ -39,7 +39,7 @@ public class DynamoDBClientFactory {
     @Replaces(DynamoDbClient.class)
     @Requires(bean = DynamoDbConfiguration.EndpointConfiguration.class)
     public DynamoDbClient dynamoDbClientEndpointOverridden(AwsCredentials awsCredentials, Region region, DynamoDbConfiguration.EndpointConfiguration endpointConfiguration){
-        logger.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
+        LOGGER.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
 
         return DynamoDbClient.builder()
                 .region(region)
