@@ -24,6 +24,8 @@ jobs:
           distribution: 'corretto'
           java-version: 17
           cache: maven
+      - name: Verify Java version  # Check if Java 17 is being used
+        run: java -version
 
       - name: Build and Package the Java Application
         run: mvn clean package --batch-mode
@@ -54,6 +56,8 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
+      - name: Verify Java version  # Check if Java 17 is being used
+        run: java -version
       - name: Run Integration Tests with Failsafe Plugin
         run: mvn verify
 
