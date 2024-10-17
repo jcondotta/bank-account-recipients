@@ -1,78 +1,52 @@
-name: Integration Tests
+name: Microservice CI/CD Pipeline
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  integration-tests:
-    runs-on: ubuntu-latest
 
-    env:
-      LOCALSTACK_VERSION: "3.7.0"
-      RYUK_VERSION: "0.7.0"
+  # Phase 1: Build and Package with Java 17
+  build-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
-      - name: Checkout code
+      - name: Checkout Source Code
         uses: actions/checkout@v3
 
-      - name: Set up JDK
+      - name: Set up JDK and Cache Maven Dependencies
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
-          java-version: '17'
+          java-version: 17  # Use Java 17 only
+          cache: maven
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
+      - name: Build and Package the Java Application
+        run: mvn clean package --batch-mode
+
+      - name: Upload Packaged Artifact
+        uses: actions/upload-artifact@v3
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          name: bank-account-recipients
+          path: target/bank-account-recipients-0.1.jar
 
-      # Cache LocalStack image
-      - name: Cache LocalStack image
-        id: cache-localstack
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/localstack
-          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
+  # Phase 2: Integration Tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: build-package
+    timeout-minutes: 25
+    env:
+      LOCALSTACK_VERSION: "3.7.0"
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
 
-      # Load or Pull LocalStack Docker image
-      - name: Get LocalStack Docker Image
-        run: |
-          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
-            echo "Loading LocalStack Docker image from cache..."
-            docker load -i ~/.docker-cache/localstack/localstack.tar
-          else
-            echo "LocalStack image not found in cache, pulling from Docker Hub..."
-            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-            
-            echo "Saving LocalStack image to cache..."
-            mkdir -p ~/.docker-cache/localstack
-            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
-          fi
-
-      # Cache Ryuk image
-      - name: Cache Ryuk image
-        id: cache-ryuk
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/ryuk
-          key: ${{ runner.os }}-ryuk-${{ env.RYUK_VERSION }}
-
-      # Load or Pull Ryuk Docker image
-      - name: Get Ryuk Docker Image
-        run: |
-          if [ -f ~/.docker-cache/ryuk/ryuk.tar ]; then
-            echo "Loading Ryuk Docker image from cache..."
-            docker load -i ~/.docker-cache/ryuk/ryuk.tar
-          else
-            echo "Ryuk image not found in cache, pulling from Docker Hub..."
-            docker pull testcontainers/ryuk:${{ env.RYUK_VERSION }}
-            echo "Saving Ryuk image to cache..."
-            mkdir -p ~/.docker-cache/ryuk
-            docker save testcontainers/ryuk:${{ env.RYUK_VERSION }} -o ~/.docker-cache/ryuk/ryuk.tar
-          fi
-
-      - name: Start LocalStack container
+      - name: Start LocalStack Services for Integration Tests
         run: |
           echo "Starting LocalStack container..."
           docker run -d --name localstack \
@@ -80,5 +54,42 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
-      - name: Run integration tests
-        run: mvn failsafe:integration-test --batch-mode --fail-at-end
+      - name: Run Integration Tests with Failsafe Plugin
+        run: mvn failsafe:integration-test --batch-mode
+
+  # Phase 3: Docker Build and Push
+  docker-image-push:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Download Packaged Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: bank-account-recipients
+
+      - name: Build Docker Image from Packaged Artifact
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
+
+      - name: Push Docker Image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest
+
+  # Phase 4: AWS Lambda Deploy
+  aws-lambda-deploy:
+    runs-on: ubuntu-latest
+    needs: docker-image-push
+    steps:
+      - name: Configure AWS Credentials for Deployment
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-3
+
+      - name: Deploy Packaged Artifact to AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name bank-account-recipients-java-17 \
+            --zip-file fileb://target/bank-account-recipients-0.1.jar
