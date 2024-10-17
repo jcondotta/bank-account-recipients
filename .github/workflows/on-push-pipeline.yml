@@ -77,6 +77,9 @@ jobs:
         with:
           name: bank-account-recipients
 
+      - name: Move Artifact to Target Directory
+        run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
+
       - name: Build Docker Image from Packaged Artifact
         run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
 
