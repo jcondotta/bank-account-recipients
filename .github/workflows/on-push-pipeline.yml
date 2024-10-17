@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
 
-    strategy:
-      matrix:
-        java-version: [ 17 ]
+#    strategy:
+#      matrix:
+#        java-version: [ 17 ]
 
     steps:
       - name: Checkout Source Code
