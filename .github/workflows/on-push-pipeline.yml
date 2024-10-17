@@ -24,8 +24,6 @@ jobs:
           distribution: 'corretto'
           java-version: 17
           cache: maven
-      - name: Verify Java version  # Check if Java 17 is being used
-        run: java -version
 
       - name: Build and Package the Java Application
         run: mvn clean package --batch-mode
@@ -48,6 +46,13 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v3
 
+      - name: Set up JDK and Cache Maven Dependencies
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+          cache: maven
+
       - name: Start LocalStack Services for Integration Tests
         run: |
           echo "Starting LocalStack container..."
@@ -56,10 +61,8 @@ jobs:
             -e SERVICES=dynamodb \
             localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
-      - name: Verify Java version  # Check if Java 17 is being used
-        run: java -version
       - name: Run Integration Tests with Failsafe Plugin
-        run: mvn verify
+        run: mvn failsafe:integration-test --batch-mode
 
   docker-image-push:
     runs-on: ubuntu-latest
