@@ -65,14 +65,11 @@ jobs:
         run: mvn failsafe:integration-test --batch-mode
 
   docker-image-push:
-    runs-on: ubuntu-latest
-    needs: integration-tests
-
     steps:
-      - name: Checkout Source Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download Packaged Artifact
+      - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
           name: bank-account-recipients
@@ -80,11 +77,19 @@ jobs:
       - name: Move Artifact to Target Directory
         run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
 
-      - name: Build Docker Image from Packaged Artifact
-        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Push Docker Image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest
 
   aws-lambda-deploy:
     runs-on: ubuntu-latest
