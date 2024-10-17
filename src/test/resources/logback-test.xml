@@ -12,8 +12,6 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <LOGGER name="org.testcontainers" level="DEBUG"/>
-
 <!--    &lt;!&ndash; Enable DEBUG level logging for Testcontainers &ndash;&gt;-->
 <!--    <LOGGER name="org.testcontainers" level="debug" additivity="false">-->
 <!--        <appender-ref ref="STDOUT" />-->

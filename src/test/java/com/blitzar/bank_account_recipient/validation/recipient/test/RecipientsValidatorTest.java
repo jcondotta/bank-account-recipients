@@ -7,12 +7,9 @@ import com.blitzar.bank_account_recipient.factory.RecipientTestFactory;
 import com.blitzar.bank_account_recipient.helper.TestBankAccount;
 import com.blitzar.bank_account_recipient.helper.TestRecipient;
 import com.blitzar.bank_account_recipient.service.dto.RecipientDTO;
-import com.blitzar.bank_account_recipient.validation.recipient.RecipientDTOValidator;
-import com.blitzar.bank_account_recipient.validation.recipient.RecipientValidator;
 import com.blitzar.bank_account_recipient.validation.recipient.RecipientsValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import java.util.List;
 import java.util.UUID;
