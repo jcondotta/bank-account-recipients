@@ -78,7 +78,7 @@ jobs:
 
   aws-lambda-deploy:
     runs-on: ubuntu-latest
-    needs: docker
+    needs: docker-image-push
 
     steps:
       - name: Configure AWS Credentials for Deployment
