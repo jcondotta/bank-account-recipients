@@ -62,6 +62,9 @@ jobs:
     needs: build-package
     timeout-minutes: 25
 
+    env:
+      LOCALSTACK_VERSION: "3.7.0"
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v3
