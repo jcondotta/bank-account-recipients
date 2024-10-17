@@ -68,7 +68,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Start LocalStack Services for Integration Tests
-        run: docker-compose up -d
+        run: |
+          echo "Starting LocalStack container..."
+          docker run -d --name localstack \
+            -p 127.0.0.1:4566:4566 \
+            -e SERVICES=dynamodb \
+            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
       - name: Run Integration Tests with Failsafe Plugin
         run: mvn failsafe:integration-test --batch-mode
