@@ -37,7 +37,7 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     needs: build-package
-    timeout-minutes: 25
+    timeout-minutes: 20
 
     env:
       LOCALSTACK_VERSION: "3.7.0"
