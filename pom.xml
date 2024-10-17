@@ -21,7 +21,9 @@
 
         <packaging>jar</packaging>
         <jdk.version>17</jdk.version>
-        <release.version>17</release.version>
+        <release.version>${jdk.version}</release.version>
+        <maven.compiler.source>${jdk.version}</maven.compiler.source>
+        <maven.compiler.target>${jdk.version}</maven.compiler.target>
         <micronaut.runtime>lambda</micronaut.runtime>
         <exec.mainClass>io.micronaut.function.aws.runtime.MicronautLambdaRuntime</exec.mainClass>
 
