@@ -55,7 +55,7 @@ jobs:
             localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
       - name: Run Integration Tests with Failsafe Plugin
-        run: mvn failsafe:integration-test --batch-mode
+        run: mvn clean failsafe:integration-test --batch-mode
 
   docker-image-push:
     runs-on: ubuntu-latest
