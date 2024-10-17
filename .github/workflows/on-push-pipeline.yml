@@ -65,6 +65,7 @@ jobs:
         run: mvn failsafe:integration-test --batch-mode
 
   docker-image-push:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
