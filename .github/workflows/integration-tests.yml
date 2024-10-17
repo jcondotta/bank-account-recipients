@@ -44,6 +44,7 @@ jobs:
           else
             echo "LocalStack image not found in cache, pulling from Docker Hub..."
             docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
+            
             echo "Saving LocalStack image to cache..."
             mkdir -p ~/.docker-cache/localstack
             docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
