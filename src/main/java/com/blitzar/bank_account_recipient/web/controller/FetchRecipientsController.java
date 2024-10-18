@@ -48,7 +48,7 @@ public class FetchRecipientsController {
             @ApiResponse(responseCode = "400", description = "Invalid input or query parameters."),
             @ApiResponse(responseCode = "500", description = "Internal server error.")
     })
-    public HttpResponse<?> findRecipients(
+    public HttpResponse<RecipientsDTO> findRecipients(
             @Schema(description = "The unique identifier of the bank account.", requiredMode = RequiredMode.REQUIRED)
             @NotNull @PathVariable("bank-account-id") UUID bankAccountId,
 
