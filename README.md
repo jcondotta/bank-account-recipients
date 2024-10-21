@@ -5,10 +5,12 @@ This project is part of a microservice architecture responsible for managing ban
 ## Tech Stack
 
 ### Languages & Frameworks:
+
 - **Java 17:** Core programming language.
 - **Micronaut 4.5.0+:** Framework used to build the microservice with lightweight, fast startup times and cloud-native capabilities.
 
 ### Infrastructure:
+
 - **Amazon DynamoDB:** NoSQL database used for storing recipient information.
 - **AWS Lambda:** Serverless compute platform for running the microservice.
 - **AWS API Gateway:** Gateway for exposing and managing the API endpoints.
@@ -17,20 +19,24 @@ This project is part of a microservice architecture responsible for managing ban
 - **LocalStack:** A fully functional local AWS cloud stack used for local testing of AWS services like DynamoDB and Lambda.
 
 ### Authentication:
+
 - **JSON Web Token (JWT):** Used for authentication and authorization to secure API endpoints.
 
 ### CI/CD & Containerization:
+
 - **GitHub Actions:** Automated pipeline for building, testing, and deploying the microservice.
 - **Docker:** Used to containerize the application for local development and deployment.
 - **Docker Hub:** The project’s Docker image is registered in Docker Hub for future deployment and scaling needs.
 
 ### Testing:
+
 - **JUnit 5:** Framework for unit and integration testing.
 - **Mockito:** Framework for mocking dependencies in tests.
 - **AssertJ:** Library for fluent assertion statements.
 - **TestContainers:** Library used to spin up containers for integration testing with services like DynamoDB, SQS, and LocalStack.
 
 ### Documentation:
+
 - **Swagger API:** API documentation and testing interface to explore the RESTful endpoints.
 
 ## Features
@@ -49,12 +55,13 @@ Before running the microservices or working with the Terraform scripts using Loc
 
 - **Java 17**:  
   Required to run your Java-based microservices.  
-  You can download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) or 
+  You can download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) or  
   use an OpenJDK distribution such as: [AdoptOpenJDK](https://adoptium.net/temurin/releases/?version=17).  
   To verify installation, run the following command:
   ```bash
   java -version
 
+  ```
 - **Maven**:  
   Required to build and manage dependencies for the Java microservices.  
   You can download and install Maven from the [official Maven website](https://maven.apache.org/install.html).  
@@ -62,59 +69,65 @@ Before running the microservices or working with the Terraform scripts using Loc
   ```bash
   mvn -v
 
+  ```
 - **Docker**:  
-  Needed to containerize your microservices and run them in isolated environments.
-  You can download and install Docker from the [Docker website](https://docs.docker.com/get-started/get-docker/).
+  Needed to containerize your microservices and run them in isolated environments.  
+  You can download and install Docker from the [Docker website](https://docs.docker.com/get-started/get-docker/).  
   To verify Docker installation, run:
   ```bash
   docker --version
 
+  ```
 - **Docker Compose**:  
-  Helps manage multi-container Docker applications. It's used to orchestrate and run your microservices together locally.
-  Docker Compose comes bundled with Docker Desktop, or you can install it separately by following instructions [here](https://docs.docker.com/compose/install/).
+  Helps manage multi-container Docker applications. It's used to orchestrate and run your microservices together locally.  
+  Docker Compose comes bundled with Docker Desktop, or you can install it separately by following instructions [here](https://docs.docker.com/compose/install/).  
   To verify Docker Compose installation, run:
   ```bash
   docker-compose --version
 
-- **Terraform**:
-  An Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.
-  You can download and install Terraform from the [official Terraform website](https://developer.hashicorp.com/terraform/install?product_intent=terraform).
+  ```
+- **Terraform**:  
+  An Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.  
+  You can download and install Terraform from the [official Terraform website](https://developer.hashicorp.com/terraform/install?product_intent=terraform).  
   To verify Terraform installation, run:
   ```bash
   terraform -v
 
+  ```
+
 ## Getting Started
 
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/jcondotta/bank-account-recipients.git
-   cd bank-account-recipients
+
+```bash
+ git clone https://github.com/jcondotta/bank-account-recipients.git
+ cd bank-account-recipients
+```
 
 2. **Build the project and resolve dependencies**:
-   ```bash
-   mvn clean install -DskipTests
+```bash
+mvn clean install -DskipTests
+```
 
 3. **Run the Microservice Locally with Docker Compose**:
-   Use Docker Compose to run the microservice along with its dependencies in the background:
-   ```bash
-   docker-compose up -d
+  Use Docker Compose to run the microservice along with its dependencies in the background:
+```bash
+docker-compose up -d
+```
 
 4. **Build up the infrastructure**
-   Navigate to the terraform directory
-   ```bash
-   cd terraform
-   ```
-    Initialize Terraform with LocalStack
-    ```bash
-    tflocal init
-   ```
-
-  Apply Terraform Configuration with Environment-Specific Variables: Apply the infrastructure changes using the development environment-specific variables:
 ```bash
-  tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
-  ```
+#Navigate to the terraform directory
+cd terraform
+
+#Initialize Terraform with LocalStack
+tflocal init
+
+#Apply Terraform Configuration with Environment-Specific Variables: Apply the infrastructure changes using the development environment-specific variables: 
+tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
+```
 
 5. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
-```bash
-java -cp target/bank-account-recipients-0.1.jar com.blitzar.bank_account_recipient.Application
-  ```
+````bash
+java -cp ../target/bank-account-recipients-0.1.jar com.blitzar.bank_account_recipient.Application ```
+````
