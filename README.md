@@ -87,5 +87,5 @@ Before running the microservices or working with the Terraform scripts using Loc
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-repo/recipients.git
-   cd recipients
+   git clone https://github.com/jcondotta/bank-account-recipients.git
+   cd bank-account-recipients
