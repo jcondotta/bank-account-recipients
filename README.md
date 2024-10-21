@@ -82,14 +82,3 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Terraform installation, run:
   ```bash
   terraform -v
-
-- **tflocal**:  
-  `tflocal` is a wrapper that simplifies using Terraform with LocalStack, making it easier to manage infrastructure locally.  
-  You can install `tflocal` via pip by running the following command:
-  ```bash
-  pip install terraform-local
-  ```
-  
-  To verify that tflocal is installed correctly, run:
-  ```bash
-  tflocal --version
