@@ -98,3 +98,10 @@ Before running the microservices or working with the Terraform scripts using Loc
    Use Docker Compose to run the microservice along with its dependencies in the background:
    ```bash
    docker-compose up -d
+
+4. **Build up the infrastructure**
+# Navigate to the terraform directory
+cd terraform
+
+# Initialize Terraform with LocalStack
+tflocal init
