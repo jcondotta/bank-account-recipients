@@ -89,3 +89,9 @@ Before running the microservices or working with the Terraform scripts using Loc
    ```bash
    git clone https://github.com/jcondotta/bank-account-recipients.git
    cd bank-account-recipients
+
+2. **Build the Project:**
+   Use Maven to build the project and resolve dependencies:
+   ```bash
+   git clone https://github.com/jcondotta/bank-account-recipients.git
+   cd bank-account-recipients
