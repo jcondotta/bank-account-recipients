@@ -40,3 +40,11 @@ This project is part of a microservice architecture responsible for managing ban
 - **Infrastructure as Code:** AWS infrastructure is managed and deployed using Terraform.
 - **Local Testing:** Fully local development setup using LocalStack and TestContainers.
 - **CI/CD Pipeline:** GitHub Actions for continuous integration and deployment
+
+
+## Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-repo/recipients.git
+   cd recipients
