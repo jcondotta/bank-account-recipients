@@ -100,8 +100,21 @@ Before running the microservices or working with the Terraform scripts using Loc
    docker-compose up -d
 
 4. **Build up the infrastructure**
-# Navigate to the terraform directory
-cd terraform
+   Navigate to the terraform directory
+   ```bash
+   cd terraform
+   ```
+    Initialize Terraform with LocalStack
+    ```bash
+    tflocal init
+   ```
 
-# Initialize Terraform with LocalStack
-tflocal init
+  Apply Terraform Configuration with Environment-Specific Variables: Apply the infrastructure changes using the development environment-specific variables:
+```bash
+  tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
+  ```
+
+5. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
+```bash
+java -cp target/bank-account-recipients-0.1.jar com.blitzar.bank_account_recipient.Application
+  ```
