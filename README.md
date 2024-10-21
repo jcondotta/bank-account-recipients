@@ -39,26 +39,38 @@ This project is part of a microservice architecture responsible for managing ban
 - **JWT Authentication:** Secure endpoints with JSON Web Tokens.
 - **Infrastructure as Code:** AWS infrastructure is managed and deployed using Terraform.
 - **Local Testing:** Fully local development setup using JUnit 5, Mockito, AssertJ, LocalStack and TestContainers.
-- **CI/CD Pipeline:** GitHub Actions for continuous integration and deployment
+- **CI/CD Pipeline:** GitHub Actions for continuous integration and deployment.
 
+## Prerequisites
 
-## Getting Started
+Before running the microservices or working with the Terraform scripts using LocalStack, make sure you have the following installed:
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/jcondotta/bank-account-recipients.git
-   cd bank-account-recipients
+### Explanation of Key Tools:
 
-## Build using Maven
+- **Java 17**:  
+  Java 17 is required to run your Java-based microservices.  
+  You can download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) or use an OpenJDK distribution such as [AdoptOpenJDK](https://adoptopenjdk.net/).  
+  To verify installation, run the following command:
+  ```bash
+  java -version
 
-To build the project locally using Maven, follow the steps below:
+- **Maven**:  
+  Maven is required to build and manage dependencies for the Java microservices.  
+  You can download and install Maven from the [official Maven website](https://maven.apache.org/install.html).  
+  To verify Maven installation, run:
+  ```bash
+  mvn -v
 
-1. **Ensure Maven is installed**:
-   Make sure you have Maven installed on your machine. You can verify the installation by running:
-   ```bash
-   mvn -v
+- **Docker**:  
+  Docker is needed to containerize your microservices and run them in isolated environments.
+  You can download and install Docker from the [Docker website](https://docs.docker.com/get-started/get-docker/).
+  To verify Docker installation, run:
+  ```bash
+  docker --version
 
-2. **Build the project**: Navigate to the root directory of the project and run the following command to build the project:
-
-```bash
-./mvnw clean install
+- **Docker Compose**:  
+  Docker Compose helps manage multi-container Docker applications. It's used to orchestrate and run your microservices together locally.
+  Docker Compose comes bundled with Docker Desktop, or you can install it separately by following instructions [here](https://docs.docker.com/compose/install/).
+  To verify Docker Compose installation, run:
+  ```bash
+  docker-compose --version
