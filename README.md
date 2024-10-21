@@ -56,29 +56,28 @@ Before running the microservices or working with the Terraform scripts using Loc
   java -version
 
 - **Maven**:  
-  Maven is required to build and manage dependencies for the Java microservices.  
+  Required to build and manage dependencies for the Java microservices.  
   You can download and install Maven from the [official Maven website](https://maven.apache.org/install.html).  
-  
-- To verify Maven installation, run:
+  To verify Maven installation, run:
   ```bash
   mvn -v
 
 - **Docker**:  
-  Docker is needed to containerize your microservices and run them in isolated environments.
+  Needed to containerize your microservices and run them in isolated environments.
   You can download and install Docker from the [Docker website](https://docs.docker.com/get-started/get-docker/).
   To verify Docker installation, run:
   ```bash
   docker --version
 
 - **Docker Compose**:  
-  Docker Compose helps manage multi-container Docker applications. It's used to orchestrate and run your microservices together locally.
+  Helps manage multi-container Docker applications. It's used to orchestrate and run your microservices together locally.
   Docker Compose comes bundled with Docker Desktop, or you can install it separately by following instructions [here](https://docs.docker.com/compose/install/).
   To verify Docker Compose installation, run:
   ```bash
   docker-compose --version
 
 - **Terraform**:
-  Terraform is an Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.
+  An Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.
   You can download and install Terraform from the [official Terraform website](https://developer.hashicorp.com/terraform/install?product_intent=terraform).
   To verify Terraform installation, run:
   ```bash
