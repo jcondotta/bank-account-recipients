@@ -49,7 +49,8 @@ Before running the microservices or working with the Terraform scripts using Loc
 
 - **Java 17**:  
   Java 17 is required to run your Java-based microservices.  
-  You can download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) or use an OpenJDK distribution such as [AdoptOpenJDK](https://adoptopenjdk.net/).  
+  You can download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) or 
+  use an OpenJDK distribution such as: [AdoptOpenJDK](https://adoptium.net/temurin/releases/?version=17).  
   To verify installation, run the following command:
   ```bash
   java -version
