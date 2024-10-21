@@ -1,37 +1,32 @@
 # Use a base Ubuntu image
-FROM ubuntu:24.10
+FROM ubuntu:latest
+
+# Set environment variables for non-interactive installs
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Update package list and install necessary packages for Docker
+# Install Homebrew (Linuxbrew)
 RUN apt-get update && apt-get install -y \
+    build-essential \
     curl \
+    file \
+    git
+
+# Install Homebrew (Linuxbrew)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Add Homebrew to the PATH
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
+
+# Update Homebrew and install necessary packages
+RUN brew update && brew install \
+    docker \
+    docker-compose \
+    maven \
+    terraform \
     wget \
-    ca-certificates \
-    gnupg \
-    lsb-release \
-    software-properties-common
+    python@3.9
 
-# Add Docker's official GPG key
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-# Add Docker's stable repository
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
-https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
-tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# Install Docker CLI
-RUN apt-get update && apt-get install -y \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io
-
-# Install Docker Compose (version 2.x which includes arm64 support)
-RUN curl -SL https://github.com/docker/compose/releases/download/v2.0.1/docker-compose-linux-aarch64 -o /usr/local/bin/docker-compose && \
-    chmod +x /usr/local/bin/docker-compose && \
-    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose && \
-    docker-compose --version
-
-# Add Amazon Corretto APT repository and install Java 17 (Amazon Corretto)
+# Install Amazon Corretto manually
 RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
     add-apt-repository 'deb https://apt.corretto.aws stable main' && \
     apt-get update && apt-get install -y java-17-amazon-corretto-jdk
@@ -39,14 +34,31 @@ RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
 # Verify Java installation
 RUN java -version
 
-# Install Maven 3.9.6
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
-RUN tar -xvzf apache-maven-3.9.6-bin.tar.gz -C /opt
-RUN ln -s /opt/apache-maven-3.9.6/bin/mvn /usr/bin/mvn
-RUN mvn -v
+# Set up Python virtual environment and install LocalStack and tflocal
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install localstack terraform-local
+
+# Set environment variable for the virtual environment
+ENV PATH="/opt/venv/bin:/usr/local/bin:$PATH"
+
+# Verify LocalStack and tflocal installations
+RUN localstack --version && tflocal --version
 
 # Clone the project repository into the container
 RUN git clone https://github.com/jcondotta/bank-account-recipients.git /app
 
-# Optional: Clean up unnecessary packages to reduce image size
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Change working directory to the project directory
+WORKDIR /app
+
+# Build the project using Maven
+RUN mvn clean package -DskipTests
+
+# Clean up unnecessary files to keep the image size small
+RUN brew cleanup && apt-get clean
+
+# Expose necessary ports (if your application needs to expose ports)
+EXPOSE 8080
+
+# Command to run the application (modify according to how your project is run)
+# CMD ["mvn", "spring-boot:run"]

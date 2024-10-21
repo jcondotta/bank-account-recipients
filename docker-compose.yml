@@ -8,13 +8,6 @@ services:
       - '127.0.0.1:4566:4566'
     environment:
       SERVICES: dynamodb, ssm, iam, sts #, lambda, apigateway, cloudwatch, logs
-      AWS_ACCESS_KEY_ID: test
-      AWS_SECRET_ACCESS_KEY: test
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_DYNAMODB_ENDPOINT: 'http://localstack:4566'
-      AWS_DYNAMODB_RECIPIENTS_TABLE_NAME: 'recipients-localstack'
-      AWS_SSM_ENDPOINT: 'http://localstack:4566'
-      AWS_SSM_JWT_SIGNATURE_SECRET_NAME: '/jwt/signature/localstack/secret'
       LS_LOG: ${LS_LOG:-debug}
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
