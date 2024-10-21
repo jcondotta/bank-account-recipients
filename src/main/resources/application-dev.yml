@@ -1,0 +1,19 @@
+micronaut:
+  server:
+    port: 8086
+
+aws:
+  access-key-id: 'test'
+  secret-key: 'test'
+  region: 'us-east-1'
+  dynamodb:
+    endpoint: 'http://localhost:4566'
+    tables:
+      recipients:
+        table-name: 'recipients-localstack'
+  ssm:
+    endpoint: 'http://localhost:4566'
+    parameters:
+      jwt-signature-secret:
+        name: '/jwt/signature/localstack/secret'
+

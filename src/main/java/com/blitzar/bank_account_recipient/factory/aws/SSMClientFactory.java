@@ -1,6 +1,6 @@
 package com.blitzar.bank_account_recipient.factory.aws;
 
-import com.blitzar.bank_account_recipient.configuration.ssm.SSMConfiguration.EndpointConfiguration;
+import com.blitzar.bank_account_recipient.configuration.ssm.SSMConfiguration.SSMEndpointConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
@@ -22,7 +22,7 @@ public class SSMClientFactory {
 
     @Singleton
     @Replaces(SsmClient.class)
-    @Requires(missing = EndpointConfiguration.class)
+    @Requires(property = "aws.ssm.endpoint", pattern = "^$")
     public SsmClient ssmClient(Region region){
         var environmentVariableCredentialsProvider = EnvironmentVariableCredentialsProvider.create();
         var awsCredentials = environmentVariableCredentialsProvider.resolveCredentials();
@@ -37,13 +37,16 @@ public class SSMClientFactory {
 
     @Singleton
     @Replaces(SsmClient.class)
-    @Requires(bean = EndpointConfiguration.class)
-    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, EndpointConfiguration endpointConfiguration){
-        LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpointConfiguration.endpoint());
+    @Requires(property = "aws.ssm.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
+    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, SSMEndpointConfiguration ssmEndpointConfiguration){
+        LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, ssmEndpointConfiguration.endpoint());
+
+        var ssmEndpoint = ssmEndpointConfiguration.endpoint()
+                .orElseThrow(() -> new IllegalStateException("SSM endpoint configuration is missing or invalid."));
 
         return SsmClient.builder()
                 .region(region)
-                .endpointOverride(URI.create(endpointConfiguration.endpoint()))
+                .endpointOverride(URI.create(ssmEndpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }

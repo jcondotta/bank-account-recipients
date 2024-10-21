@@ -1,4 +1,4 @@
-# Recipients Project
+# Recipients Project v.1.0
 
 This project is part of a microservice architecture responsible for managing bank account recipients. The service provides RESTful APIs for creating, fetching, and deleting recipient information. The system leverages various AWS services and modern software development practices to ensure scalability, security, and maintainability.
 

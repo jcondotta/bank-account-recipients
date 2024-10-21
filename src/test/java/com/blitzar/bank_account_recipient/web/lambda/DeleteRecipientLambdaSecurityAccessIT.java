@@ -64,7 +64,7 @@ class DeleteRecipientLambdaSecurityAccessIT implements LocalStackTestContainer {
     }
 
     @Test
-    void shouldReturn401Unauthorized_whenNoTokenProvided() throws IOException {
+    void shouldReturn401Unauthorized_whenNoTokenProvided() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         var deleteRecipientsURI = RecipientAPIUriBuilder

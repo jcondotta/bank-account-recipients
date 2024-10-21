@@ -72,7 +72,7 @@ class FetchRecipientLambdaSecurityAccessIT implements LocalStackTestContainer {
     }
 
     @Test
-    void shouldReturn401Unauthorized_whenNoTokenProvided() throws IOException {
+    void shouldReturn401Unauthorized_whenNoTokenProvided() {
         var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
 
         var fetchRecipientsAPIPath = RecipientAPIUriBuilder.fetchRecipientsURI(jeffersonRecipientDTO.getBankAccountId());
