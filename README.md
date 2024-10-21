@@ -48,3 +48,12 @@ This project is part of a microservice architecture responsible for managing ban
    ```bash
    git clone https://github.com/jcondotta/bank-account-recipients.git
    cd bank-account-recipients
+
+## Build using Maven
+
+To build the project locally using Maven, follow the steps below:
+
+1. **Ensure Maven is installed**:
+   Make sure you have Maven installed on your machine. You can verify the installation by running:
+   ```bash
+   mvn -v
