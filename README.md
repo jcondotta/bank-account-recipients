@@ -48,7 +48,7 @@ Before running the microservices or working with the Terraform scripts using Loc
 ### Explanation of Key Tools:
 
 - **Java 17**:  
-  Java 17 is required to run your Java-based microservices.  
+  Required to run your Java-based microservices.  
   You can download and install Java 17 from the [Oracle website](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) or 
   use an OpenJDK distribution such as: [AdoptOpenJDK](https://adoptium.net/temurin/releases/?version=17).  
   To verify installation, run the following command:
@@ -58,7 +58,8 @@ Before running the microservices or working with the Terraform scripts using Loc
 - **Maven**:  
   Maven is required to build and manage dependencies for the Java microservices.  
   You can download and install Maven from the [official Maven website](https://maven.apache.org/install.html).  
-  To verify Maven installation, run:
+  
+- To verify Maven installation, run:
   ```bash
   mvn -v
 
