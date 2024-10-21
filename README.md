@@ -46,5 +46,5 @@ This project is part of a microservice architecture responsible for managing ban
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-repo/recipients.git
-   cd recipients
+   git clone https://github.com/jcondotta/bank-account-recipients.git
+   cd bank-account-recipients
