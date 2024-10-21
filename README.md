@@ -77,7 +77,7 @@ Before running the microservices or working with the Terraform scripts using Loc
   docker-compose --version
 
 - **Terraform**:
-- An Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.
+  An Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.
   You can download and install Terraform from the [official Terraform website](https://developer.hashicorp.com/terraform/install?product_intent=terraform).
   To verify Terraform installation, run:
   ```bash
