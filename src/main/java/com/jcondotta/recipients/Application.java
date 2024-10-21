@@ -9,10 +9,9 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "${api.title}",
-                version = "${api.version}",
-                description = "${api.description}",
-                contact = @Contact(name = "${api.contact.recipientName}", email = "${api.contact.email}", url = "${api.contact.url}")
+                title = "Bank account recipients API Specification",
+                version = "1.0",
+                contact = @Contact(name = "Jefferson Condotta", email = "jefferson.condotta@gmail.com", url = "https://jcondotta.io")
         ), servers = @Server(url = "http://localhost:8086")
 )
 public class Application {

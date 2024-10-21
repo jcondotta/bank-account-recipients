@@ -16,16 +16,26 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Validated
+@SecurityScheme(
+        name = "bearerAuth",           // The name of the security scheme
+        type = SecuritySchemeType.HTTP, // Specifies the type, HTTP in this case
+        scheme = "bearer",             // Use the "bearer" scheme for JWT tokens
+        bearerFormat = "JWT",          // Optional: specify that it's a JWT
+        description = "JWT Bearer Token for accessing secure endpoints"
+)
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
 public class AddRecipientController {
