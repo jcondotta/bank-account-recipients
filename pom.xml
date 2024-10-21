@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.blitzar.bank_account_recipient</groupId>
+    <groupId>com.jcondotta.recipients</groupId>
     <artifactId>bank-account-recipients</artifactId>
     <version>0.1</version>
     <packaging>${packaging}</packaging>
@@ -318,7 +318,7 @@
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
-                        <arg>-Amicronaut.processing.group=com.blitzar.bank_account_recipient</arg>
+                        <arg>-Amicronaut.processing.group=com.jcondotta.recipients</arg>
                         <arg>-Amicronaut.processing.module=bank-account-recipients</arg>
                         <arg>-J-Dmicronaut.openapi.property.naming.strategy=SNAKE_CASE</arg>
                         <arg>-Xlint:unchecked</arg>
