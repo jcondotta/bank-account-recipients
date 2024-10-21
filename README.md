@@ -58,7 +58,7 @@ To build the project locally using Maven, follow the steps below:
    ```bash
    mvn -v
 
-2. Build the project: Navigate to the root directory of the project and run the following command to build the project:
+2. **Build the project**: Navigate to the root directory of the project and run the following command to build the project:
 
 ```bash
 ./mvnw clean install
