@@ -74,3 +74,21 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Docker Compose installation, run:
   ```bash
   docker-compose --version
+
+- **Terraform**:
+  Terraform is an Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.
+  You can download and install Terraform from the [official Terraform website](https://developer.hashicorp.com/terraform/install?product_intent=terraform).
+  To verify Terraform installation, run:
+  ```bash
+  terraform -v
+
+- **tflocal**:  
+  `tflocal` is a wrapper that simplifies using Terraform with LocalStack, making it easier to manage infrastructure locally.  
+  You can install `tflocal` via pip by running the following command:
+  ```bash
+    pip install terraform-local
+  ```
+  
+  To verify that tflocal is installed correctly, run:
+  ```bash
+  tflocal --version
