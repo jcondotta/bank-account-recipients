@@ -82,3 +82,10 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Terraform installation, run:
   ```bash
   terraform -v
+
+## Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-repo/recipients.git
+   cd recipients

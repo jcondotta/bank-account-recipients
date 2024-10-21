@@ -1,144 +1,144 @@
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  # Phase 1: Build and Package
-  build-package:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK and Cache Maven Dependencies
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: 17
-          cache: maven
-
-      - name: Build and Package the Java Application
-        run: mvn clean package --batch-mode
-
-      - name: Upload Packaged Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: bank-account-recipients
-          path: target/bank-account-recipients-0.1.jar
-
-  # Phase 2: Integration Tests
-  integration-tests:
-    runs-on: ubuntu-latest
-    needs: build-package  # Run only after build-package is successful
-    timeout-minutes: 20
-    env:
-      LOCALSTACK_VERSION: "3.7.0"
-
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK and Cache Maven Dependencies
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: 17
-          cache: maven
-
-      # Cache LocalStack image
-      - name: Cache LocalStack image
-        id: cache-localstack
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/localstack
-          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
-
-      # Load or Pull LocalStack Docker image
-      - name: Get LocalStack Docker Image
-        run: |
-          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
-            echo "Loading LocalStack Docker image from cache..."
-            docker load -i ~/.docker-cache/localstack/localstack.tar
-          else
-            echo "LocalStack image not found in cache, pulling from Docker Hub..."
-            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-            
-            echo "Saving LocalStack image to cache..."
-            mkdir -p ~/.docker-cache/localstack
-            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
-          fi
-
-      - name: Start LocalStack Services for Integration Tests
-        run: |
-          echo "Starting LocalStack container..."
-          docker run -d --name localstack \
-            -p 127.0.0.1:4566:4566 \
-            -e SERVICES=dynamodb \
-            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-
-      - name: Run Integration Tests with Failsafe Plugin
-        run: mvn failsafe:integration-test --batch-mode
-
-  # Phase 3: Docker Build and Push
-  docker-image-push:
-    runs-on: ubuntu-latest
-    needs: integration-tests  # Ensure it only runs after integration tests pass
-
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Download Packaged Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: bank-account-recipients
-
-      - name: Move Artifact to Target Directory
-        run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
-
-      - name: Push Docker Image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest
-
-  # Phase 4: AWS Lambda Deploy
-  aws-lambda-deploy:
-    runs-on: ubuntu-latest
-    needs: docker-image-push  # Deploy only after Docker image push
-
-    steps:
-      - name: Configure AWS Credentials for Deployment
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-3
-
-      - name: Download Packaged Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: bank-account-recipients
-
-      # Ensure the artifact is placed in the target directory
-      - name: Move Artifact to Target Directory
-        run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
-
-      - name: Deploy Packaged Artifact to AWS Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name bank-account-recipients-java-17 \
-            --zip-file fileb://target/bank-account-recipients-0.1.jar
+#name: CI/CD Pipeline
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+#
+#jobs:
+#  # Phase 1: Build and Package
+#  build-package:
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 5
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK and Cache Maven Dependencies
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'corretto'
+#          java-version: 17
+#          cache: maven
+#
+#      - name: Build and Package the Java Application
+#        run: mvn clean package --batch-mode
+#
+#      - name: Upload Packaged Artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: bank-account-recipients
+#          path: target/bank-account-recipients-0.1.jar
+#
+#  # Phase 2: Integration Tests
+#  integration-tests:
+#    runs-on: ubuntu-latest
+#    needs: build-package  # Run only after build-package is successful
+#    timeout-minutes: 20
+#    env:
+#      LOCALSTACK_VERSION: "3.7.0"
+#
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK and Cache Maven Dependencies
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'corretto'
+#          java-version: 17
+#          cache: maven
+#
+#      # Cache LocalStack image
+#      - name: Cache LocalStack image
+#        id: cache-localstack
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.docker-cache/localstack
+#          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
+#
+#      # Load or Pull LocalStack Docker image
+#      - name: Get LocalStack Docker Image
+#        run: |
+#          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
+#            echo "Loading LocalStack Docker image from cache..."
+#            docker load -i ~/.docker-cache/localstack/localstack.tar
+#          else
+#            echo "LocalStack image not found in cache, pulling from Docker Hub..."
+#            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
+#
+#            echo "Saving LocalStack image to cache..."
+#            mkdir -p ~/.docker-cache/localstack
+#            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
+#          fi
+#
+#      - name: Start LocalStack Services for Integration Tests
+#        run: |
+#          echo "Starting LocalStack container..."
+#          docker run -d --name localstack \
+#            -p 127.0.0.1:4566:4566 \
+#            -e SERVICES=dynamodb \
+#            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
+#
+#      - name: Run Integration Tests with Failsafe Plugin
+#        run: mvn failsafe:integration-test --batch-mode
+#
+#  # Phase 3: Docker Build and Push
+#  docker-image-push:
+#    runs-on: ubuntu-latest
+#    needs: integration-tests  # Ensure it only runs after integration tests pass
+#
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v3
+#
+#      - name: Download Packaged Artifact
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: bank-account-recipients
+#
+#      - name: Move Artifact to Target Directory
+#        run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
+#
+#      - name: Log in to Docker Hub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#
+#      - name: Build Docker Image
+#        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest .
+#
+#      - name: Push Docker Image to Docker Hub
+#        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bank-account-recipients:latest
+#
+#  # Phase 4: AWS Lambda Deploy
+#  aws-lambda-deploy:
+#    runs-on: ubuntu-latest
+#    needs: docker-image-push  # Deploy only after Docker image push
+#
+#    steps:
+#      - name: Configure AWS Credentials for Deployment
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: eu-west-3
+#
+#      - name: Download Packaged Artifact
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: bank-account-recipients
+#
+#      # Ensure the artifact is placed in the target directory
+#      - name: Move Artifact to Target Directory
+#        run: mkdir -p target && mv bank-account-recipients-0.1.jar target/
+#
+#      - name: Deploy Packaged Artifact to AWS Lambda
+#        run: |
+#          aws lambda update-function-code \
+#            --function-name bank-account-recipients-java-17 \
+#            --zip-file fileb://target/bank-account-recipients-0.1.jar
