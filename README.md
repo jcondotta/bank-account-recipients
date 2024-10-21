@@ -93,3 +93,8 @@ Before running the microservices or working with the Terraform scripts using Loc
 2. **Build the project and resolve dependencies**:
    ```bash
    mvn clean install -DskipTests
+
+3. **Run the Microservice Locally with Docker Compose**:
+   Use Docker Compose to run the microservice along with its dependencies in the background:
+   ```bash
+   docker-compose up -d
