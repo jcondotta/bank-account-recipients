@@ -38,7 +38,7 @@ This project is part of a microservice architecture responsible for managing ban
 - **Recipient Management:** Create, fetch, and delete recipients linked to a bank account.
 - **JWT Authentication:** Secure endpoints with JSON Web Tokens.
 - **Infrastructure as Code:** AWS infrastructure is managed and deployed using Terraform.
-- **Local Testing:** Fully local development setup using LocalStack and TestContainers.
+- **Local Testing:** Fully local development setup using JUnit 5, Mockito, AssertJ, LocalStack and TestContainers.
 - **CI/CD Pipeline:** GitHub Actions for continuous integration and deployment
 
 
