@@ -47,6 +47,10 @@ This project is part of a microservice architecture responsible for managing ban
 - **Local Testing:** Fully local development setup using JUnit 5, Mockito, AssertJ, LocalStack and TestContainers.
 - **CI/CD Pipeline:** GitHub Actions for continuous integration and deployment.
 
+## Project Architecture
+
+[Download the editable architecture diagram](recipients-architecture.drawio)
+
 ## Prerequisites
 
 Before running the microservices or working with the Terraform scripts using LocalStack, make sure you have the following installed:
