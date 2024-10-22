@@ -130,7 +130,7 @@ mvn clean install -DskipTests
 mvn clean install
 ```
 
-3. **Configure AWS Credentials for LocalStack**:
+3. **Configure AWS Credentials for LocalStack**:  
    In order to interact with LocalStack's simulated AWS services, you need to configure a separate AWS profile. This profile will have mock credentials, region, and the LocalStack endpoint.
    <br><br>
    Run aws configure with the LocalStack profile:
@@ -162,9 +162,10 @@ tflocal init
 
 # Apply the infrastructure changes using the development environment-specific variables: 
 tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
-```
 
-When all the resources are ready to be created, Terraform will prompt for confirmation before proceeding. To confirm and initiate the creation of the resources, simply type yes when prompted.
+# When all the resources are ready to be created, Terraform will prompt for confirmation before proceeding.   
+# To confirm and initiate the creation of the resources, simply type yes when prompted.
+```
 
 6. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
 ```bash
