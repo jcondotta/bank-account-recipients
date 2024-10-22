@@ -130,13 +130,28 @@ mvn clean install -DskipTests
 mvn clean install
 ```
 
-3. **Run the Microservice Locally with Docker Compose**:
+3. **Configure AWS Credentials for LocalStack**:
+   In order to interact with LocalStack's simulated AWS services, you need to configure a separate AWS profile. This profile will have mock credentials, region, and the LocalStack endpoint.  
+   Run aws configure with the LocalStack profile:
+   ```bash
+   aws configure --profile localstack
+   ```  
+   Enter the following values when prompted:  
+   When running the above command, AWS CLI will prompt you to enter the access key, secret key, region, and output format. Provide the values below:
+   ```bash
+   AWS Access Key ID [None]: test
+   AWS Secret Access Key [None]: test
+   Default region name [None]: us-east-1
+   Default output format [None]: json
+   ```
+
+4. **Run the Microservice Locally with Docker Compose**:
   Use Docker Compose to run the microservice along with its dependencies in the background:
 ```bash
 docker-compose up -d
 ```
 
-4. **Build up the infrastructure**
+5. **Build up the infrastructure**
 ```bash
 # Navigate to the terraform directory
 cd terraform
@@ -148,7 +163,7 @@ tflocal init
 tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
 ```
 
-5. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
+6. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
 ```bash
 # Navigate back to the root project directory
 cd ..
