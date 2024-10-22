@@ -1,10 +1,25 @@
 micronaut:
   server:
-    port: 8086
+    port: 8087
+  openapi:
+    filename: recipients-swagger-spec
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
   security:
+    enabled: true
     authentication: bearer
+    endpoints:
+      login:
+        enabled: true
     token:
       jwt:
+        enabled: true
         signatures:
           secret:
             generator:

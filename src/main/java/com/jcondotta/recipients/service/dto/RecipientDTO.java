@@ -1,5 +1,6 @@
 package com.jcondotta.recipients.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jcondotta.recipients.domain.Recipient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.serde.annotation.Serdeable;
@@ -8,14 +9,34 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static io.swagger.v3.oas.annotations.media.Schema.*;
+
 @Serdeable
 @Schema(name = "RecipientDTO", description = "Represents a recipient entity with account details.")
 public class RecipientDTO {
 
-    private final UUID bankAccountId;
-    private final String recipientName;
-    private final String recipientIban;
-    private final LocalDateTime createdAt;
+    @Schema(description = "Unique identifier for the bank account.",
+            example = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            requiredMode = RequiredMode.REQUIRED)
+    private UUID bankAccountId;
+
+    @Schema(description = "Name of the recipient.",
+            example = "Jefferson Condotta",
+            maxLength = 30,
+            requiredMode = RequiredMode.REQUIRED)
+    String recipientName;
+
+    @Schema(description = "IBAN of the recipient.",
+            example = "GB29NWBK60161331926819",
+            maxLength = 34,
+            requiredMode = RequiredMode.REQUIRED)
+    String recipientIban;
+
+    @Schema(description = "Timestamp when the recipient was created.",
+            example = "2023-08-23T14:55:00Z",
+            requiredMode = RequiredMode.REQUIRED)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+    LocalDateTime createdAt;
 
     public RecipientDTO(
             @JsonProperty("bankAccountId") UUID bankAccountId,

@@ -9,14 +9,16 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Bank account recipients API Specification",
-                version = "1.0",
-                contact = @Contact(name = "Jefferson Condotta", email = "jefferson.condotta@gmail.com", url = "https://jcondotta.io")
+                title = "${api.title}",
+                version = "${api.version}",
+                description = "${api.description}",
+                contact = @Contact(name = "${api.contact.name}", email = "${api.contact.email}", url = "${api.contact.url}")
         ), servers = @Server(url = "http://localhost:8086")
 )
 public class Application {
 
     public static void main(String[] args) {
+        System.setProperty("logback.configurationFile", "logback-dev.xml");
         Micronaut.build(args)
                 .mainClass(Application.class)
                 .defaultEnvironments(Environment.DEVELOPMENT)

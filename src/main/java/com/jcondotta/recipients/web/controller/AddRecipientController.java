@@ -17,6 +17,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -62,7 +63,11 @@ public class AddRecipientController {
             ))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Recipient successfully created.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class))),
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class)),
+                    headers = @Header(name = "Location",
+                            description = "Relative URI for retrieving all recipients for the bank account",
+                            schema = @Schema(type = "string", format = "uri", example = "/api/v1/recipients/bank-account-id/{bankAccountId}"))
+            ),
             @ApiResponse(responseCode = "200", description = "Recipient already exists, returning the existing data.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = RecipientDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid bank account ID, recipient name, or IBAN. Ensure that all required fields are valid."),
