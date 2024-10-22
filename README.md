@@ -131,7 +131,8 @@ mvn clean install
 ```
 
 3. **Configure AWS Credentials for LocalStack**:
-   In order to interact with LocalStack's simulated AWS services, you need to configure a separate AWS profile. This profile will have mock credentials, region, and the LocalStack endpoint.  
+   In order to interact with LocalStack's simulated AWS services, you need to configure a separate AWS profile. This profile will have mock credentials, region, and the LocalStack endpoint.
+   <br><br>
    Run aws configure with the LocalStack profile:
    ```bash
    aws configure --profile localstack
@@ -163,11 +164,28 @@ tflocal init
 tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
 ```
 
+When all the resources are ready to be created, Terraform will prompt for confirmation before proceeding. To confirm and initiate the creation of the resources, simply type yes when prompted.
+
 6. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
 ```bash
 # Navigate back to the root project directory
 cd ..
 
 # Run the following command to start the Bank Account Recipients application
-java -cp target/bank-account-recipients-0.1.jar com.blitzar.bank_account_recipient.Application
+java -cp target/bank-account-recipients-0.1.jar com.jcondotta.recipients.Application
+
+# If everything works correctly, you should see logs similar to the following:
+ __  __ _                                  _   
+|  \/  (_) ___ _ __ ___  _ __   __ _ _   _| |_ 
+| |\/| | |/ __| '__/ _ \| '_ \ / _` | | | | __|
+| |  | | | (__| | | (_) | | | | (_| | |_| | |_ 
+|_|  |_|_|\___|_|  \___/|_| |_|\__,_|\__,_|\__|
+10:47:31.900 [main] INFO  i.m.c.DefaultApplicationContext$RuntimeConfiguredEnvironment - Established active environments: [dev]
+10:47:31.901 [main] INFO  i.m.c.DefaultApplicationContext$BootstrapEnvironment - Established active environments: [dev]
+10:47:31.934 [main] INFO  i.m.context.DefaultBeanContext - Reading bootstrap environment configuration
+10:47:31.993 [main] INFO  i.m.d.c.c.DistributedPropertySourceLocator - Resolved 0 configuration sources from client: compositeConfigurationClient()
+10:47:32.033 [main] INFO  c.j.r.factory.aws.SSMClientFactory - Building SSMClient with params: awsCredentials: AwsCredentials(accessKeyId=test), region: us-east-1 and endpoint: Optional[http://localhost:4566]
+10:47:32.240 [main] INFO  c.j.r.f.aws.SSMParameterFactory - Fetching JWT signature secret from SSM parameter: /jwt/signature/localstack/secret
+10:47:32.303 [main] INFO  c.j.r.f.JwtConfigurationFactory - Configuring JWT secret from SSM Parameter Store: 8YxV***************
+10:47:32.465 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 720ms. Server Running: http://localhost:8086
 ```
