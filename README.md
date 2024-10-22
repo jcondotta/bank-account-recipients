@@ -49,7 +49,7 @@ This project is part of a microservice architecture responsible for managing ban
 
 ## Project Architecture
 
-[Download the editable architecture diagram](recipients-architecture.drawio)
+![Recipients Project Architecture](recipients-architecture.png)
 
 ## Prerequisites
 
