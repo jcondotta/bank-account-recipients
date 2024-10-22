@@ -167,7 +167,9 @@ tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
 # To confirm and initiate the creation of the resources, simply type yes when prompted.
 ```
 
-### 6. **Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice**:
+### 6. **Run the Java Application**:
+  Once the infrastructure is ready, run the Java application to start the microservice:
+
 ```bash
 # Navigate back to the root project directory
 cd ..
@@ -194,7 +196,7 @@ java -cp target/bank-account-recipients-0.1.jar com.jcondotta.recipients.Applica
 ### 7. Calling REST APIs
   To interact with secure API endpoints, you must first authenticate and obtain a token from the Login API. Follow the steps below:
 
-  - Authenticate to Obtain a Token  
+1. **Authenticate to Obtain a Token**  
     You need to make a POST request to the Login API, providing a username and password. For this test environment, the credentials are predefined as username=default and password=default.
 ```json
 {
@@ -209,7 +211,7 @@ curl -i --request POST \
   -H "Content-Type: application/json" \
   --data-raw '{"username": "default", "password": "default"}'
 ```
-  - Retrieve the Token:  
+2. **Retrieve the Token**:    
     If the request is successful, the API will respond with a JWT (JSON Web Token). The response will look similar to this:
 ```json
 {
@@ -219,16 +221,12 @@ curl -i --request POST \
   "username":"default"
 }
 ```
-  - Store the Token:      
+3. **Store the Token**:        
     Copy and save the access_token from the response. This token will be used for authentication when making requests to protected endpoints.
 
-  - Use the Token for Subsequent API Calls
-    To access protected endpoints, include the token in the Authorization header as a Bearer token. Here’s an example using cURL:
-    
-    to create a new recipient:
 
-Example: Using the Token in Subsequent API Calls:  
-To access protected endpoints, include the token in the Authorization header as a Bearer token. For example to create a new recipient:
+4. **Use the Token for Subsequent API Calls**
+    To access protected endpoints, include the token in the Authorization header as a Bearer token. Here’s an example using cURL:
 ```bash
 curl -i --request POST \
   --url 'http://localhost:8086/api/v1/recipients' \
