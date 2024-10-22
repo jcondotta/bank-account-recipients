@@ -95,6 +95,17 @@ Before running the microservices or working with the Terraform scripts using Loc
 
   ```
 
+- **tflocal**:  
+  tflocal is a wrapper around Terraform that is designed to work with LocalStack.  
+  To install tflocal, you can use pip:
+  ```bash
+  pip install terraform-local
+  ```
+  Verify that tflocal is installed correctly:
+  ```bash
+  tflocal -v
+  ```
+
 ## Getting Started
 
 1. **Clone the repository:**
@@ -107,6 +118,9 @@ Before running the microservices or working with the Terraform scripts using Loc
 2. **Build the project and resolve dependencies**:
 ```bash
 mvn clean install -DskipTests
+
+# If you'd like to build the project and execute all tests, run instead:
+mvn clean install
 ```
 
 3. **Run the Microservice Locally with Docker Compose**:
