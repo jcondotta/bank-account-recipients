@@ -215,7 +215,7 @@ curl -i --request POST \
     If the request is successful, the API will respond with a JWT (JSON Web Token). The response will look similar to this:
 ```json
 {
-  "access_token":""eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZWZhdWx0IiwibmJmIjo...",
+  "access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZWZhdWx0IiwibmJmIjo...",
   "token_type":"Bearer",
   "expires_in":3600,
   "username":"default"
