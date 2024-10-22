@@ -60,7 +60,6 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify installation, run the following command:
   ```bash
   java -version
-
   ```
 - **Maven**:  
   Required to build and manage dependencies for the Java microservices.  
@@ -68,7 +67,6 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Maven installation, run:
   ```bash
   mvn -v
-
   ```
 - **Docker**:  
   Needed to containerize your microservices and run them in isolated environments.  
@@ -76,7 +74,6 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Docker installation, run:
   ```bash
   docker --version
-
   ```
 - **Docker Compose**:  
   Helps manage multi-container Docker applications. It's used to orchestrate and run your microservices together locally.  
@@ -84,7 +81,6 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Docker Compose installation, run:
   ```bash
   docker-compose --version
-
   ```
 - **Terraform**:  
   An Infrastructure as Code (IaC) tool used for managing cloud infrastructure resources, such as AWS services.  
@@ -92,7 +88,18 @@ Before running the microservices or working with the Terraform scripts using Loc
   To verify Terraform installation, run:
   ```bash
   terraform -v
+  ```
 
+- **LocalStack**:  
+  A fully functional local AWS cloud stack that allows you to develop and test cloud applications offline. 
+  It provides a local environment that simulates various AWS services, such as S3, DynamoDB, Lambda, and more.  
+  You can install LocalStack using pip.
+  ```bash
+  pip install localstack
+  ```
+  Verify Installation: Once installed, you can verify that LocalStack is correctly installed by checking the version:
+  ```bash
+  localstack --version
   ```
 
 - **tflocal**:  
@@ -131,13 +138,13 @@ docker-compose up -d
 
 4. **Build up the infrastructure**
 ```bash
-#Navigate to the terraform directory
+# Navigate to the terraform directory
 cd terraform
 
-#Initialize Terraform with LocalStack
+# Initialize Terraform with LocalStack
 tflocal init
 
-#Apply Terraform Configuration with Environment-Specific Variables: Apply the infrastructure changes using the development environment-specific variables: 
+# Apply the infrastructure changes using the development environment-specific variables: 
 tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
 ```
 
