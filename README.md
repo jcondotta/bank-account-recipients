@@ -150,5 +150,9 @@ tflocal apply -var-file="./environments/dev/terraform.localstack.tfvars"
 
 5. Run the Java Application: Once the infrastructure is ready, run the Java application to start the microservice:
 ```bash
-java -cp ../target/bank-account-recipients-0.1.jar com.blitzar.bank_account_recipient.Application
+# Navigate back to the root project directory
+cd ..
+
+# Run the following command to start the Bank Account Recipients application
+java -cp target/bank-account-recipients-0.1.jar com.blitzar.bank_account_recipient.Application
 ```
