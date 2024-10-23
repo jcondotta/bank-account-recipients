@@ -1,7 +1,6 @@
 package com.jcondotta.recipients.service;
 
-import com.jcondotta.recipients.domain.Recipient;
-import com.jcondotta.recipients.exception.RecipientNotFoundException;
+import com.jcondotta.recipients.repository.DeleteRecipientRepository;
 import com.jcondotta.recipients.service.request.DeleteRecipientRequest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -10,8 +9,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.util.UUID;
 
@@ -20,12 +17,12 @@ public class DeleteRecipientService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteRecipientService.class);
 
-    private final DynamoDbTable<Recipient> dynamoDbTable;
+    private final DeleteRecipientRepository recipientRepository;
     private final Validator validator;
 
     @Inject
-    public DeleteRecipientService(DynamoDbTable<Recipient> dynamoDbTable, Validator validator) {
-        this.dynamoDbTable = dynamoDbTable;
+    public DeleteRecipientService(DeleteRecipientRepository recipientRepository, Validator validator) {
+        this.recipientRepository = recipientRepository;
         this.validator = validator;
     }
 
@@ -41,17 +38,6 @@ public class DeleteRecipientService {
             throw new ConstraintViolationException(constraintViolations);
         }
 
-        Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(bankAccountId.toString())
-                .sortValue(recipientName)
-                .build());
-
-        if (recipient != null) {
-            dynamoDbTable.deleteItem(recipient);
-            LOGGER.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully: {}", bankAccountId, recipientName, recipient);
-        } else {
-            LOGGER.warn("[BankAccountId={}, RecipientName={}] Attempted to delete a non-existent recipient", bankAccountId, recipientName);
-            throw new RecipientNotFoundException("recipient.notFound", bankAccountId, recipientName);
-        }
+        recipientRepository.deleteRecipient(bankAccountId, recipientName);
     }
 }

@@ -3,10 +3,10 @@ package com.jcondotta.recipients.service;
 import com.jcondotta.recipients.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
 import com.jcondotta.recipients.argument_provider.validation.security.ThreatInputArgumentProvider;
 import com.jcondotta.recipients.domain.Recipient;
-import com.jcondotta.recipients.exception.RecipientNotFoundException;
 import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
+import com.jcondotta.recipients.repository.DeleteRecipientRepository;
 import com.jcondotta.recipients.service.request.DeleteRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -17,8 +17,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.util.UUID;
 
@@ -34,7 +32,10 @@ class DeleteRecipientServiceTest {
     private DeleteRecipientService deleteRecipientService;
 
     @Mock
-    private DynamoDbTable<Recipient> dynamoDbTable;
+    private DeleteRecipientRepository deleteRecipientRepository;
+
+    @Mock
+    private Recipient recipientMock;
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
@@ -43,18 +44,16 @@ class DeleteRecipientServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        deleteRecipientService = new DeleteRecipientService(dynamoDbTable, VALIDATOR);
+        deleteRecipientService = new DeleteRecipientService(deleteRecipientRepository, VALIDATOR);
     }
 
     @Test
     void shouldDeleteRecipient_whenRecipientExists() {
-        Recipient recipientMock = mock(Recipient.class);
-        when(dynamoDbTable.getItem(any(Key.class))).thenReturn(recipientMock);
-
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
         deleteRecipientService.deleteRecipient(deleteRecipientRequest);
 
-        verify(dynamoDbTable).deleteItem(recipientMock);
+        verify(deleteRecipientRepository).deleteRecipient(any(UUID.class), anyString());
+        verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
     @Test
@@ -70,7 +69,8 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
-        verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
+        verify(deleteRecipientRepository, never()).deleteRecipient(any(UUID.class), anyString());
+        verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
     @ParameterizedTest
@@ -87,7 +87,8 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
+        verify(deleteRecipientRepository, never()).deleteRecipient(any(UUID.class), anyString());
+        verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
     @ParameterizedTest
@@ -104,18 +105,7 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
-    }
-
-    @Test
-    void shouldThrowRecipientNotFoundException_whenRecipientDoesNotExist() {
-        when(dynamoDbTable.getItem(any(Key.class))).thenReturn(null);
-
-        var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
-        assertThatThrownBy(() -> deleteRecipientService.deleteRecipient(deleteRecipientRequest))
-                .isInstanceOf(RecipientNotFoundException.class)
-                .hasMessage("recipient.notFound");
-
-        verify(dynamoDbTable, never()).deleteItem(any(Recipient.class));
+        verify(deleteRecipientRepository, never()).deleteRecipient(any(UUID.class), anyString());
+        verifyNoMoreInteractions(deleteRecipientRepository);
     }
 }

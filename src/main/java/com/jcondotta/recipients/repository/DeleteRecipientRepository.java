@@ -4,11 +4,13 @@ import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.exception.RecipientNotFoundException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.util.UUID;
@@ -25,19 +27,22 @@ public class DeleteRecipientRepository {
         this.dynamoDbTable = dynamoDbTable;
     }
 
-    public void deleteRecipient(UUID bankAccountId, String recipientName) {
+    public void deleteRecipient(@NotNull UUID bankAccountId, @NotNull String recipientName) {
         var recipientKey = Key.builder()
                 .partitionValue(bankAccountId.toString())
                 .sortValue(recipientName)
                 .build();
 
+        var deleteItemRequest = DeleteItemEnhancedRequest.builder()
+                .key(recipientKey)
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
+                        .build())
+                .build();
+
         try {
-            dynamoDbTable.deleteItem(builder -> builder.key(recipientKey)
-                    .conditionExpression(Expression.builder().expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
-                            .build()));
-
+            dynamoDbTable.deleteItem(deleteItemRequest);
             LOGGER.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully", bankAccountId, recipientName);
-
         }
         catch (ConditionalCheckFailedException e) {
             LOGGER.warn("[BankAccountId={}, RecipientName={}] Attempted to delete a non-existent recipient", bankAccountId, recipientName);
