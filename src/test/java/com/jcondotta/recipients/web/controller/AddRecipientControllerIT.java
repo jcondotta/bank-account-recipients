@@ -54,7 +54,6 @@ class AddRecipientControllerIT implements LocalStackTestContainer {
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
-    private static final String RECIPIENT_NAME_PATRIZIO = TestRecipient.PATRIZIO.getRecipientName();
     private static final String RECIPIENT_IBAN_PATRIZIO = TestRecipient.PATRIZIO.getRecipientIban();
 
     private static final RecipientDTOValidator RECIPIENT_DTO_VALIDATOR = new RecipientDTOValidator();
