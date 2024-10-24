@@ -31,10 +31,10 @@ import org.slf4j.LoggerFactory;
 
 @Validated
 @SecurityScheme(
-        name = "bearerAuth",           // The name of the security scheme
-        type = SecuritySchemeType.HTTP, // Specifies the type, HTTP in this case
-        scheme = "bearer",             // Use the "bearer" scheme for JWT tokens
-        bearerFormat = "JWT",          // Optional: specify that it's a JWT
+        name = "bearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT",
         description = "JWT Bearer Token for accessing secure endpoints"
 )
 @Secured(SecurityRule.IS_AUTHENTICATED)
