@@ -52,7 +52,7 @@ class DeleteRecipientServiceTest {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
         deleteRecipientService.deleteRecipient(deleteRecipientRequest);
 
-        verify(deleteRecipientRepository).deleteRecipient(any(UUID.class), anyString());
+        verify(deleteRecipientRepository).delete(any(UUID.class), anyString());
         verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
@@ -69,7 +69,7 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
-        verify(deleteRecipientRepository, never()).deleteRecipient(any(UUID.class), anyString());
+        verify(deleteRecipientRepository, never()).delete(any(UUID.class), anyString());
         verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
@@ -87,7 +87,7 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(deleteRecipientRepository, never()).deleteRecipient(any(UUID.class), anyString());
+        verify(deleteRecipientRepository, never()).delete(any(UUID.class), anyString());
         verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
@@ -105,7 +105,7 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(deleteRecipientRepository, never()).deleteRecipient(any(UUID.class), anyString());
+        verify(deleteRecipientRepository, never()).delete(any(UUID.class), anyString());
         verifyNoMoreInteractions(deleteRecipientRepository);
     }
 }

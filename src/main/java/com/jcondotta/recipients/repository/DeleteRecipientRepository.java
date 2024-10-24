@@ -27,7 +27,7 @@ public class DeleteRecipientRepository {
         this.dynamoDbTable = dynamoDbTable;
     }
 
-    public void deleteRecipient(@NotNull UUID bankAccountId, @NotNull String recipientName) {
+    public void delete(@NotNull UUID bankAccountId, @NotNull String recipientName) {
         var recipientKey = Key.builder()
                 .partitionValue(bankAccountId.toString())
                 .sortValue(recipientName)

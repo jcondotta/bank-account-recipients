@@ -2,12 +2,12 @@ package com.jcondotta.recipients.web.controller;
 
 import com.jcondotta.recipients.argument_provider.validation.security.ThreatInputArgumentProvider;
 import com.jcondotta.recipients.container.LocalStackTestContainer;
-import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.factory.MessageSourceResolver;
 import com.jcondotta.recipients.helper.AddRecipientServiceFacade;
 import com.jcondotta.recipients.helper.RecipientTablePurgeService;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
+import com.jcondotta.recipients.repository.FindRecipientRepository;
 import com.jcondotta.recipients.security.AuthenticationService;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -19,8 +19,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +30,7 @@ import static org.hamcrest.Matchers.hasSize;
 class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
-    private DynamoDbTable<Recipient> dynamoDbTable;
+    private FindRecipientRepository findRecipientRepository;
 
     @Inject
     private AddRecipientServiceFacade addRecipientService;
@@ -81,12 +79,8 @@ class DeleteRecipientControllerIT implements LocalStackTestContainer {
         .then()
             .statusCode(HttpStatus.NO_CONTENT.getCode());
 
-        Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(jeffersonRecipientDTO.getBankAccountId().toString())
-                .sortValue(jeffersonRecipientDTO.getRecipientName())
-                .build());
-
-        assertThat(recipient).isNull();
+        var recipient = findRecipientRepository.findRecipient(jeffersonRecipientDTO.getBankAccountId(), jeffersonRecipientDTO.getRecipientName());
+        assertThat(recipient).isNotPresent();
     }
 
     @Test
@@ -147,11 +141,7 @@ class DeleteRecipientControllerIT implements LocalStackTestContainer {
                 .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.notFound",
                         jeffersonRecipientDTO.getBankAccountId(), nonExistentRecipientName)));
 
-        Recipient recipient = dynamoDbTable.getItem(Key.builder()
-                .partitionValue(jeffersonRecipientDTO.getBankAccountId().toString())
-                .sortValue(jeffersonRecipientDTO.getRecipientName())
-                .build());
-
-        assertThat(recipient).isNotNull();
+        var recipient = findRecipientRepository.findRecipient(jeffersonRecipientDTO.getBankAccountId(), jeffersonRecipientDTO.getRecipientName());
+        assertThat(recipient).isPresent();
     }
 }

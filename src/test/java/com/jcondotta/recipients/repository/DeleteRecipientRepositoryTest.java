@@ -8,12 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.util.UUID;
@@ -39,7 +36,7 @@ class DeleteRecipientRepositoryTest {
 
     @Test
     void shouldDeleteRecipient_whenRecipientExists() {
-        deleteRecipientRepository.deleteRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
+        deleteRecipientRepository.delete(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
         verify(dynamoDbTable).deleteItem(any(DeleteItemEnhancedRequest.class));
         verifyNoMoreInteractions(dynamoDbTable);
@@ -51,7 +48,7 @@ class DeleteRecipientRepositoryTest {
                 .when(dynamoDbTable).deleteItem(any(DeleteItemEnhancedRequest.class));
 
         var recipientNotFoundException = assertThrows(RecipientNotFoundException.class,
-                () -> deleteRecipientRepository.deleteRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON));
+                () -> deleteRecipientRepository.delete(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON));
 
         assertThat(recipientNotFoundException)
                 .hasMessage("recipient.notFound")

@@ -38,6 +38,6 @@ public class DeleteRecipientService {
             throw new ConstraintViolationException(constraintViolations);
         }
 
-        recipientRepository.deleteRecipient(bankAccountId, recipientName);
+        recipientRepository.delete(bankAccountId, recipientName);
     }
 }
