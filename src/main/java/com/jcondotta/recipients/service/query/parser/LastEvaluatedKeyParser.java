@@ -6,7 +6,9 @@ import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class LastEvaluatedKeyParser {
@@ -20,27 +22,41 @@ public class LastEvaluatedKeyParser {
         if (MapUtils.isNotEmpty(recipientsPage.lastEvaluatedKey())) {
             var lastEvaluatedKey = recipientsPage.lastEvaluatedKey();
 
-            var bankAccountIdAttr = lastEvaluatedKey.get(BANK_ACCOUNT_ID_KEY);
-            var recipientNameAttr = lastEvaluatedKey.get(RECIPIENT_NAME_KEY);
+            // Extract recipientName and bankAccountId
+            String recipientName = extractRecipientName(lastEvaluatedKey);
+            UUID bankAccountId = extractBankAccountId(lastEvaluatedKey);
 
-            if (bankAccountIdAttr == null || recipientNameAttr == null) {
-                LOGGER.error("Missing required attributes in last evaluated key for recipient page.");
-                throw new IllegalStateException("Missing required attributes in last evaluated key.");
-            }
-
-            try {
-                var bankAccountId = UUID.fromString(bankAccountIdAttr.s());
-                var recipientName = recipientNameAttr.s();
-
-                LOGGER.debug("Last evaluated key retrieved - BankAccountId: {}, RecipientName: {}", bankAccountId, recipientName);
-                return new LastEvaluatedKey(bankAccountId, recipientName);
-            }
-            catch (IllegalArgumentException e) {
-                LOGGER.error("Invalid UUID format for bankAccountId in last evaluated key.");
-                throw new IllegalStateException("Invalid UUID format for bankAccountId in last evaluated key.");
-            }
+            LOGGER.debug("Last evaluated key retrieved - BankAccountId: {}, RecipientName: {}", bankAccountId, recipientName);
+            return new LastEvaluatedKey(bankAccountId, recipientName); // Return both as required by DynamoDB
         }
         LOGGER.debug("No last evaluated key found for recipient page.");
         return null;
+    }
+
+    private String extractRecipientName(Map<String, AttributeValue> lastEvaluatedKey) {
+        var recipientNameAttr = lastEvaluatedKey.get(RECIPIENT_NAME_KEY);
+
+        if (recipientNameAttr == null) {
+            LOGGER.error("Missing recipientName in last evaluated key for recipient page.");
+            throw new IllegalStateException("Missing recipientName in last evaluated key.");
+        }
+
+        return recipientNameAttr.s();
+    }
+
+    private UUID extractBankAccountId(Map<String, AttributeValue> lastEvaluatedKey) {
+        var bankAccountIdAttr = lastEvaluatedKey.get(BANK_ACCOUNT_ID_KEY);
+
+        if (bankAccountIdAttr == null) {
+            LOGGER.error("Missing bankAccountId in last evaluated key for recipient page.");
+            throw new IllegalStateException("Missing bankAccountId in last evaluated key.");
+        }
+
+        try {
+            return UUID.fromString(bankAccountIdAttr.s()); // Convert String to UUID
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Invalid UUID format for bankAccountId in last evaluated key.");
+            throw new IllegalStateException("Invalid UUID format for bankAccountId in last evaluated key.", e);
+        }
     }
 }

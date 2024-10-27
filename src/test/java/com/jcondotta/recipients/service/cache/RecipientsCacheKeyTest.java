@@ -3,7 +3,6 @@ package com.jcondotta.recipients.service.cache;
 import com.jcondotta.recipients.argument_provider.validation.query_params.QueryParamsArgumentProvider;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.service.request.QueryParams;
-import com.jcondotta.recipients.service.request.QueryRecipientsRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -16,7 +15,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RecipientsCacheKeyTest {
 
@@ -68,5 +67,4 @@ class RecipientsCacheKeyTest {
             throw new RuntimeException("SHA-256 algorithm not found", e);
         }
     }
-
 }

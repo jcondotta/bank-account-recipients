@@ -60,7 +60,7 @@ class LastEvaluatedKeyParserTest {
         when(pageRecipient.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
 
         var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(pageRecipient));
-        assertThat(exception).hasMessage("Missing required attributes in last evaluated key.");
+        assertThat(exception).hasMessage("Missing bankAccountId in last evaluated key.");
     }
 
     @Test
@@ -69,7 +69,7 @@ class LastEvaluatedKeyParserTest {
         when(pageRecipient.lastEvaluatedKey()).thenReturn(lastEvaluatedKeyMap);
 
         var exception = assertThrows(IllegalStateException.class, () -> lastEvaluatedKeyParser.parse(pageRecipient));
-        assertThat(exception).hasMessage("Missing required attributes in last evaluated key.");
+        assertThat(exception).hasMessage("Missing recipientName in last evaluated key.");
     }
 
     @Test

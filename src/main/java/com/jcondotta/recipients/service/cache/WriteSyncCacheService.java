@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Singleton
 public class WriteSyncCacheService {
@@ -28,6 +29,7 @@ public class WriteSyncCacheService {
 
     public void setCacheEntry(@NotNull RecipientsCacheKey recipientsCacheKey, @NotNull RecipientsDTO cacheValue) {
         var cacheKey = recipientsCacheKey.getCacheKey();
+        cacheValue = Objects.requireNonNull(cacheValue, "cache.recipients.cacheValue.notNull");
 
         redisCommands.setex(cacheKey, cacheEntryExpirationInSeconds, cacheValue);
         logger.info("RecipientDTO cached with key: {}", cacheKey);

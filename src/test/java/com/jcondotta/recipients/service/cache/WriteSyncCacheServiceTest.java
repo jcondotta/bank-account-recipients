@@ -45,7 +45,7 @@ class WriteSyncCacheServiceTest {
         var recipientsCacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, queryParams);
         writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
 
-        verify(redisCommands).setex(anyString(), anyLong(), any(RecipientsDTO.class));
+        verify(redisCommands).setex(anyString(), eq(DEFAULT_CACHE_ENTRY_EXPIRATION_IN_SECONDS), eq(recipientsDTO));
         verifyNoMoreInteractions(redisCommands);
     }
 
@@ -54,20 +54,33 @@ class WriteSyncCacheServiceTest {
         var recipientsCacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL);
         writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
 
-        verify(redisCommands).setex(anyString(), anyLong(), any(RecipientsDTO.class));
+        verify(redisCommands).setex(anyString(), eq(DEFAULT_CACHE_ENTRY_EXPIRATION_IN_SECONDS), eq(recipientsDTO));
         verifyNoMoreInteractions(redisCommands);
     }
 
     @Test
     void shouldThrowNullPointerException_whenBankAccountIdCacheKeyIsNull() {
         var exception = assertThrows(NullPointerException.class, () -> {
-            var recipientsCacheKey = new RecipientsCacheKey(null, new QueryParams());
+            var recipientsCacheKey = new RecipientsCacheKey(null, QueryParams.builder().build());
             writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
         });
 
         assertThat(exception)
                 .satisfies(violation -> assertThat(violation.getMessage())
                         .isEqualTo("cache.recipients.bankAccountId.notNull"));
+
+        verifyNoInteractions(redisCommands);
+    }
+
+    @Test
+    void shouldThrowNullPointerException_whenRecipientsDTOIsNull() {
+        var recipientsCacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, QueryParams.builder().build());
+
+        var exception = assertThrows(NullPointerException.class, () -> writeSyncCacheService.setCacheEntry(recipientsCacheKey, null));
+
+        assertThat(exception)
+                .satisfies(violation -> assertThat(violation.getMessage())
+                        .isEqualTo("cache.recipients.cacheValue.notNull"));
 
         verifyNoInteractions(redisCommands);
     }

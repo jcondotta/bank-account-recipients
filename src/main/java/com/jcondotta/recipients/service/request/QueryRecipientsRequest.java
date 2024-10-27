@@ -4,6 +4,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,13 +20,14 @@ public record QueryRecipientsRequest(
         UUID bankAccountId,
 
         @Schema(description = "Additional query parameters for pagination or sorting.")
-        Optional<QueryParams> queryParams
-) {
-        public QueryRecipientsRequest(UUID bankAccountId) {
-                this(bankAccountId, Optional.empty());
+        QueryParams queryParams)
+{
+        public QueryRecipientsRequest(UUID bankAccountId, QueryParams queryParams) {
+                this.bankAccountId = Objects.requireNonNull(bankAccountId, "query.recipients.bankAccountId.notNull");
+                this.queryParams = Objects.requireNonNullElseGet(queryParams, () -> QueryParams.builder().build());
         }
 
-        public QueryRecipientsRequest(UUID bankAccountId, QueryParams queryParams) {
-                this(bankAccountId, Optional.ofNullable(queryParams));
+        public QueryRecipientsRequest(UUID bankAccountId) {
+                this(bankAccountId, null);
         }
 }

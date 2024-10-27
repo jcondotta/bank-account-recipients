@@ -11,7 +11,7 @@ public record RecipientsCacheKey(UUID bankAccountId, QueryParams queryParams) {
 
     public RecipientsCacheKey(UUID bankAccountId, QueryParams queryParams) {
         this.bankAccountId = Objects.requireNonNull(bankAccountId, "cache.recipients.bankAccountId.notNull");
-        this.queryParams = Objects.requireNonNullElseGet(queryParams, () -> new QueryParams());
+        this.queryParams = Objects.requireNonNullElseGet(queryParams, () -> QueryParams.builder().build());
     }
 
     public RecipientsCacheKey(UUID bankAccountId) {

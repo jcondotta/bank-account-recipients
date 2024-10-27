@@ -4,6 +4,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
@@ -28,8 +29,24 @@ public record LastEvaluatedKey(
 ) {
 
     public Map<String, AttributeValue> toExclusiveStartKey() {
+        if (bankAccountId == null) {
+            throw new IllegalArgumentException("bankAccountId must not be null");
+        }
+        if (StringUtils.isBlank(recipientName)) {
+            throw new IllegalArgumentException("recipientName must not be null or blank");
+        }
+
         return Map.of(
                 "bankAccountId", AttributeValue.fromS(bankAccountId.toString()),
-                "recipientName", AttributeValue.fromS(recipientName));
+                "recipientName", AttributeValue.fromS(recipientName)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return "LastEvaluatedKey{" +
+                "bankAccountId=" + bankAccountId +
+                ", recipientName='" + recipientName + '\'' +
+                '}';
     }
 }

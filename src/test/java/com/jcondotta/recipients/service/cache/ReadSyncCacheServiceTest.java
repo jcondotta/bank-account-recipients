@@ -5,7 +5,6 @@ import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import com.jcondotta.recipients.service.request.QueryParams;
 import io.lettuce.core.api.sync.RedisCommands;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,9 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +53,7 @@ class ReadSyncCacheServiceTest {
     @Test
     void shouldThrowNullPointerException_whenBankAccountIdCacheKeyIsNull() {
         var exception = assertThrows(NullPointerException.class, () -> {
-            var recipientsCacheKey = new RecipientsCacheKey(null, new QueryParams());
+            var recipientsCacheKey = new RecipientsCacheKey(null, QueryParams.builder().build());
             readSyncCacheService.getCacheEntry(recipientsCacheKey);
         });
 

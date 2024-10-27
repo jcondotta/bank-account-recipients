@@ -1,5 +1,6 @@
 package com.jcondotta.recipients.service.query.builder;
 
+import com.jcondotta.recipients.service.request.LastEvaluatedKey;
 import com.jcondotta.recipients.service.request.QueryParams;
 import com.jcondotta.recipients.service.request.QueryRecipientsRequest;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class RecipientQueryEnhancedRequestBuilder {
@@ -24,14 +26,12 @@ public class RecipientQueryEnhancedRequestBuilder {
     }
 
     public QueryEnhancedRequest build(QueryRecipientsRequest queryRecipientsRequest) {
-        QueryConditional queryConditional = recipientQueryConditionalBuilder.build(queryRecipientsRequest);
-
-        final var queryParams = queryRecipientsRequest.queryParams();
-        final var limit = queryParams.flatMap(QueryParams::limit).orElse(DEFAULT_PAGE_LIMIT);
+        final var queryConditional = recipientQueryConditionalBuilder.build(queryRecipientsRequest);
+        final var limit = queryRecipientsRequest.queryParams().limit().orElse(DEFAULT_PAGE_LIMIT);
 
         LOGGER.debug("[BankAccountId={}] Query limit set to: {}", queryRecipientsRequest.bankAccountId(), limit);
 
-        final Map<String, AttributeValue> exclusiveStartKey = buildExclusiveStartKey(queryParams);
+        final Map<String, AttributeValue> exclusiveStartKey = buildExclusiveStartKey(queryRecipientsRequest.queryParams());
 
         return QueryEnhancedRequest.builder()
                 .queryConditional(queryConditional)
@@ -40,9 +40,9 @@ public class RecipientQueryEnhancedRequestBuilder {
                 .build();
     }
 
-    public Map<String, AttributeValue> buildExclusiveStartKey(Optional<QueryParams> queryParams){
-        return queryParams
-                .map(QueryParams::getExclusiveStartKey)
+    private Map<String, AttributeValue> buildExclusiveStartKey(QueryParams queryParams){
+        return queryParams.lastEvaluatedKey()
+                .map(LastEvaluatedKey::toExclusiveStartKey)
                 .orElse(null);
     }
 }
