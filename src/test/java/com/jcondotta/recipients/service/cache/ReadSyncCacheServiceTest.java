@@ -10,51 +10,45 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class WriteSyncCacheServiceTest {
+class ReadSyncCacheServiceTest {
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
-    private static final Long DEFAULT_CACHE_ENTRY_EXPIRATION_IN_SECONDS = 3600L;
 
-    private WriteSyncCacheService writeSyncCacheService;
+    @InjectMocks
+    private ReadSyncCacheService readSyncCacheService;
 
     @Mock
     private RedisCommands<String, RecipientsDTO> redisCommands;
 
-    @Mock
-    private RecipientsDTO recipientsDTO;
-
-    @BeforeEach
-    void beforeEach() {
-        writeSyncCacheService = new WriteSyncCacheService(redisCommands, DEFAULT_CACHE_ENTRY_EXPIRATION_IN_SECONDS);
-    }
-
     @ParameterizedTest
     @ArgumentsSource(QueryParamsArgumentProvider.class)
-    void shouldSetCacheEntry_whenParametersAreValid(QueryParams queryParams) {
+    void shouldReturnCacheEntry_whenParametersAreValid(QueryParams queryParams) {
         var recipientsCacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, queryParams);
-        writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
+        readSyncCacheService.getCacheEntry(recipientsCacheKey);
 
-        verify(redisCommands).setex(anyString(), anyLong(), any(RecipientsDTO.class));
+        verify(redisCommands).get(anyString());
         verifyNoMoreInteractions(redisCommands);
     }
 
     @Test
-    void shouldSetCacheEntry_whenNoQueryParamsIsPassedInCacheKey() {
+    void shouldReturnCacheEntry_whenNoQueryParamsIsPassedInCacheKey() {
         var recipientsCacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL);
-        writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
+        readSyncCacheService.getCacheEntry(recipientsCacheKey);
 
-        verify(redisCommands).setex(anyString(), anyLong(), any(RecipientsDTO.class));
+        verify(redisCommands).get(anyString());
         verifyNoMoreInteractions(redisCommands);
     }
 
@@ -62,7 +56,7 @@ class WriteSyncCacheServiceTest {
     void shouldThrowNullPointerException_whenBankAccountIdCacheKeyIsNull() {
         var exception = assertThrows(NullPointerException.class, () -> {
             var recipientsCacheKey = new RecipientsCacheKey(null, new QueryParams());
-            writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
+            readSyncCacheService.getCacheEntry(recipientsCacheKey);
         });
 
         assertThat(exception)
