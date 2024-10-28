@@ -230,13 +230,8 @@ class AddRecipientServiceTest {
             String message = violation.getMessage();
             String propertyPath = violation.getPropertyPath().toString();
 
-            assertThat(expectedViolations)
-                    .containsKey(message)
-                    .withFailMessage("Unexpected message: %s", message);
-
-            assertThat(propertyPath)
-                    .isEqualTo(expectedViolations.get(message))
-                    .withFailMessage("Property path mismatch for message: %s", message);
+            assertThat(expectedViolations).containsKey(message);
+            assertThat(propertyPath).isEqualTo(expectedViolations.get(message));
         });
 
         verifyNoInteractions(recipientRepository, cacheEvictionService);
