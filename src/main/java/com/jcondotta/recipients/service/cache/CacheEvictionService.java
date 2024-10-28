@@ -29,7 +29,6 @@ public class CacheEvictionService {
         KeyScanCursor<String> keyScanCursor = redisCommands.scan(ScanArgs.Builder.matches(keyPattern));
 
         for (String key : keyScanCursor.getKeys()) {
-            System.out.println("deleting key: " + key);
             redisCommands.del(key);
         }
 

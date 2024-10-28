@@ -79,13 +79,8 @@ class FetchRecipientLambdaSecurityAccessIT implements LocalStackTestContainer {
         requestEvent.withPath(fetchRecipientsAPIPath.getRawPath());
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
-        assertThat(response.getStatusCode())
-                .isEqualTo(HttpStatus.UNAUTHORIZED.getCode())
-                .withFailMessage(() -> String.format(
-                        "Expected status code to be %d (Unauthorized), but was %d.",
-                        HttpStatus.UNAUTHORIZED.getCode(),
-                        response.getStatusCode()
-                ));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.getCode());
+
     }
 }
 

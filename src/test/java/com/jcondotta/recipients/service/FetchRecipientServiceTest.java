@@ -66,7 +66,7 @@ class FetchRecipientServiceTest {
     void shouldReturnDbQueriedList_whenNoCacheEntryExistsForQueryRecipientRequestIsKey(QueryParams queryParams) {
         queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
 
-        var recipientsDTO = fetchRecipientService.findRecipients(queryRecipientsRequest);
+        fetchRecipientService.findRecipients(queryRecipientsRequest);
 
         verify(recipientsCacheService).getCacheEntry(queryRecipientsRequest);
         verify(dynamoDbRecipientService).findRecipients(queryRecipientsRequest);
@@ -89,7 +89,6 @@ class FetchRecipientServiceTest {
     void shouldThrowNullPointerExceptionException_whenBankAccountIdIsNull() {
         var exception = assertThrows(NullPointerException.class, () -> {
             queryRecipientsRequest = new QueryRecipientsRequest(null);
-            fetchRecipientService.findRecipients(queryRecipientsRequest);
         });
 
         assertThat(exception)

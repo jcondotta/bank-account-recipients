@@ -61,8 +61,7 @@ class WriteSyncCacheServiceTest {
     @Test
     void shouldThrowNullPointerException_whenBankAccountIdCacheKeyIsNull() {
         var exception = assertThrows(NullPointerException.class, () -> {
-            var recipientsCacheKey = new RecipientsCacheKey(null, QueryParams.builder().build());
-            writeSyncCacheService.setCacheEntry(recipientsCacheKey, recipientsDTO);
+            new RecipientsCacheKey(null, QueryParams.builder().build());
         });
 
         assertThat(exception)
