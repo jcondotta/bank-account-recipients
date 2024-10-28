@@ -30,7 +30,7 @@ class LastEvaluatedKeyTest {
 
         Map<String, AttributeValue> exclusiveStartKey = lastEvaluatedKey.toExclusiveStartKey();
 
-        Assertions.assertThat(exclusiveStartKey.size()).isEqualTo(2);
+        Assertions.assertThat(exclusiveStartKey).hasSize(2);
         Assertions.assertThat(exclusiveStartKey.get("bankAccountId").s()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL.toString());
         Assertions.assertThat(exclusiveStartKey.get("recipientName").s()).isEqualTo(RECIPIENT_NAME_JEFFERSON);
     }

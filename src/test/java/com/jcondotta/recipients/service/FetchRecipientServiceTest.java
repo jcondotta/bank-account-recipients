@@ -44,7 +44,6 @@ class FetchRecipientServiceTest {
 
     private FetchRecipientService fetchRecipientService;
 
-    private QueryParams queryParams;
     private QueryRecipientsRequest queryRecipientsRequest;
 
     @Mock

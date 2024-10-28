@@ -1,5 +1,7 @@
 package com.jcondotta.recipients.factory.redis;
 
+import com.jcondotta.recipients.exception.RecipientsDeserializationException;
+import com.jcondotta.recipients.exception.RecipientsSerializationException;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import io.lettuce.core.codec.RedisCodec;
 import io.micronaut.json.JsonMapper;
@@ -29,7 +31,7 @@ public class RedisRecipientsDTOCodec implements RedisCodec<String, RecipientsDTO
             return jsonMapper.readValue(array, RecipientsDTO.class);
         }
         catch (IOException e) {
-            throw new RuntimeException("Failed to deserialize RecipientsDTO", e);
+            throw new RecipientsDeserializationException("Failed to deserialize RecipientsDTO", e);
         }
     }
 
@@ -45,7 +47,7 @@ public class RedisRecipientsDTOCodec implements RedisCodec<String, RecipientsDTO
             return ByteBuffer.wrap(bytes);
         }
         catch (IOException e) {
-            throw new RuntimeException("Failed to serialize RecipientsDTO", e);
+            throw new RecipientsSerializationException("Failed to serialize RecipientsDTO", e);
         }
     }
 }

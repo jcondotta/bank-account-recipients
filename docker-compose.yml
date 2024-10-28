@@ -1,13 +1,19 @@
 version: "3.8"
 
 services:
-  localstack:
-    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
-    image: localstack/localstack:3.7.0
+#  localstack:
+#    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+#    image: localstack/localstack:3.7.0
+#    ports:
+#      - '127.0.0.1:4566:4566'
+#    environment:
+#      SERVICES: dynamodb, ssm, iam, sts, lambda, apigateway, cloudwatch, logs
+#      LS_LOG: ${LS_LOG:-debug}
+#    volumes:
+#      - '/var/run/docker.sock:/var/run/docker.sock'
+
+  redis:
+    container_name: "${REDIS_DOCKER_NAME:-redis-main}"
+    image: redis:6.2
     ports:
-      - '127.0.0.1:4566:4566'
-    environment:
-      SERVICES: dynamodb, ssm, iam, sts, lambda, apigateway, cloudwatch, logs
-      LS_LOG: ${LS_LOG:-debug}
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - "6379:6379"

@@ -160,39 +160,7 @@ class AddRecipientServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientIbanIsBlank(String invalidRecipientIban) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientIban");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientIbanIsMalicious(String invalidRecipientIban) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientIban");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
     @ArgumentsSource(InvalidIbanArgumentsProvider.class)
     void shouldThrowConstraintViolationException_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);

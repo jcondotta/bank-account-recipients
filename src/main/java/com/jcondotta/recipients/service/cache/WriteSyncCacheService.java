@@ -23,7 +23,7 @@ public class WriteSyncCacheService {
 
     public void setCacheEntry(@NotNull RecipientsCacheKey recipientsCacheKey, @NotNull RecipientsDTO cacheValue) {
         var cacheKey = recipientsCacheKey.getCacheKey();
-        cacheValue = Objects.requireNonNull(cacheValue, "cache.recipients.cacheValue.notNull");
+        Objects.requireNonNull(cacheValue, "cache.recipients.cacheValue.notNull");
 
         redisCommands.setex(cacheKey, timeToLiveInSeconds, cacheValue);
     }

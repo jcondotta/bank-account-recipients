@@ -196,39 +196,7 @@ class AddRecipientControllerIT implements LocalStackTestContainer {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldReturn400BadRequest_whenRecipientIbanIsBlank(String invalidRecipientIban) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
-
-        given()
-            .spec(requestSpecification)
-                .body(addRecipientRequest)
-        .when()
-            .post()
-        .then()
-            .statusCode(HttpStatus.BAD_REQUEST.getCode())
-            .rootPath("_embedded")
-                .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientIban.invalid")));
-    }
-
-    @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldReturn400BadRequest_whenRecipientIbanIsMalicious(String invalidRecipientIban) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
-
-        given()
-            .spec(requestSpecification)
-                .body(addRecipientRequest)
-        .when()
-            .post()
-        .then()
-            .statusCode(HttpStatus.BAD_REQUEST.getCode())
-            .rootPath("_embedded")
-                .body("errors", hasSize(1))
-                .body("errors[0].message", equalTo(messageSourceResolver.getMessage("recipient.recipientIban.invalid")));
-    }
-
-    @ParameterizedTest
     @ArgumentsSource(InvalidIbanArgumentsProvider.class)
     void shouldReturn400BadRequest_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);

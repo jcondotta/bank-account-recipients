@@ -25,9 +25,6 @@ class RecipientsCacheServiceTest {
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
 
-    private static final String FIXED_CACHE_KEY = "recipients:bank-account-id:01920bff-1338-7efd-ade6-e9128debe5d4:" +
-            "query-params:2c013149ead6d11268ae479e1e3ef90bce4d3c62cfbdbe6545b24263ceeea9d5";
-
     @InjectMocks
     private RecipientsCacheService recipientsCacheService;
 

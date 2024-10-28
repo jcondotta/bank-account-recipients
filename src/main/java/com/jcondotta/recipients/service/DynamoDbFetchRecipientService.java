@@ -29,7 +29,7 @@ public class DynamoDbFetchRecipientService {
         return dynamoDbTable.query(queryEnhancedRequest)
                 .stream()
                 .findFirst()
-                .map(recipientPage -> recipientPageParser.parse(recipientPage))
+                .map(recipientPageParser::parse)
                 .orElseThrow();
     }
 

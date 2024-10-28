@@ -23,7 +23,7 @@ import java.util.Locale;
 @Requires(classes = { RecipientAlreadyExistsException.class })
 public class RecipientAlreadyExistsExceptionHandler implements ExceptionHandler<RecipientAlreadyExistsException, HttpResponse<?>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientAlreadyExistsException.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientAlreadyExistsExceptionHandler.class);
 
     private final MessageSource messageSource;
     private final ErrorResponseProcessor<?> errorResponseProcessor;

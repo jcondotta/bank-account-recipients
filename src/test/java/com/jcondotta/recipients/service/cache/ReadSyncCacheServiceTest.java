@@ -52,9 +52,8 @@ class ReadSyncCacheServiceTest {
 
     @Test
     void shouldThrowNullPointerException_whenBankAccountIdCacheKeyIsNull() {
-        var exception = assertThrows(NullPointerException.class, () -> {
-            new RecipientsCacheKey(null, QueryParams.builder().build());
-        });
+        var exception = assertThrows(NullPointerException.class, () ->
+                new RecipientsCacheKey(null, QueryParams.builder().build()));
 
         assertThat(exception)
                 .satisfies(violation -> assertThat(violation.getMessage())
