@@ -38,11 +38,14 @@ public class FetchRecipientService {
         }
 
         return recipientsCacheService.getCacheEntry(queryRecipientsRequest).orElseGet(() -> {
-                var recipientsDTO = dynamoDbFetchRecipientService.findRecipients(queryRecipientsRequest);
-                recipientsCacheService.setCacheEntry(queryRecipientsRequest, recipientsDTO);
+            LOGGER.info("[BankAccountId={}] Cache miss. Fetching from DynamoDB.", queryRecipientsRequest.bankAccountId());
 
-                return recipientsDTO;
-            }
-        );
+            var recipientsDTO = dynamoDbFetchRecipientService.findRecipients(queryRecipientsRequest);
+            recipientsCacheService.setCacheEntry(queryRecipientsRequest, recipientsDTO);
+
+            return recipientsDTO;
+
+//                LOGGER.info("[BankAccountId={}] Successfully fetched and cached recipients.", queryRecipientsRequest.bankAccountId());
+        });
     }
 }

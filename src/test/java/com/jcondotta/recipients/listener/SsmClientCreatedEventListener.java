@@ -17,7 +17,7 @@ public class SsmClientCreatedEventListener implements BeanCreatedEventListener<S
     private static final Logger LOGGER = LoggerFactory.getLogger(SsmClientCreatedEventListener.class);
 
     @Inject
-    private JwtSignatureSecretConfiguration jwtSignatureSecretConfiguration;
+    JwtSignatureSecretConfiguration jwtSignatureSecretConfiguration;
 
     @Override
     public SsmClient onCreated(@NonNull BeanCreatedEvent<SsmClient> event) {

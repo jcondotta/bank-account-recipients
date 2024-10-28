@@ -26,6 +26,9 @@ public class RecipientQueryEnhancedRequestBuilder {
     }
 
     public QueryEnhancedRequest build(QueryRecipientsRequest queryRecipientsRequest) {
+        LOGGER.info("[BankAccountId={}] Building query for DynamoDB with parameters: {}",
+                queryRecipientsRequest.bankAccountId(), queryRecipientsRequest.queryParams());
+
         final var queryConditional = recipientQueryConditionalBuilder.build(queryRecipientsRequest);
         final var limit = queryRecipientsRequest.queryParams().limit().orElse(DEFAULT_PAGE_LIMIT);
 

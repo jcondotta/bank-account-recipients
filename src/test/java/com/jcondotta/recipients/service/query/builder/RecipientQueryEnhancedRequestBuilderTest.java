@@ -1,6 +1,5 @@
 package com.jcondotta.recipients.service.query.builder;
 
-import com.jcondotta.recipients.helper.QueryParamsBuilder;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.service.request.LastEvaluatedKey;
@@ -50,7 +49,7 @@ class RecipientQueryEnhancedRequestBuilderTest {
 
     @Test
     void shouldReturnQueryRequest_whenRecipientNameIsNotEmpty() {
-        queryParams = new QueryParamsBuilder().withRecipientName(RECIPIENT_NAME_JEFFERSON).build();
+        queryParams = QueryParams.builder().withRecipientName(RECIPIENT_NAME_JEFFERSON).build();
         queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
 
         var queryEnhancedRequest = queryEnhancedRequestBuilder.build(queryRecipientsRequest);
@@ -63,7 +62,7 @@ class RecipientQueryEnhancedRequestBuilderTest {
     @Test
     void shouldReturnQueryRequest_whenLimitIsNotDefault() {
         var pageLimit = 100;
-        queryParams = new QueryParamsBuilder().withLimit(pageLimit).build();
+        queryParams = QueryParams.builder().withLimit(pageLimit).build();
         queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
 
         QueryEnhancedRequest queryEnhancedRequest = queryEnhancedRequestBuilder.build(queryRecipientsRequest);
@@ -77,7 +76,7 @@ class RecipientQueryEnhancedRequestBuilderTest {
     void shouldReturnQueryRequest_whenLastEvaluatedKeyIsNotNull() {
         var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
-        queryParams = new QueryParamsBuilder().withLastEvaluatedKey(lastEvaluatedKey).build();
+        queryParams = QueryParams.builder().withLastEvaluatedKey(lastEvaluatedKey).build();
         queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
 
         QueryEnhancedRequest queryEnhancedRequest = queryEnhancedRequestBuilder.build(queryRecipientsRequest);

@@ -53,7 +53,7 @@ public class FetchRecipientsController {
             @NotNull @PathVariable("bank-account-id") UUID bankAccountId,
 
             @Schema(description = "Query parameters for filtering and pagination.", implementation = QueryParams.class)
-            @QueryValue("queryParams") Optional<QueryParams> queryParams) {
+            @QueryValue("queryParams") QueryParams queryParams) {
 
         var queryRecipientsRequest = new QueryRecipientsRequest(bankAccountId, queryParams);
         var recipientsDTO = fetchRecipientService.findRecipients(queryRecipientsRequest);

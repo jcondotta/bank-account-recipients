@@ -255,7 +255,7 @@ class AddRecipientServiceTest {
     }
 
     @Test
-    void shouldReturnRecipientWithoutModification_WhenIdempotencyOccurs() {
+    void shouldReturnRecipientWithoutModification_whenIdempotencyOccurs() {
         var recipientMock = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         when(repositoryResponseMock.recipient()).thenReturn(recipientMock);
         when(repositoryResponseMock.isIdempotent()).thenReturn(false);
