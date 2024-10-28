@@ -66,11 +66,11 @@ class FetchRecipientServiceTest {
     void shouldReturnDbQueriedList_whenNoCacheEntryExistsForQueryRecipientRequestIsKey(QueryParams queryParams) {
         queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
 
-        fetchRecipientService.findRecipients(queryRecipientsRequest);
+        var dbQueriedRecipientsDTO = fetchRecipientService.findRecipients(queryRecipientsRequest);
 
         verify(recipientsCacheService).getCacheEntry(queryRecipientsRequest);
         verify(dynamoDbRecipientService).findRecipients(queryRecipientsRequest);
-        verify(recipientsCacheService).setCacheEntry(queryRecipientsRequest, recipientsDTO);
+        verify(recipientsCacheService).setCacheEntry(queryRecipientsRequest, dbQueriedRecipientsDTO);
     }
 
     @ParameterizedTest
