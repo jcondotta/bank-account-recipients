@@ -1,11 +1,8 @@
 package com.jcondotta.recipients.service.request;
 
 import com.jcondotta.recipients.argument_provider.validation.query_params.QueryParamsArgumentProvider;
-import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +12,6 @@ import org.testcontainers.shaded.com.google.common.hash.Hashing;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,18 +43,6 @@ class QueryParamsTest {
     @Test
     void shouldReturnCorrectLimit_whenLimitIsProvided() {
         var queryParams = QueryParams.builder().withLimit(DEFAULT_LIMIT).build();
-
-        assertThat(queryParams.limit()).isPresent()
-                .isEqualTo(Optional.of(DEFAULT_LIMIT));
-    }
-
-    @Test
-    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
-        final Validator VALIDATOR = ValidatorTestFactory.getValidator();
-        var queryParams = QueryParams.builder().withLimit(21).build();
-
-        Set<ConstraintViolation<QueryParams>> validate = VALIDATOR.validate(queryParams);
-        System.out.println(validate);
 
         assertThat(queryParams.limit()).isPresent()
                 .isEqualTo(Optional.of(DEFAULT_LIMIT));

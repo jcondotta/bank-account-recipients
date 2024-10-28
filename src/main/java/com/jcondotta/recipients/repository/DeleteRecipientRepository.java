@@ -33,15 +33,12 @@ public class DeleteRecipientRepository {
                 .sortValue(recipientName)
                 .build();
 
-        var deleteItemRequest = DeleteItemEnhancedRequest.builder()
-                .key(recipientKey)
-                .conditionExpression(Expression.builder()
-                        .expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
-                        .build())
-                .build();
-
         try {
-            dynamoDbTable.deleteItem(deleteItemRequest);
+            dynamoDbTable.deleteItem(builder -> builder.key(recipientKey)
+                    .conditionExpression(Expression.builder()
+                            .expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
+                            .build())
+                    .build();
             LOGGER.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully", bankAccountId, recipientName);
         }
         catch (ConditionalCheckFailedException e) {
