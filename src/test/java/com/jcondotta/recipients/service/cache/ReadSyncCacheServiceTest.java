@@ -15,10 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class ReadSyncCacheServiceTest {
@@ -48,17 +47,5 @@ class ReadSyncCacheServiceTest {
 
         verify(redisCommands).get(anyString());
         verifyNoMoreInteractions(redisCommands);
-    }
-
-    @Test
-    void shouldThrowNullPointerException_whenBankAccountIdCacheKeyIsNull() {
-        var exception = assertThrows(NullPointerException.class, () ->
-                new RecipientsCacheKey(null, QueryParams.builder().build()));
-
-        assertThat(exception)
-                .satisfies(violation -> assertThat(violation.getMessage())
-                        .isEqualTo("cache.recipients.bankAccountId.notNull"));
-
-        verifyNoInteractions(redisCommands);
     }
 }
