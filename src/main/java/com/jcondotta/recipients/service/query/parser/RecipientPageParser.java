@@ -19,7 +19,8 @@ public class RecipientPageParser {
 
     public RecipientsDTO parse(Page<Recipient> recipientsPage) {
         if (Objects.nonNull(recipientsPage) && Objects.nonNull(recipientsPage.items())) {
-            List<RecipientDTO> recipients = recipientsPage.items().stream()
+            List<RecipientDTO> recipients = recipientsPage.items()
+                    .stream()
                     .map(RecipientDTO::new)
                     .toList();
 
