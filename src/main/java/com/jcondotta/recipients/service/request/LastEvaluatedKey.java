@@ -1,9 +1,11 @@
 package com.jcondotta.recipients.service.request;
 
+import com.jcondotta.recipients.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -19,13 +21,17 @@ public record LastEvaluatedKey(
         @Schema(description = "The unique identifier for the bank account associated with the recipient.",
                 example = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 requiredMode = RequiredMode.REQUIRED)
-        @NotNull UUID bankAccountId,
+        @NotNull(message = "query.recipients.params.lastEvaluatedKey.bankAccountId.notNull")
+        UUID bankAccountId,
 
         @Schema(description = "The recipientName of the recipient used for pagination.",
                 example = "Jefferson Condotta",
-                maxLength = 30,
+                maxLength = 50,
                 requiredMode = RequiredMode.REQUIRED)
-        @NotBlank String recipientName
+        @NotBlank(message = "query.recipients.params.lastEvaluatedKey.recipientName.notBlank")
+        @Size(max = 50, message = "query.recipients.params.lastEvaluatedKey.recipientName.tooLong")
+        @SecureInput(message = "query.recipients.params.lastEvaluatedKey.recipientName.invalid")
+        String recipientName
 ) {
 
     public Map<String, AttributeValue> toExclusiveStartKey() {

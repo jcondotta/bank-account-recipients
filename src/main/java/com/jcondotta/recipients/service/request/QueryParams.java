@@ -1,8 +1,12 @@
 package com.jcondotta.recipients.service.request;
 
 import com.google.common.hash.Hashing;
+import com.jcondotta.recipients.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Size;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -14,15 +18,16 @@ public record QueryParams(
         @Schema(description = "The recipientName of the recipient to filter the results. If provided, " +
                 "the query will return recipients whose names start with the given value.",
                 example = "Jeff")
-        Optional<String> recipientName,
+        Optional<
+                @Size(max = 50, message = "query.recipients.params.recipientName.tooLong")
+                @SecureInput(message = "query.recipients.params.recipientName.invalid")
+                String> recipientName,
 
-        @Schema(description = "The maximum number of results to return. Must be a positive integer.",
-                example = "15")
-        Optional<Integer> limit,
+        @Schema(description = "The maximum number of results to return. Must be a positive integer.", example = "15")
+        Optional<@Max(value = 20, message = "query.recipients.params.limit.exceedsMaximum") Integer> limit,
 
-        @Schema(description = "The last evaluated key used for pagination, " +
-                "allowing the query to resume from where the previous one left off.")
-        Optional<LastEvaluatedKey> lastEvaluatedKey
+        @Schema(description = "The last evaluated key used for pagination, " + "allowing the query to resume from where the previous one left off.")
+        Optional<@Valid LastEvaluatedKey> lastEvaluatedKey
 ) {
 
     public static QueryParamsBuilder builder() {
