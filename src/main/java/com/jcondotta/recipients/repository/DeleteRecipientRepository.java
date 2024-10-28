@@ -37,7 +37,7 @@ public class DeleteRecipientRepository {
                     .conditionExpression(Expression.builder()
                             .expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
                             .build())
-                    .build();
+                    .build());
             LOGGER.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully", bankAccountId, recipientName);
         }
         catch (ConditionalCheckFailedException e) {
