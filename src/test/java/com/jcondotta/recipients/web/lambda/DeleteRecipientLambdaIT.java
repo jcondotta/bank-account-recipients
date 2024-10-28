@@ -35,16 +35,16 @@ class DeleteRecipientLambdaIT implements LocalStackTestContainer {
     private APIGatewayProxyRequestEvent.ProxyRequestContext proxyRequestContext;
 
     @Inject
-    private AddRecipientServiceFacade addRecipientService;
+    AddRecipientServiceFacade addRecipientService;
 
     @Inject
-    private ApplicationContext applicationContext;
+    ApplicationContext applicationContext;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
-    private AuthenticationService authenticationService;
+    AuthenticationService authenticationService;
 
     @BeforeAll
     void beforeAll() {

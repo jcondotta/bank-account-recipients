@@ -36,19 +36,19 @@ class FetchRecipientLambdaSecurityAccessIT implements LocalStackTestContainer {
     private APIGatewayProxyRequestEvent.ProxyRequestContext proxyRequestContext;
 
     @Inject
-    private AddRecipientServiceFacade addRecipientService;
+    AddRecipientServiceFacade addRecipientService;
 
     @Inject
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
-    private TokenGeneratorService tokenGeneratorService;
+    TokenGeneratorService tokenGeneratorService;
 
     @Inject
-    private ApplicationContext applicationContext;
+    ApplicationContext applicationContext;
 
     @BeforeAll
     void beforeAll() {

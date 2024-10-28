@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
+import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -37,24 +39,26 @@ import static org.hamcrest.Matchers.nullValue;
 class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FetchRecipientControllerIT.class);
+
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final int PAGE_LIMIT_2 = 2;
 
     private final RecipientsValidator recipientsValidator = new RecipientsValidator();
 
     @Inject
-    private AddRecipientServiceFacade addRecipientService;
+    AddRecipientServiceFacade addRecipientService;
 
     @Inject
-    private DynamoDbTable<Recipient> dynamoDbTable;
+    DynamoDbTable<Recipient> dynamoDbTable;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
-    private AuthenticationService authenticationService;
+    AuthenticationService authenticationService;
 
     @Inject
-    private RedisCommands<String, RecipientsDTO> redisCommands;
+    RedisCommands<String, RecipientsDTO> redisCommands;
 
     private RequestSpecification requestSpecification;
 
@@ -75,19 +79,16 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
     @AfterEach
     void afterEach() {
         recipientTablePurgeService.purgeTable();
-        redisCommands.scan().getKeys().forEach(key -> redisCommands.del(key));
     }
 
     @Test
     void shouldReturnRecipientsDTO_whenNoQueryParamsIsProvided() {
-        final var brazilBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
-
-        final var expectedRecipients = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
+        final var expectedRecipients = addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
         addRecipientService.addRecipients(TestBankAccount.ITALY, TestRecipient.JESSICA, TestRecipient.PATRIZIO);
 
         var recipientsDTO = given()
                 .spec(requestSpecification)
-                .pathParam("bank-account-id", brazilBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
             .when()
                 .get()
             .then()
@@ -100,7 +101,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
 
-        var cacheKey = new RecipientsCacheKey(brazilBankAccountId).getCacheKey();
+        var cacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL).getCacheKey();
         assertThat(redisCommands.get(cacheKey))
                 .as("Cached RecipientsDTO should not be null")
                 .isNotNull()
@@ -110,15 +111,14 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     void shouldReturnNamePrefixedRecipientsDTO_whenRecipientNameIsProvided() {
-        final var brazilBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
         final var prefixRecipientName = "Je";
 
-        var expectedRecipients = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JEFFERSON, TestRecipient.JENNIFER);
+        var expectedRecipients = addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JENNIFER);
         addRecipientService.addRecipient(TestBankAccount.ITALY, TestRecipient.JESSICA);
 
         var recipientsDTO = given()
                 .spec(requestSpecification)
-                .pathParam("bank-account-id", brazilBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
                 .queryParam("recipientName", prefixRecipientName)
             .when()
                 .get()
@@ -133,7 +133,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
 
         var queryParams = QueryParams.builder().withRecipientName(prefixRecipientName).build();
-        var cacheKey = new RecipientsCacheKey(brazilBankAccountId, queryParams).getCacheKey();
+        var cacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, queryParams).getCacheKey();
 
         assertThat(redisCommands.get(cacheKey))
                 .as("Cached RecipientsDTO should not be null")
@@ -143,15 +143,14 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     void shouldLimitNumberOfRecipientsReturned_whenLimitIsProvided() {
-        final var brazilBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
         final var queryParams = QueryParams.builder().withLimit(PAGE_LIMIT_2).build();
 
-        var expectedRecipients = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
-        addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JESSICA, TestRecipient.JENNIFER);
+        var expectedRecipients = addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
+        addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JESSICA, TestRecipient.JENNIFER);
 
         var recipientsDTO = given()
                 .spec(requestSpecification)
-                .pathParam("bank-account-id", brazilBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
                 .queryParam("limit", queryParams.limit())
             .when()
                 .get()
@@ -159,14 +158,14 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
                 .statusCode(HttpStatus.OK.getCode())
                 .body("recipients", hasSize(expectedRecipients.size()))
                 .body("count", equalTo(expectedRecipients.size()))
-                .body("lastEvaluatedKey.bankAccountId", equalTo(brazilBankAccountId.toString()))
+                .body("lastEvaluatedKey.bankAccountId", equalTo(BANK_ACCOUNT_ID_BRAZIL.toString()))
                 .body("lastEvaluatedKey.recipientName", equalTo(TestRecipient.JEFFERSON.getRecipientName()))
                     .extract()
                         .as(RecipientsDTO.class);
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
 
-        var cacheKey = new RecipientsCacheKey(brazilBankAccountId, queryParams).getCacheKey();
+        var cacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, queryParams).getCacheKey();
         assertThat(redisCommands.get(cacheKey))
                 .as("Cached RecipientsDTO should not be null")
                 .isNotNull()
@@ -175,17 +174,15 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     void shouldReturnPagedRecipientsDTO_whenLastEvaluatedKeyIsProvided() {
-        final var brazilBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
+        addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
+        var expectedRecipients = addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JESSICA, TestRecipient.JENNIFER);
 
-        addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JEFFERSON, TestRecipient.INDALECIO);
-        var expectedRecipients = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JESSICA, TestRecipient.JENNIFER);
-
-        var lastEvaluatedKey = new LastEvaluatedKey(brazilBankAccountId, TestRecipient.JEFFERSON.getRecipientName());
+        var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON.getRecipientName());
         final var queryParams = QueryParams.builder().withLastEvaluatedKey(lastEvaluatedKey).build();
 
         var recipientsDTO = given()
                 .spec(requestSpecification)
-                .pathParam("bank-account-id", brazilBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
                 .queryParam("lastEvaluatedKey.bankAccountId", lastEvaluatedKey.bankAccountId())
                 .queryParam("lastEvaluatedKey.recipientName", lastEvaluatedKey.recipientName())
             .when()
@@ -199,7 +196,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipients, recipientsDTO.recipients());
 
-        var cacheKey = new RecipientsCacheKey(brazilBankAccountId, queryParams).getCacheKey();
+        var cacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, queryParams).getCacheKey();
         assertThat(redisCommands.get(cacheKey))
                 .as("Cached RecipientsDTO should not be null")
                 .isNotNull()
@@ -208,27 +205,25 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     void shouldReturn204NoContent_whenNonExistentBankAccountIdIsProvided() {
-        var nonExistentBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
-
         given()
                 .spec(requestSpecification)
-                .pathParam("bank-account-id", nonExistentBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
             .when()
                 .get()
             .then()
                 .statusCode(HttpStatus.NO_CONTENT.getCode());
 
         var pageIterable = dynamoDbTable.query(QueryConditional.keyEqualTo(builder -> builder
-                .partitionValue(nonExistentBankAccountId.toString())
+                .partitionValue(BANK_ACCOUNT_ID_BRAZIL.toString())
                 .build()));
         assertThat(pageIterable.items()).isEmpty();
 
-        var cacheKey = new RecipientsCacheKey(nonExistentBankAccountId).getCacheKey();
+        var cacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL).getCacheKey();
         assertThat(redisCommands.get(cacheKey))
                 .as("Cached RecipientsDTO should have empty values")
                 .isNotNull()
                 .satisfies(cachedRecipientsDTO -> {
-                    assertThat(cachedRecipientsDTO.recipients().isEmpty());
+                    assertThat(cachedRecipientsDTO.recipients()).isEmpty();
                     assertThat(cachedRecipientsDTO.count()).isZero();
                     assertThat(cachedRecipientsDTO.lastEvaluatedKey()).isNull();
                 });
@@ -236,7 +231,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     void shouldReturn204NoContent_whenFilteringByNonExistentPrefixRecipientName() {
-        var jeffersonRecipientDTO = addRecipientService.addRecipient(TestBankAccount.BRAZIL, TestRecipient.JEFFERSON);
+        var jeffersonRecipientDTO = addRecipientService.addRecipient(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON);
 
         final var nonExistentPrefixRecipientName = "Z";
         LOGGER.debug("Searching for recipients with non-existent prefix name: {}", nonExistentPrefixRecipientName);
@@ -266,19 +261,18 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
     @Test
     void shouldReturnAndCacheRecipientsInPages_whenQueryParamsHasAllParameters() {
-        final var brazilBankAccountId = TestBankAccount.BRAZIL.getBankAccountId();
         final var prefixRecipientName = "Je";
 
-        var expectedRecipientsPage1 = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JEFFERSON, TestRecipient.JENNIFER);
-        var expectedRecipientsPage2 = addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.JESSICA);
-        addRecipientService.addRecipients(brazilBankAccountId, TestRecipient.VIRGINIO, TestRecipient.PATRIZIO);
+        var expectedRecipientsPage1 = addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.JENNIFER);
+        var expectedRecipientsPage2 = addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JESSICA);
+        addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.VIRGINIO, TestRecipient.PATRIZIO);
 
         LOGGER.debug("Fetching page 1 recipients for bank account ID: {}, recipientNamePrefix: {} and limit: {}",
-                brazilBankAccountId, prefixRecipientName, PAGE_LIMIT_2);
+                BANK_ACCOUNT_ID_BRAZIL, prefixRecipientName, PAGE_LIMIT_2);
 
         RecipientsDTO recipientsDTOPage1 = given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", brazilBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
                 .queryParam("recipientName", prefixRecipientName)
                 .queryParam("limit", PAGE_LIMIT_2)
             .when()
@@ -287,14 +281,14 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
                 .statusCode(HttpStatus.OK.getCode())
                     .body("recipients", hasSize(expectedRecipientsPage1.size()))
                     .body("count", equalTo(expectedRecipientsPage1.size()))
-                    .body("lastEvaluatedKey.bankAccountId", equalTo(brazilBankAccountId.toString()))
+                    .body("lastEvaluatedKey.bankAccountId", equalTo(BANK_ACCOUNT_ID_BRAZIL.toString()))
                     .body("lastEvaluatedKey.recipientName", equalTo(TestRecipient.JENNIFER.getRecipientName()))
                     .extract()
                         .as(RecipientsDTO.class);
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage1, recipientsDTOPage1.recipients());
 
-        var cacheKeyRecipientsDTOPage1 = new RecipientsCacheKey(brazilBankAccountId, QueryParams.builder()
+        var cacheKeyRecipientsDTOPage1 = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, QueryParams.builder()
                 .withRecipientName(prefixRecipientName)
                 .withLimit(PAGE_LIMIT_2)
                 .build())
@@ -306,11 +300,11 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
                 .satisfies(cachedRecipientsDTO -> recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage1, cachedRecipientsDTO.recipients()));
 
         LOGGER.debug("Fetching page 2 recipients for bank account ID: {}, recipientNamePrefix: {}, limit: {} and last evaluated key: {}",
-                brazilBankAccountId, prefixRecipientName, PAGE_LIMIT_2, recipientsDTOPage1.lastEvaluatedKey());
+                BANK_ACCOUNT_ID_BRAZIL, prefixRecipientName, PAGE_LIMIT_2, recipientsDTOPage1.lastEvaluatedKey());
 
         var recipientsDTOPage2 = given()
             .spec(requestSpecification)
-                .pathParam("bank-account-id", brazilBankAccountId)
+                .pathParam("bank-account-id", BANK_ACCOUNT_ID_BRAZIL)
                 .queryParam("recipientName", prefixRecipientName)
                 .queryParam("limit", PAGE_LIMIT_2)
                 .queryParam("lastEvaluatedKey.bankAccountId", recipientsDTOPage1.lastEvaluatedKey().bankAccountId())
@@ -327,7 +321,7 @@ class FetchRecipientControllerIT implements LocalStackTestContainer {
 
         recipientsValidator.validateDTOsAgainstDTOs(expectedRecipientsPage2, recipientsDTOPage2.recipients());
 
-        var cacheKeyRecipientsDTOPage2 = new RecipientsCacheKey(brazilBankAccountId, QueryParams.builder()
+        var cacheKeyRecipientsDTOPage2 = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, QueryParams.builder()
                 .withRecipientName(prefixRecipientName)
                 .withLimit(PAGE_LIMIT_2)
                 .withLastEvaluatedKey(recipientsDTOPage1.lastEvaluatedKey())

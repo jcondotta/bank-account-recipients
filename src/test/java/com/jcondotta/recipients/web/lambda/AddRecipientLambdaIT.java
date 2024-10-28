@@ -2,7 +2,6 @@ package com.jcondotta.recipients.web.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.jcondotta.recipients.argument_provider.validation.BlankValuesArgumentProvider;
 import com.jcondotta.recipients.container.LocalStackTestContainer;
 import com.jcondotta.recipients.domain.Recipient;
@@ -45,25 +44,24 @@ class AddRecipientLambdaIT implements LocalStackTestContainer {
 
     private ApiGatewayProxyRequestEventFunction requestEventFunction;
     private APIGatewayProxyRequestEvent requestEvent;
-    private APIGatewayProxyRequestEvent.ProxyRequestContext proxyRequestContext;
 
     @Inject
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Inject
-    private Clock testClockUTC;
+    Clock testClockUTC;
 
     @Inject
-    private ApplicationContext applicationContext;
+    ApplicationContext applicationContext;
 
     @Inject
-    private MessageSourceResolver messageSourceResolver;
+    MessageSourceResolver messageSourceResolver;
 
     @Inject
-    private AuthenticationService authenticationService;
+    AuthenticationService authenticationService;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
@@ -77,7 +75,7 @@ class AddRecipientLambdaIT implements LocalStackTestContainer {
     @BeforeEach
     void beforeEach() {
         var authenticationResponseDTO = authenticationService.authenticate();
-        proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
+        var proxyRequestContext = new APIGatewayProxyRequestEvent.ProxyRequestContext();
 
         requestEvent = new APIGatewayProxyRequestEvent()
                 .withPath(RecipientAPIUriBuilder.RECIPIENTS_BASE_PATH_API_V1_MAPPING)
@@ -100,9 +98,8 @@ class AddRecipientLambdaIT implements LocalStackTestContainer {
 
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
-        assertThat(response)
+        assertThat(response.getStatusCode())
                 .as("Verify the response has the correct status code")
-                .extracting(APIGatewayProxyResponseEvent::getStatusCode)
                 .isEqualTo(HttpStatus.CREATED.getCode());
 
         var recipient = objectMapper.readValue(response.getBody(), Recipient.class);
@@ -122,9 +119,8 @@ class AddRecipientLambdaIT implements LocalStackTestContainer {
 
         var response = requestEventFunction.handleRequest(requestEvent, mockLambdaContext);
 
-        assertThat(response)
+        assertThat(response.getStatusCode())
                 .as("Verify the response has the correct status code")
-                .extracting(APIGatewayProxyResponseEvent::getStatusCode)
                 .isEqualTo(HttpStatus.BAD_REQUEST.getCode());
 
         var responseBodyJSON = objectMapper.readTree(response.getBody());

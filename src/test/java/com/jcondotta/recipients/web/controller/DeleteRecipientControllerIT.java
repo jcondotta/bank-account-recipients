@@ -30,22 +30,22 @@ import static org.hamcrest.Matchers.hasSize;
 class DeleteRecipientControllerIT implements LocalStackTestContainer {
 
     @Inject
-    private FindRecipientRepository findRecipientRepository;
+    FindRecipientRepository findRecipientRepository;
 
     @Inject
-    private AddRecipientServiceFacade addRecipientService;
+    AddRecipientServiceFacade addRecipientService;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
-    private MessageSourceResolver messageSourceResolver;
+    MessageSourceResolver messageSourceResolver;
 
     @Inject
-    private AuthenticationService authenticationService;
+    AuthenticationService authenticationService;
 
     @Inject
-    private RequestSpecification requestSpecification;
+    RequestSpecification requestSpecification;
 
     @BeforeAll
     public static void beforeAll(){

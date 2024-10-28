@@ -35,13 +35,13 @@ class AddRecipientControllerSecurityAccessIT implements LocalStackTestContainer 
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
     @Inject
-    private RequestSpecification requestSpecification;
+    RequestSpecification requestSpecification;
 
     @Inject
-    private TokenGeneratorService tokenGeneratorService;
+    TokenGeneratorService tokenGeneratorService;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @BeforeAll
     public static void beforeAll() {

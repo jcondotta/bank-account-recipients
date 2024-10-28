@@ -11,12 +11,8 @@ import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.security.AuthenticationService;
 import com.jcondotta.recipients.service.dto.RecipientDTO;
-import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import com.jcondotta.recipients.service.request.AddRecipientRequest;
 import com.jcondotta.recipients.validation.recipient.RecipientDTOValidator;
-import io.lettuce.core.api.sync.RedisCommands;
-import io.micronaut.cache.CacheInfo;
-import io.micronaut.cache.SyncCache;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
@@ -27,10 +23,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
@@ -59,25 +53,22 @@ class AddRecipientControllerIT implements LocalStackTestContainer {
     private static final RecipientDTOValidator RECIPIENT_DTO_VALIDATOR = new RecipientDTOValidator();
 
     @Inject
-    private DynamoDbTable<Recipient> dynamoDbTable;
+    DynamoDbTable<Recipient> dynamoDbTable;
 
     @Inject
-    private Clock testClockUTC;
+    Clock testClockUTC;
 
     @Inject
-    private MessageSourceResolver messageSourceResolver;
+    MessageSourceResolver messageSourceResolver;
 
     @Inject
-    private RequestSpecification requestSpecification;
+    RequestSpecification requestSpecification;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
-    private AuthenticationService authenticationService;
-
-    @Inject
-    private RedisCommands<String, String> redisCommands;
+    AuthenticationService authenticationService;
 
     @BeforeAll
     public static void beforeAll() {

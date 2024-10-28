@@ -31,16 +31,16 @@ class DeleteRecipientControllerSecurityAccessIT implements LocalStackTestContain
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
     @Inject
-    private AddRecipientServiceFacade addRecipientService;
+    AddRecipientServiceFacade addRecipientService;
 
     @Inject
-    private RequestSpecification requestSpecification;
+    RequestSpecification requestSpecification;
 
     @Inject
-    private RecipientTablePurgeService recipientTablePurgeService;
+    RecipientTablePurgeService recipientTablePurgeService;
 
     @Inject
-    private TokenGeneratorService tokenGeneratorService;
+    TokenGeneratorService tokenGeneratorService;
 
     @BeforeAll
     public static void beforeAll() {
