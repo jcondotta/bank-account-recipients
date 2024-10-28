@@ -1,15 +1,15 @@
 package com.jcondotta.recipients.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jcondotta.recipients.domain.Recipient;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jcondotta.recipients.domain.Recipient;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Serdeable
 @Schema(name = "RecipientDTO", description = "Represents a recipient entity with account details.")

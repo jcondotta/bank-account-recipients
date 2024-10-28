@@ -88,7 +88,7 @@
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-jackson-databind</artifactId>
             <version>4.6.5</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut.validation</groupId>
@@ -103,6 +103,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>11.0</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -120,22 +125,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.openapi</groupId>
-            <artifactId>micronaut-openapi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.swagger.core.v3</groupId>-->
-<!--            <artifactId>swagger-ui</artifactId>-->
-<!--        </dependency>-->
-        <dependency>
             <groupId>io.micronaut.security</groupId>
             <artifactId>micronaut-security-jwt</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>io.micronaut.redis</groupId>
+            <artifactId>micronaut-redis-lettuce</artifactId>
+            <version>6.5.0</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -195,6 +192,12 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>localstack</artifactId>
             <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.redis</groupId>
+            <artifactId>testcontainers-redis</artifactId>
+            <version>2.2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
