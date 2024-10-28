@@ -86,7 +86,7 @@ class QueryParamsTest {
                 ", lastEvaluatedKey=" + queryParams.lastEvaluatedKey() +
                 "}";
 
-        assertThat(queryParams.toString()).isEqualTo(expectedToString);
+        assertThat(queryParams).hasToString(expectedToString);
     }
 
     private String buildQueryParamsHash(QueryParams queryParams){

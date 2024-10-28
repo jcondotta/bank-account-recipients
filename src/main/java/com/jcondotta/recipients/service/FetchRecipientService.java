@@ -43,9 +43,8 @@ public class FetchRecipientService {
             var recipientsDTO = dynamoDbFetchRecipientService.findRecipients(queryRecipientsRequest);
             recipientsCacheService.setCacheEntry(queryRecipientsRequest, recipientsDTO);
 
+            LOGGER.info("[BankAccountId={}] Successfully fetched and cached recipients.", queryRecipientsRequest.bankAccountId());
             return recipientsDTO;
-
-//                LOGGER.info("[BankAccountId={}] Successfully fetched and cached recipients.", queryRecipientsRequest.bankAccountId());
         });
     }
 }

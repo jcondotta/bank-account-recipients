@@ -68,9 +68,9 @@ class FetchRecipientServiceTest {
 
         var recipientsDTO = fetchRecipientService.findRecipients(queryRecipientsRequest);
 
-        verify(recipientsCacheService).getCacheEntry(eq(queryRecipientsRequest));
-        verify(dynamoDbRecipientService).findRecipients(eq(queryRecipientsRequest));
-        verify(recipientsCacheService).setCacheEntry(eq(queryRecipientsRequest), eq(recipientsDTO));
+        verify(recipientsCacheService).getCacheEntry(queryRecipientsRequest);
+        verify(dynamoDbRecipientService).findRecipients(queryRecipientsRequest);
+        verify(recipientsCacheService).setCacheEntry(queryRecipientsRequest, recipientsDTO);
     }
 
     @ParameterizedTest
@@ -81,7 +81,7 @@ class FetchRecipientServiceTest {
 
         fetchRecipientService.findRecipients(queryRecipientsRequest);
 
-        verify(recipientsCacheService).getCacheEntry(eq(queryRecipientsRequest));
+        verify(recipientsCacheService).getCacheEntry(queryRecipientsRequest);
         verifyNoMoreInteractions(recipientsCacheService, dynamoDbRecipientService);
     }
 

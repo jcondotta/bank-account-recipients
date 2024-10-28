@@ -79,7 +79,7 @@ class AddRecipientServiceTest {
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
 
         verify(recipientRepository).add(any(Recipient.class));
-        verify(cacheEvictionService).evictCacheEntriesByBankAccountId(eq(addRecipientRequest.bankAccountId()));
+        verify(cacheEvictionService).evictCacheEntriesByBankAccountId(addRecipientRequest.bankAccountId());
         verifyNoMoreInteractions(recipientRepository, cacheEvictionService);
 
         assertThat(recipientDTO).isExactlyInstanceOf(RecipientDTO.class);

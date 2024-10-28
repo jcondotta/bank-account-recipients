@@ -47,7 +47,7 @@ class CacheEvictionIT implements LocalStackTestContainer {
     private final QueryParams queryParams = QueryParams.builder().build();
 
     @Test
-    public void shouldEvictCacheEntries_whenAddRecipientRelatedToBankAccountId(){
+    void shouldEvictCacheEntries_whenAddRecipientRelatedToBankAccountId(){
         addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON);
         addRecipientService.addRecipient(BANK_ACCOUNT_ID_ITALY, TestRecipient.VIRGINIO);
 
@@ -75,7 +75,7 @@ class CacheEvictionIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldEvictCacheEntries_whenDeleteRecipientRelatedToBankAccountId(){
+    void shouldEvictCacheEntries_whenDeleteRecipientRelatedToBankAccountId(){
         addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.PATRIZIO);
         addRecipientService.addRecipient(BANK_ACCOUNT_ID_ITALY, TestRecipient.VIRGINIO);
 
@@ -104,7 +104,7 @@ class CacheEvictionIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldEvictCacheEntry_whenCacheIsExpired(){
+    void shouldEvictCacheEntry_whenCacheIsExpired(){
         addRecipientService.addRecipients(BANK_ACCOUNT_ID_BRAZIL, TestRecipient.JEFFERSON, TestRecipient.PATRIZIO);
 
         fetchRecipientService.findRecipients(new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams));

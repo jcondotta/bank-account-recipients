@@ -64,7 +64,7 @@ class DynamoDbFetchRecipientServiceTest {
         dynamoDbFetchRecipientService.findRecipients(queryRecipientsRequest);
 
         verify(dynamoDbTable).query(Mockito.any(QueryEnhancedRequest.class));
-        verify(recipientPageParser).parse(eq(pageRecipient));
+        verify(recipientPageParser).parse(pageRecipient);
         verifyNoMoreInteractions(recipientPageParser, dynamoDbTable);
     }
 

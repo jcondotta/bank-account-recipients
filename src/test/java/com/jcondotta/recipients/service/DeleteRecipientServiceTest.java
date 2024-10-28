@@ -52,7 +52,7 @@ class DeleteRecipientServiceTest {
         deleteRecipientService.deleteRecipient(deleteRecipientRequest);
 
         verify(deleteRecipientRepository).delete(any(UUID.class), anyString());
-        verify(cacheEvictionService).evictCacheEntriesByBankAccountId(eq(deleteRecipientRequest.bankAccountId()));
+        verify(cacheEvictionService).evictCacheEntriesByBankAccountId(deleteRecipientRequest.bankAccountId());
         verifyNoMoreInteractions(deleteRecipientRepository);
     }
 

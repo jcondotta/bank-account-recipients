@@ -36,7 +36,7 @@ class CacheEvictionServiceTest {
     private KeyScanCursor<String> keyScanCursor;
 
     @Test
-    public void shouldEvictNoCacheEntries_whenCacheHasNoBankAccountIdEntries(){
+    void shouldEvictNoCacheEntries_whenCacheHasNoBankAccountIdEntries(){
         when(keyScanCursor.getKeys()).thenReturn(List.of());
         when(redisCommands.scan(any(ScanArgs.class))).thenReturn(keyScanCursor);
 
@@ -48,7 +48,7 @@ class CacheEvictionServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(QueryParamsArgumentProvider.class)
-    public void shouldEvictCacheEntry_whenSingleEntryIsRelatedToBankAccountId(QueryParams queryParams){
+    void shouldEvictCacheEntry_whenSingleEntryIsRelatedToBankAccountId(QueryParams queryParams){
         var recipientsCacheKey = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, queryParams);
         var cacheKey = recipientsCacheKey.getCacheKey();
 
@@ -58,12 +58,12 @@ class CacheEvictionServiceTest {
         cacheEvictionService.evictCacheEntriesByBankAccountId(BANK_ACCOUNT_ID_BRAZIL);
 
         verify(redisCommands).scan(any(ScanArgs.class));
-        verify(redisCommands).del(eq(cacheKey));
+        verify(redisCommands).del(cacheKey);
         verifyNoMoreInteractions(redisCommands);
     }
 
     @Test
-    public void shouldEvictCacheEntries_whenMultipleEntriesAreRelatedToBankAccountId(){
+    void shouldEvictCacheEntries_whenMultipleEntriesAreRelatedToBankAccountId(){
         var recipientsCacheKey1 = new RecipientsCacheKey(BANK_ACCOUNT_ID_BRAZIL, QueryParams.builder()
                 .withRecipientName("Jef")
                 .build());
@@ -79,8 +79,8 @@ class CacheEvictionServiceTest {
         cacheEvictionService.evictCacheEntriesByBankAccountId(BANK_ACCOUNT_ID_BRAZIL);
 
         verify(redisCommands).scan(any(ScanArgs.class));
-        verify(redisCommands).del(eq(recipientsCacheKey1.getCacheKey()));
-        verify(redisCommands).del(eq(recipientsCacheKey2.getCacheKey()));
+        verify(redisCommands).del(recipientsCacheKey1.getCacheKey());
+        verify(redisCommands).del(recipientsCacheKey2.getCacheKey());
         verifyNoMoreInteractions(redisCommands);
     }
 }
