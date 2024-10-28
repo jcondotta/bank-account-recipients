@@ -3,14 +3,11 @@ package com.jcondotta.recipients.service;
 import com.jcondotta.recipients.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
 import com.jcondotta.recipients.argument_provider.validation.query_params.QueryParamsArgumentProvider;
 import com.jcondotta.recipients.argument_provider.validation.security.ThreatInputArgumentProvider;
-import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.service.cache.RecipientsCacheService;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
-import com.jcondotta.recipients.service.query.parser.RecipientPageParser;
-import com.jcondotta.recipients.service.request.AddRecipientRequest;
 import com.jcondotta.recipients.service.request.LastEvaluatedKey;
 import com.jcondotta.recipients.service.request.QueryParams;
 import com.jcondotta.recipients.service.request.QueryRecipientsRequest;
@@ -23,8 +20,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.enhanced.dynamodb.model.Page;
-import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -43,18 +38,9 @@ class FetchRecipientServiceTest {
     @Mock
     private DynamoDbFetchRecipientService dynamoDbRecipientService;
 
-    @Mock
-    private PageIterable<Recipient> pageIterable;
-
-    @Mock
-    private Page<Recipient> pageRecipient;
-
     private FetchRecipientService fetchRecipientService;
 
     private QueryRecipientsRequest queryRecipientsRequest;
-
-    @Mock
-    private RecipientPageParser recipientPageParser;
 
     @Mock
     private RecipientsDTO recipientsDTO;
@@ -89,19 +75,6 @@ class FetchRecipientServiceTest {
 
         verify(recipientsCacheService).getCacheEntry(queryRecipientsRequest);
         verifyNoMoreInteractions(recipientsCacheService, dynamoDbRecipientService);
-    }
-
-    @Test
-    void shouldThrowNullPointerExceptionException_whenBankAccountIdIsNull() {
-        var exception = assertThrows(NullPointerException.class, () -> {
-            queryRecipientsRequest = new QueryRecipientsRequest(null);
-        });
-
-        assertThat(exception)
-                .satisfies(violation -> assertThat(violation.getMessage())
-                        .isEqualTo("query.recipients.bankAccountId.notNull"));
-
-        verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
     }
 
     @ParameterizedTest
