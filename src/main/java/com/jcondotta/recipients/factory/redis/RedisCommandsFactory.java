@@ -1,5 +1,6 @@
 package com.jcondotta.recipients.factory.redis;
 
+import com.jcondotta.recipients.service.cache.RedisRecipientsDTOCodec;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;

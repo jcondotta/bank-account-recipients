@@ -1,4 +1,4 @@
-package com.jcondotta.recipients.factory.redis;
+package com.jcondotta.recipients.service.cache;
 
 import com.jcondotta.recipients.exception.RecipientsDeserializationException;
 import com.jcondotta.recipients.exception.RecipientsSerializationException;

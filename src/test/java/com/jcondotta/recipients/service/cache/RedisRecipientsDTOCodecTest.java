@@ -1,11 +1,10 @@
-package com.jcondotta.recipients.factory.redis;
+package com.jcondotta.recipients.service.cache;
 
 import com.jcondotta.recipients.exception.RecipientsDeserializationException;
 import com.jcondotta.recipients.exception.RecipientsSerializationException;
 import com.jcondotta.recipients.factory.RecipientDTOTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
-import com.jcondotta.recipients.service.cache.RecipientsCacheKey;
 import com.jcondotta.recipients.service.dto.RecipientDTO;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import com.jcondotta.recipients.service.request.LastEvaluatedKey;
