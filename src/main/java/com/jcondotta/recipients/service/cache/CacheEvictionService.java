@@ -3,7 +3,6 @@ package com.jcondotta.recipients.service.cache;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import io.lettuce.core.KeyScanCursor;
 import io.lettuce.core.ScanArgs;
-import io.lettuce.core.ScanCursor;
 import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;

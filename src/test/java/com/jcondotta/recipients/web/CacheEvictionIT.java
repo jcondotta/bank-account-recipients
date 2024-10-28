@@ -1,7 +1,6 @@
 package com.jcondotta.recipients.web;
 
 
-import com.jcondotta.recipients.argument_provider.validation.query_params.QueryParamsArgumentProvider;
 import com.jcondotta.recipients.container.LocalStackTestContainer;
 import com.jcondotta.recipients.helper.AddRecipientServiceFacade;
 import com.jcondotta.recipients.helper.TestBankAccount;
@@ -14,14 +13,10 @@ import com.jcondotta.recipients.service.request.DeleteRecipientRequest;
 import com.jcondotta.recipients.service.request.QueryParams;
 import com.jcondotta.recipients.service.request.QueryRecipientsRequest;
 import io.lettuce.core.api.sync.RedisCommands;
-import io.micronaut.context.annotation.Property;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

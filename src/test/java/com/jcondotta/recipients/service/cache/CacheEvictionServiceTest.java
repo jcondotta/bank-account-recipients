@@ -3,16 +3,13 @@ package com.jcondotta.recipients.service.cache;
 
 import com.jcondotta.recipients.argument_provider.validation.query_params.QueryParamsArgumentProvider;
 import com.jcondotta.recipients.helper.TestBankAccount;
-import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import com.jcondotta.recipients.service.request.QueryParams;
 import io.lettuce.core.KeyScanCursor;
 import io.lettuce.core.ScanArgs;
-import io.lettuce.core.ScanCursor;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InjectMocks;
@@ -21,11 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @ExtendWith(MockitoExtension.class)
 class CacheEvictionServiceTest {
