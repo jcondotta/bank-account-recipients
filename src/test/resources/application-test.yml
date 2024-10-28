@@ -14,3 +14,24 @@ aws:
       jwt-signature-secret:
         name: '/jwt/signature/test/secret'
 
+redis:
+  uri: ${REDIS_URI}
+  cache:
+    recipients:
+      ttl-in-seconds: 1
+  pool:
+    enabled: true
+    max-size: 10
+
+#redis:
+#  uri: ${REDIS_URI}
+#  timeout: '30s'
+#  caches:
+##    default:
+##      enabled: true
+##      ttl: 3600
+#    recipients-by-bank-account-id:
+#      enabled: true
+#      ttl: 1
+#      timeout: '30s'
+

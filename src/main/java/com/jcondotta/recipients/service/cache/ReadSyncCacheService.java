@@ -5,15 +5,11 @@ import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 @Singleton
 public class ReadSyncCacheService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ReadSyncCacheService.class);
 
     private final RedisCommands<String, RecipientsDTO> redisCommands;
 

@@ -1,5 +1,6 @@
 package com.jcondotta.recipients.container;
 
+import com.redis.testcontainers.RedisContainer;
 import io.micronaut.test.support.TestPropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +20,25 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     String LOCAL_STACK_IMAGE_NAME = "localstack/localstack:3.7.0";
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(LOCAL_STACK_IMAGE_NAME);
 
+    String REDIS_IMAGE_NAME = "redis:6.2.6";
+    DockerImageName REDIS_IMAGE = DockerImageName.parse(REDIS_IMAGE_NAME);
+
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
             .withServices(Service.DYNAMODB, Service.SSM)
-            .withLogConsumer(outputFrame -> LOGGER.info(outputFrame.getUtf8StringWithoutLineEnding()));
+            .withLogConsumer(outputFrame -> LOGGER.debug(outputFrame.getUtf8StringWithoutLineEnding()));
+
+    RedisContainer REDIS_CONTAINER = new RedisContainer(REDIS_IMAGE)
+            .withLogConsumer(outputFrame -> LOGGER.debug(outputFrame.getUtf8StringWithoutLineEnding()));
 
     @Override
     default Map<String, String> getProperties() {
         try {
-            Startables.deepStart(LOCALSTACK_CONTAINER).join();
+            Startables.deepStart(LOCALSTACK_CONTAINER, REDIS_CONTAINER).join();
         }
         catch (Exception e) {
-            LOGGER.error("Failed to start LocalStack container: {}", e.getMessage());
+            LOGGER.error("Failed to start any of the containers: {}", e.getMessage());
 
-            throw new RuntimeException("Failed to start LocalStack container", e);
+            throw new RuntimeException("Failed to start any of the containers", e);
         }
 
         logContainerConfiguration();
@@ -45,7 +52,8 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 Map.entry("AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey()),
                 Map.entry("AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion()),
                 Map.entry("AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString()),
-                Map.entry("AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString())
+                Map.entry("AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString()),
+                Map.entry("REDIS_URI", REDIS_CONTAINER.getRedisURI())
         );
     }
 
@@ -59,5 +67,7 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)));
 
         LOGGER.info(sbConfig.toString());
+
+        LOGGER.info(String.format("  Redis URI: %s%n", REDIS_CONTAINER.getRedisURI()));
     }
 }

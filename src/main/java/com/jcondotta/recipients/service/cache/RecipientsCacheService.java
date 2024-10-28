@@ -14,8 +14,8 @@ public class RecipientsCacheService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecipientsCacheService.class);
 
-    private WriteSyncCacheService writeSyncCacheService;
-    private ReadSyncCacheService readSyncCacheService;
+    private final WriteSyncCacheService writeSyncCacheService;
+    private final ReadSyncCacheService readSyncCacheService;
 
     @Inject
     public RecipientsCacheService(WriteSyncCacheService writeSyncCacheService, ReadSyncCacheService readSyncCacheService) {

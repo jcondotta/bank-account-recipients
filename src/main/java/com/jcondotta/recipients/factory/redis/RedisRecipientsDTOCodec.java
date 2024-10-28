@@ -3,7 +3,6 @@ package com.jcondotta.recipients.factory.redis;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import io.lettuce.core.codec.RedisCodec;
 import io.micronaut.json.JsonMapper;
-import jakarta.inject.Singleton;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

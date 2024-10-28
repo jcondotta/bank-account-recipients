@@ -3,15 +3,9 @@ package com.jcondotta.recipients.service.request;
 import com.google.common.hash.Hashing;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Serdeable
 @Schema(description = "Parameters for querying recipients, including pagination and filtering options.")

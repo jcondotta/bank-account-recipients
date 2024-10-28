@@ -2,11 +2,11 @@ package com.jcondotta.recipients.service;
 
 import com.jcondotta.recipients.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
 import com.jcondotta.recipients.argument_provider.validation.security.ThreatInputArgumentProvider;
-import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.repository.DeleteRecipientRepository;
+import com.jcondotta.recipients.service.cache.CacheEvictionService;
 import com.jcondotta.recipients.service.request.DeleteRecipientRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -35,7 +34,7 @@ class DeleteRecipientServiceTest {
     private DeleteRecipientRepository deleteRecipientRepository;
 
     @Mock
-    private Recipient recipientMock;
+    private CacheEvictionService cacheEvictionService;
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
@@ -44,7 +43,7 @@ class DeleteRecipientServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        deleteRecipientService = new DeleteRecipientService(deleteRecipientRepository, VALIDATOR);
+        deleteRecipientService = new DeleteRecipientService(deleteRecipientRepository, cacheEvictionService, VALIDATOR);
     }
 
     @Test
@@ -53,6 +52,7 @@ class DeleteRecipientServiceTest {
         deleteRecipientService.deleteRecipient(deleteRecipientRequest);
 
         verify(deleteRecipientRepository).delete(any(UUID.class), anyString());
+        verify(cacheEvictionService).evictCacheEntriesByBankAccountId(eq(deleteRecipientRequest.bankAccountId()));
         verifyNoMoreInteractions(deleteRecipientRepository);
     }
 
@@ -69,8 +69,7 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
-        verify(deleteRecipientRepository, never()).delete(any(UUID.class), anyString());
-        verifyNoMoreInteractions(deleteRecipientRepository);
+        verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -87,8 +86,7 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(deleteRecipientRepository, never()).delete(any(UUID.class), anyString());
-        verifyNoMoreInteractions(deleteRecipientRepository);
+        verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -105,7 +103,6 @@ class DeleteRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(deleteRecipientRepository, never()).delete(any(UUID.class), anyString());
-        verifyNoMoreInteractions(deleteRecipientRepository);
+        verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
     }
 }

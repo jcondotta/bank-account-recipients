@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
-import java.util.Objects;
-
 public class RecipientQueryConditionalBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecipientQueryConditionalBuilder.class);

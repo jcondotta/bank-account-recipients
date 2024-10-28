@@ -22,7 +22,7 @@ public class QueryParamsArgumentProvider implements ArgumentsProvider {
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
         return Stream.of(
-                Arguments.of(Named.of("no param", QueryParams.builder()
+                Arguments.of(Named.of("empty queryParams", QueryParams.builder()
                         .build())),
 
                 Arguments.of(Named.of("with recipientName", QueryParams.builder()

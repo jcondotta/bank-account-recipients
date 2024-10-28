@@ -13,11 +13,10 @@ import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.repository.AddRecipientRepository;
 import com.jcondotta.recipients.repository.AddRecipientRepositoryResponse;
+import com.jcondotta.recipients.service.cache.CacheEvictionService;
 import com.jcondotta.recipients.service.dto.ExistentRecipientDTO;
 import com.jcondotta.recipients.service.dto.RecipientDTO;
 import com.jcondotta.recipients.service.request.AddRecipientRequest;
-import com.jcondotta.recipients.web.controller.RecipientAPIUriBuilder;
-import io.micronaut.http.HttpStatus;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,18 +26,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,22 +46,23 @@ class AddRecipientServiceTest {
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
     private static final String RECIPIENT_IBAN_JEFFERSON = TestRecipient.JEFFERSON.getRecipientIban();
 
-    private static final String RECIPIENT_IBAN_PATRIZIO = TestRecipient.PATRIZIO.getRecipientIban();
-
     private static final Clock TEST_CLOCK_FIXED_INSTANT = ClockTestFactory.testClockFixedInstant;
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
 
     @Mock
-    private AddRecipientRepository recipientRepositoryMock;
+    private AddRecipientRepository recipientRepository;
 
     @Mock
-    private AddRecipientRepositoryResponse repositoryResponseMock;
+    private AddRecipientRepositoryResponse repositoryResponse;
+
+    @Mock
+    private CacheEvictionService cacheEvictionService;
 
     private AddRecipientService addRecipientService;
 
     @BeforeEach
     void beforeEach() {
-        addRecipientService = new AddRecipientService(recipientRepositoryMock, TEST_CLOCK_FIXED_INSTANT, VALIDATOR);
+        addRecipientService = new AddRecipientService(recipientRepository, cacheEvictionService, TEST_CLOCK_FIXED_INSTANT, VALIDATOR);
     }
 
     @ParameterizedTest
@@ -76,15 +71,16 @@ class AddRecipientServiceTest {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, validIban);
 
         var recipientMock = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, validIban);
-        when(repositoryResponseMock.recipient()).thenReturn(recipientMock);
-        when(repositoryResponseMock.isIdempotent()).thenReturn(false);
+        when(repositoryResponse.recipient()).thenReturn(recipientMock);
+        when(repositoryResponse.isIdempotent()).thenReturn(false);
 
-        when(recipientRepositoryMock.add(any(Recipient.class))).thenReturn(repositoryResponseMock);
+        when(recipientRepository.add(any(Recipient.class))).thenReturn(repositoryResponse);
 
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
 
-        verify(recipientRepositoryMock).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verify(recipientRepository).add(any(Recipient.class));
+        verify(cacheEvictionService).evictCacheEntriesByBankAccountId(eq(addRecipientRequest.bankAccountId()));
+        verifyNoMoreInteractions(recipientRepository, cacheEvictionService);
 
         assertThat(recipientDTO).isExactlyInstanceOf(RecipientDTO.class);
         assertAll(
@@ -108,8 +104,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -126,8 +121,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -144,8 +138,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @Test
@@ -162,8 +155,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -180,8 +172,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientIban");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -198,8 +189,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientIban");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @ParameterizedTest
@@ -216,8 +206,7 @@ class AddRecipientServiceTest {
                     assertThat(violation.getPropertyPath()).hasToString("recipientIban");
                 });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @Test
@@ -250,17 +239,16 @@ class AddRecipientServiceTest {
                     .withFailMessage("Property path mismatch for message: %s", message);
         });
 
-        verify(recipientRepositoryMock, never()).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
     }
 
     @Test
     void shouldReturnRecipientWithoutModification_whenIdempotencyOccurs() {
         var recipientMock = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
-        when(repositoryResponseMock.recipient()).thenReturn(recipientMock);
-        when(repositoryResponseMock.isIdempotent()).thenReturn(false);
+        when(repositoryResponse.recipient()).thenReturn(recipientMock);
+        when(repositoryResponse.isIdempotent()).thenReturn(false);
 
-        when(recipientRepositoryMock.add(any(Recipient.class))).thenReturn(repositoryResponseMock);
+        when(recipientRepository.add(any(Recipient.class))).thenReturn(repositoryResponse);
 
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         var recipientDTO = addRecipientService.addRecipient(addRecipientRequest);
@@ -273,7 +261,7 @@ class AddRecipientServiceTest {
                 () -> assertThat(recipientDTO.getCreatedAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT))
         );
 
-        when(repositoryResponseMock.isIdempotent()).thenReturn(true);
+        when(repositoryResponse.isIdempotent()).thenReturn(true);
 
         var existentRecipientDTO = addRecipientService.addRecipient(addRecipientRequest);
         assertThat(existentRecipientDTO).isExactlyInstanceOf(ExistentRecipientDTO.class);
@@ -283,17 +271,19 @@ class AddRecipientServiceTest {
                 () -> assertThat(existentRecipientDTO.getRecipientIban()).isEqualTo(addRecipientRequest.recipientIban()),
                 () -> assertThat(existentRecipientDTO.getCreatedAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT))
         );
+
+        verify(cacheEvictionService, times(2)).evictCacheEntriesByBankAccountId(addRecipientRequest.bankAccountId());
     }
 
     @Test
     void shouldThrowRecipientAlreadyExistsException_whenSameRecipientButDifferentIbanIsAdded() {
-        when(recipientRepositoryMock.add(any(Recipient.class))).thenThrow(RecipientAlreadyExistsException.class);
+        when(recipientRepository.add(any(Recipient.class))).thenThrow(RecipientAlreadyExistsException.class);
 
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
 
         assertThrows(RecipientAlreadyExistsException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
 
-        verify(recipientRepositoryMock).add(any(Recipient.class));
-        verifyNoMoreInteractions(recipientRepositoryMock);
+        verify(recipientRepository).add(any(Recipient.class));
+        verifyNoMoreInteractions(recipientRepository, cacheEvictionService);
     }
 }

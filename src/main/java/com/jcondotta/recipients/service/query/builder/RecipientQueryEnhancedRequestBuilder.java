@@ -5,13 +5,10 @@ import com.jcondotta.recipients.service.request.QueryParams;
 import com.jcondotta.recipients.service.request.QueryRecipientsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 public class RecipientQueryEnhancedRequestBuilder {
 

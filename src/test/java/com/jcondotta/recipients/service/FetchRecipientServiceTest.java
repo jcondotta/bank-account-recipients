@@ -4,7 +4,6 @@ import com.jcondotta.recipients.argument_provider.validation.query_params.QueryP
 import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
-import com.jcondotta.recipients.helper.TestRecipient;
 import com.jcondotta.recipients.service.cache.RecipientsCacheService;
 import com.jcondotta.recipients.service.dto.RecipientsDTO;
 import com.jcondotta.recipients.service.query.parser.RecipientPageParser;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;

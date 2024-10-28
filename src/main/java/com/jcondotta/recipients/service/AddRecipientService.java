@@ -1,10 +1,10 @@
 package com.jcondotta.recipients.service;
 
+import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.repository.AddRecipientRepository;
-import com.jcondotta.recipients.repository.AddRecipientRepositoryResponse;
+import com.jcondotta.recipients.service.cache.CacheEvictionService;
 import com.jcondotta.recipients.service.dto.ExistentRecipientDTO;
 import com.jcondotta.recipients.service.dto.RecipientDTO;
-import com.jcondotta.recipients.domain.Recipient;
 import com.jcondotta.recipients.service.request.AddRecipientRequest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -23,12 +23,14 @@ public class AddRecipientService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AddRecipientService.class);
 
     private final AddRecipientRepository addRecipientRepository;
+    private final CacheEvictionService cacheEvictionService;
     private final Clock currentInstant;
     private final Validator validator;
 
     @Inject
-    public AddRecipientService(AddRecipientRepository addRecipientRepository, Clock currentInstant, Validator validator) {
+    public AddRecipientService(AddRecipientRepository addRecipientRepository, CacheEvictionService cacheEvictionService, Clock currentInstant, Validator validator) {
         this.addRecipientRepository = addRecipientRepository;
+        this.cacheEvictionService = cacheEvictionService;
         this.currentInstant = currentInstant;
         this.validator = validator;
     }
@@ -54,6 +56,8 @@ public class AddRecipientService {
         );
 
         var recipient = addRecipientRepositoryResponse.recipient();
+        cacheEvictionService.evictCacheEntriesByBankAccountId(recipient.getBankAccountId());
+
         if (addRecipientRepositoryResponse.isIdempotent()) {
             LOGGER.debug("[BankAccountId={}, RecipientName={}] Idempotent request processed, recipient already exists",
                     recipient.getBankAccountId(), recipient.getRecipientName());

@@ -6,7 +6,8 @@ public enum TestRecipient {
     PATRIZIO("Patrizio Condotta", "IT93 Q030 0203 2801 7517 1887 19 3"),
     VIRGINIO("Virginio Condotta", "IT49 W030 0203 2801 1452 4628 85 7"),
     INDALECIO("Indalecio Condotta", "BR23 4642 4773 8848 9796 8151 332C 5"),
-    JESSICA("Jessica Condotta", "BR48 7399 5739 4597 3669 8619 729E 5");
+    JESSICA("Jessica Condotta", "BR48 7399 5739 4597 3669 8619 729E 5"),
+    JENNIFER("Jennifer Condotta", "BR48 7399 5739 4597 3669 8619 729E 5");
 
     private final String recipientName;
     private final String recipientIban;

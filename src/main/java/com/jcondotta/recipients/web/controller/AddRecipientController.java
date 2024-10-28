@@ -1,10 +1,9 @@
 package com.jcondotta.recipients.web.controller;
 
 import com.jcondotta.recipients.service.AddRecipientService;
+import com.jcondotta.recipients.service.dto.ExistentRecipientDTO;
 import com.jcondotta.recipients.service.dto.RecipientDTO;
 import com.jcondotta.recipients.service.request.AddRecipientRequest;
-import com.jcondotta.recipients.service.dto.ExistentRecipientDTO;
-import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -23,7 +22,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
@@ -73,7 +71,7 @@ public class AddRecipientController {
             @ApiResponse(responseCode = "400", description = "Invalid bank account ID, recipient name, or IBAN. Ensure that all required fields are valid."),
             @ApiResponse(responseCode = "500", description = "Internal server error. This may occur due to system issues, failed database connections, or unexpected runtime exceptions.")
     })
-    public HttpResponse<RecipientDTO> addRecipient(@Body AddRecipientRequest addRecipientRequest, HttpRequest<?> request) {
+    public HttpResponse<RecipientDTO> addRecipient(@Body AddRecipientRequest addRecipientRequest) {
 
         LOGGER.info("[BankAccountId={}, RecipientName={}, IBAN={}] Incoming request to add recipient",
                 addRecipientRequest.bankAccountId(), addRecipientRequest.recipientName(), addRecipientRequest.recipientIban());
@@ -88,7 +86,7 @@ public class AddRecipientController {
         }
         else {
             var locationUri = RecipientAPIUriBuilder.fetchRecipientsURI(recipientDTO.getBankAccountId());
-            return HttpResponse.created(recipientDTO, locationUri);  // 201 Created for new recipients
+            return HttpResponse.created(recipientDTO, locationUri);
         }
     }
 }
