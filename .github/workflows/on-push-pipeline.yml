@@ -49,18 +49,47 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Setup Docker Images
-        uses: ./.github/workflows/setup-docker-images.yml
+      - name: Cache LocalStack and Redis Docker images
+        uses: actions/cache@v3
         with:
-          LOCALSTACK_VERSION: "3.7.0"
-          REDIS_VERSION: "6.2.6"
+          path: ~/.docker-cache
+          key: ${{ runner.os }}-localstack-redis
+
+      - name: Load or Pull LocalStack and Redis Docker Images
+        run: |
+          mkdir -p ~/.docker-cache/localstack
+          mkdir -p ~/.docker-cache/redis
+
+          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
+            echo "Loading LocalStack Docker image from cache..."
+            docker load -i ~/.docker-cache/localstack/localstack.tar
+          else
+            echo "LocalStack image not found in cache, pulling from Docker Hub..."
+            docker pull localstack/localstack:3.7.0
+            echo "Saving LocalStack image to cache..."
+            docker save localstack/localstack:3.7.0 -o ~/.docker-cache/localstack/localstack.tar
+          fi
+
+          if [ -f ~/.docker-cache/redis/redis.tar ]; then
+            echo "Loading Redis Docker image from cache..."
+            docker load -i ~/.docker-cache/redis/redis.tar
+          else
+            echo "Redis image not found in cache, pulling from Docker Hub..."
+            docker pull redis:6.2.6
+            echo "Saving Redis image to cache..."
+            docker save redis:6.2.6 -o ~/.docker-cache/redis/redis.tar
+          fi
 
       - name: Start LocalStack for Integration Tests
         run: |
           docker run -d --name localstack \
             -p 127.0.0.1:4566:4566 \
             -e SERVICES=dynamodb,ssm \
-            localstack/localstack:${{ needs.build-and-test.outputs.LOCALSTACK_VERSION }}
+            localstack/localstack:3.7.0
+
+      - name: Start Redis for Integration Tests
+        run: |
+          docker run -d --name redis -p 6379:6379 redis:6.2.6
 
       - name: Run Integration Tests with JaCoCo
         run: |
