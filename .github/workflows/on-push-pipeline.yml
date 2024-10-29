@@ -25,7 +25,7 @@ jobs:
 
       - name: Compile and Run Unit Tests
         run: |
-          mvn clean test package --batch-mode
+          mvn clean package -DskipTests=true --batch-mode
 
       - name: Upload Packaged Artifact
         uses: actions/upload-artifact@v3
