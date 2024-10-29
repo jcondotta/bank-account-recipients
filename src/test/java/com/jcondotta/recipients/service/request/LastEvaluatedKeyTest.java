@@ -1,8 +1,12 @@
 package com.jcondotta.recipients.service.request;
 
 import com.jcondotta.recipients.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
+import com.jcondotta.recipients.argument_provider.validation.security.ThreatInputArgumentProvider;
+import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,34 +29,101 @@ class LastEvaluatedKeyTest {
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
 
+    private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
+
+    @Test
+    void shouldNotThrowException_whenLastEvaluatedKeyIsValid() {
+        final var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
+
+        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        assertThat(constraintViolations).isEmpty();
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
+        final var lastEvaluatedKey = new LastEvaluatedKey(null, RECIPIENT_NAME_JEFFERSON);
+
+        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        assertThat(constraintViolations)
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.bankAccountId.notNull");
+                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
+                });
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String blankRecipientName) {
+        final var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, blankRecipientName);
+
+        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        assertThat(constraintViolations)
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.recipientName.notBlank");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
+                });
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenRecipientNameExceeds50Characters() {
+        final var veryLongRecipientName = "J".repeat(51);
+        var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName);
+
+        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        assertThat(constraintViolations)
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.recipientName.tooLong");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
+                });
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String maliciousRecipientName) {
+        var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, maliciousRecipientName);
+
+        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        assertThat(constraintViolations)
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.recipientName.invalid");
+                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
+                });
+    }
+
     @Test
     void shouldReturnExclusiveStartKey_whenKeyValuesAreValid() {
         var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
         Map<String, AttributeValue> exclusiveStartKey = lastEvaluatedKey.toExclusiveStartKey();
 
-        Assertions.assertThat(exclusiveStartKey).hasSize(2);
-        Assertions.assertThat(exclusiveStartKey.get("bankAccountId").s()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL.toString());
-        Assertions.assertThat(exclusiveStartKey.get("recipientName").s()).isEqualTo(RECIPIENT_NAME_JEFFERSON);
+        assertThat(exclusiveStartKey).hasSize(2);
+        assertThat(exclusiveStartKey.get("bankAccountId").s()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL.toString());
+        assertThat(exclusiveStartKey.get("recipientName").s()).isEqualTo(RECIPIENT_NAME_JEFFERSON);
     }
 
     @Test
-    void shouldThrowIllegalArgumentException_whenExclusiveStartKeyHasNullBankAccountId() {
+    void shouldThrowNullPointerException_whenGetExclusiveStartKeyWithNullBankAccountId() {
         var lastEvaluatedKey = new LastEvaluatedKey(null, RECIPIENT_NAME_JEFFERSON);
 
-        var exception = assertThrows(IllegalArgumentException.class, () -> lastEvaluatedKey.toExclusiveStartKey());
-        assertThat(exception)
-                .hasMessage("bankAccountId must not be null");
+        var exception = assertThrows(NullPointerException.class, () -> lastEvaluatedKey.toExclusiveStartKey());
+        assertThat(exception).hasMessage("lastEvaluatedKey.bankAccountId.notNull");
     }
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldThrowIllegalArgumentException_whenExclusiveStartKeyHasBlankRecipientName(String invalidRecipientName) {
+    void shouldThrowNullPointerException_whenGetExclusiveStartKeyWithBlankBankAccountId(String invalidRecipientName) {
         var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(IllegalArgumentException.class, () -> lastEvaluatedKey.toExclusiveStartKey());
-        assertThat(exception)
-                .hasMessage("recipientName must not be null or blank");
+        assertThat(exception).hasMessage("lastEvaluatedKey.recipientName.notBlank");
     }
 
     @Test

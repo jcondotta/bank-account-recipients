@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -21,25 +22,24 @@ public record LastEvaluatedKey(
         @Schema(description = "The unique identifier for the bank account associated with the recipient.",
                 example = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 requiredMode = RequiredMode.REQUIRED)
-        @NotNull(message = "query.recipients.params.lastEvaluatedKey.bankAccountId.notNull")
+        @NotNull(message = "lastEvaluatedKey.bankAccountId.notNull")
         UUID bankAccountId,
 
         @Schema(description = "The recipientName of the recipient used for pagination.",
                 example = "Jefferson Condotta",
                 maxLength = 50,
                 requiredMode = RequiredMode.REQUIRED)
-        @NotBlank(message = "query.recipients.params.lastEvaluatedKey.recipientName.notBlank")
-        @Size(max = 50, message = "query.recipients.params.lastEvaluatedKey.recipientName.tooLong")
-        @SecureInput(message = "query.recipients.params.lastEvaluatedKey.recipientName.invalid")
+        @NotBlank(message = "lastEvaluatedKey.recipientName.notBlank")
+        @Size(max = 50, message = "lastEvaluatedKey.recipientName.tooLong")
+        @SecureInput(message = "lastEvaluatedKey.recipientName.invalid")
         String recipientName
 ) {
 
     public Map<String, AttributeValue> toExclusiveStartKey() {
-        if (bankAccountId == null) {
-            throw new IllegalArgumentException("bankAccountId must not be null");
-        }
+        Objects.requireNonNull(bankAccountId, "lastEvaluatedKey.bankAccountId.notNull");
+
         if (StringUtils.isBlank(recipientName)) {
-            throw new IllegalArgumentException("recipientName must not be null or blank");
+            throw new IllegalArgumentException("lastEvaluatedKey.recipientName.notBlank");
         }
 
         return Map.of(
