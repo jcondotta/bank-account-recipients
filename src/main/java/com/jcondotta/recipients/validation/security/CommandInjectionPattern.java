@@ -9,7 +9,7 @@ public class CommandInjectionPattern implements ThreatInputPattern {
             "(&&.*?ls)|" +                                  // Listing files
             "(\\|.*?cat\\b)|" +                             // Piping output
             "(&&[^>]*+>)|" +                                // Redirecting output (retain possessive quantifier here)
-            "(&&.*?&)|" +                                   // Background execution
+            "(&&[^&]*+&)|" +                                // Background execution
             "(;.*?ls)|" +                                   // Multiple commands
             "(\\|\\|\\s*true\\b)|" +                        // Bypassing with || true
             "(\\bsh\\b|\\bchmod\\b|\\bchown\\b)",           // Shell commands
