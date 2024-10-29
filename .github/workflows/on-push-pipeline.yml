@@ -109,7 +109,7 @@ jobs:
           docker run -d --name redis -p 6379:6379 redis:6.2.6
 
       - name: Run Integration Tests with JaCoCo
-          run: |
+        run: |
           mvn failsafe:integration-test jacoco:report -Djacoco.destFile=target/jacoco-it.exec --batch-mode
 
       - name: Merge JaCoCo Reports
