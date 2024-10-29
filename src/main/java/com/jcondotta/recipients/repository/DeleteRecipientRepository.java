@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.util.UUID;
@@ -32,12 +33,16 @@ public class DeleteRecipientRepository {
                 .sortValue(recipientName)
                 .build();
 
+
+        var deleteItemRequest = DeleteItemEnhancedRequest.builder()
+                .key(recipientKey)
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
+                        .build())
+                .build();
+
         try {
-            dynamoDbTable.deleteItem(builder -> builder.key(recipientKey)
-                    .conditionExpression(Expression.builder()
-                            .expression("attribute_exists(bankAccountId) AND attribute_exists(recipientName)")
-                            .build())
-                    .build());
+            dynamoDbTable.deleteItem(deleteItemRequest);
             LOGGER.info("[BankAccountId={}, RecipientName={}] Recipient deleted successfully", bankAccountId, recipientName);
         }
         catch (ConditionalCheckFailedException e) {
