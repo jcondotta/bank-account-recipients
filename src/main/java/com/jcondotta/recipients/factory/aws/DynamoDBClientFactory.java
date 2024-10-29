@@ -1,9 +1,9 @@
 package com.jcondotta.recipients.factory.aws;
 
-import com.jcondotta.recipients.configuration.dynamodb.DynamoDbConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +38,8 @@ public class DynamoDBClientFactory {
     @Singleton
     @Replaces(DynamoDbClient.class)
     @Requires(property = "aws.dynamodb.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
-    public DynamoDbClient dynamoDbClientEndpointOverridden(AwsCredentials awsCredentials, Region region, DynamoDbConfiguration.DynamoDbEndpointConfiguration dynamoDbEndpointConfiguration){
-        LOGGER.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, dynamoDbEndpointConfiguration.endpoint());
-
-        var dynamoDbEndpoint = dynamoDbEndpointConfiguration.endpoint()
-                .orElseThrow(() -> new IllegalStateException("Dynamo DB endpoint configuration is missing or invalid."));
+    public DynamoDbClient dynamoDbClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.dynamodb.endpoint}") String dynamoDbEndpoint){
+        LOGGER.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, dynamoDbEndpoint);
 
         return DynamoDbClient.builder()
                 .region(region)

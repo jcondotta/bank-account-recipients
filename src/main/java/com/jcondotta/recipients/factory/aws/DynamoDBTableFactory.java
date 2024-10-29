@@ -1,9 +1,9 @@
 package com.jcondotta.recipients.factory.aws;
 
-import com.jcondotta.recipients.configuration.dynamodb.RecipientsTableConfiguration;
 import com.jcondotta.recipients.domain.Recipient;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -16,15 +16,11 @@ import java.util.UUID;
 @Factory
 public class DynamoDBTableFactory {
 
-    private RecipientsTableConfiguration recipientsTableConfiguration;
-
-    public DynamoDBTableFactory(RecipientsTableConfiguration recipientsTableConfiguration) {
-        this.recipientsTableConfiguration = recipientsTableConfiguration;
-    }
-
     @Singleton
-    @Requires(bean = RecipientsTableConfiguration.class)
-    public DynamoDbTable<Recipient> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient){
+    @Requires(property = "aws.dynamodb.tables.recipients.table-name")
+    public DynamoDbTable<Recipient> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient,
+                                                  @Value("${aws.dynamodb.tables.recipients.table-name}") String recipientsTableName){
+
         StaticTableSchema<Recipient> staticTableSchema = StaticTableSchema.builder(Recipient.class)
                 .newItemSupplier(Recipient::new)
                 .addAttribute(UUID.class, attr -> attr.name("bankAccountId")
@@ -44,6 +40,6 @@ public class DynamoDBTableFactory {
                 .build();
 
 
-        return dynamoDbEnhancedClient.table(recipientsTableConfiguration.tableName(), staticTableSchema);
+        return dynamoDbEnhancedClient.table(recipientsTableName, staticTableSchema);
     }
 }

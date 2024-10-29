@@ -1,8 +1,8 @@
 package com.jcondotta.recipients.factory.aws;
 
-import com.jcondotta.recipients.configuration.AwsConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.regions.Region;
 
@@ -10,8 +10,8 @@ import software.amazon.awssdk.regions.Region;
 public class AWSRegionFactory {
 
     @Singleton
-    @Requires(beans = AwsConfiguration.class)
-    public Region region(AwsConfiguration awsConfiguration){
-        return Region.of(awsConfiguration.region());
+    @Requires(property = "aws.region")
+    public Region region(@Value("${aws.region}") String region){
+        return Region.of(region);
     }
 }
