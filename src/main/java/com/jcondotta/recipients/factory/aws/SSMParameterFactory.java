@@ -1,8 +1,8 @@
 package com.jcondotta.recipients.factory.aws;
 
-import com.jcondotta.recipients.configuration.ssm.JwtSignatureSecretConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -17,13 +17,13 @@ public class SSMParameterFactory {
 
     @Singleton
     @Named("jwtSignatureSecret")
-    @Requires(bean = JwtSignatureSecretConfiguration.class)
-    public Parameter jwtSignatureSecretParameter(SsmClient ssmClient, JwtSignatureSecretConfiguration jwtSignatureSecretConfiguration){
+    @Requires(property = "aws.ssm.parameters.jwt-signature-secret")
+    public Parameter jwtSignatureSecretParameter(SsmClient ssmClient, @Value("aws.ssm.parameters.jwt-signature-secret") String jwtSignatureSecretParameterName){
 
-        LOGGER.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretConfiguration.name());
+        LOGGER.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretParameterName);
 
         var parameterResponse = ssmClient
-                .getParameter(builder -> builder.name(jwtSignatureSecretConfiguration.name())
+                .getParameter(builder -> builder.name(jwtSignatureSecretParameterName)
                 .withDecryption(true)
                 .build());
 

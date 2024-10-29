@@ -13,12 +13,6 @@ public class RecipientAlreadyExistsException extends RuntimeException{
         this.recipientName = recipientName;
     }
 
-    public RecipientAlreadyExistsException(UUID bankAccountId, String recipientName) {
-        super();
-        this.bankAccountId = bankAccountId;
-        this.recipientName = recipientName;
-    }
-
     public UUID getBankAccountId() {
         return bankAccountId;
     }

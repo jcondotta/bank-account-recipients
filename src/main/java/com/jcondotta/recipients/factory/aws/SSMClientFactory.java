@@ -1,9 +1,9 @@
 package com.jcondotta.recipients.factory.aws;
 
-import com.jcondotta.recipients.configuration.ssm.SSMConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +38,8 @@ public class SSMClientFactory {
     @Singleton
     @Replaces(SsmClient.class)
     @Requires(property = "aws.ssm.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
-    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, SSMConfiguration.SSMEndpointConfiguration ssmEndpointConfiguration){
-        LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, ssmEndpointConfiguration.endpoint());
-
-        var ssmEndpoint = ssmEndpointConfiguration.endpoint()
-                .orElseThrow(() -> new IllegalStateException("SSM endpoint configuration is missing or invalid."));
+    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("aws.ssm.endpoint") String ssmEndpoint){
+        LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, ssmEndpoint);
 
         return SsmClient.builder()
                 .region(region)

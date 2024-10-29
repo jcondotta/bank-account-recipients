@@ -67,14 +67,4 @@ public class RecipientDTO {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
-    @Override
-    public String toString() {
-        return "Recipient{" +
-                "bankAccountId=" + bankAccountId +
-                ", recipientName='" + recipientName + '\'' +
-                ", recipientIban='" + recipientIban + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }
