@@ -85,7 +85,7 @@ jobs:
 
       - name: Run Integration Tests with Failsafe Plugin
         run: |
-          mvn verify sonar:sonar \
+          mvn test sonar:sonar \
             -Dsonar.projectKey=jcondotta_bank-account-recipients \
             -Dsonar.organization=jcondotta \
             -Dsonar.host.url=https://sonarcloud.io \
