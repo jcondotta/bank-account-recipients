@@ -150,7 +150,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-            mvn sonar:sonar \
+            mvn package -DskipUnitTests=true sonar:sonar \
               -Dsonar.projectKey=jcondotta_bank-account-recipients \
               -Dsonar.organization=jcondotta \
               -Dsonar.host.url=https://sonarcloud.io \
