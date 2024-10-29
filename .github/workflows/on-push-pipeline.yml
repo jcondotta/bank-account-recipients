@@ -84,7 +84,25 @@ jobs:
             localstack/localstack:${{ env.LOCALSTACK_VERSION }}
 
       - name: Run Integration Tests with Failsafe Plugin
-        run: mvn failsafe:integration-test --batch-mode
+        run: |
+          mvn verify sonar:sonar \
+            -Dsonar.projectKey=jcondotta_bank-account-recipients \
+            -Dsonar.organization=jcondotta \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+#        run: mvn failsafe:integration-test --batch-mode
+#
+#
+#        mvn sonar:sonar \
+#        -Dsonar.projectKey=your_project_key \
+#        -Dsonar.organization=your_org \
+#        -Dsonar.host.url=https://sonarcloud.io \
+#        -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+#        -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-report/jacoco.xml
+
+
 
 #  # Phase 3: Docker Build and Push
 #  docker-image-push:
