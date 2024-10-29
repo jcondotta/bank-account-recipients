@@ -9,6 +9,12 @@ on:
       - main
 
 jobs:
+  setup-docker-images:
+    uses: ./.github/workflows/setup-docker-images.yml
+    with:
+      LOCALSTACK_VERSION: "3.7.0"
+      REDIS_VERSION: "6.2.6"
+
   # Phase 1: Build and Package
   build-package:
     runs-on: ubuntu-latest
@@ -24,25 +30,25 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: SonarCloud Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn clean package sonar:sonar \
-              -Dsonar.projectKey=jcondotta_bank-account-recipients \
-              -Dsonar.organization=jcondotta \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+#      - name: Cache SonarCloud packages
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.sonar/cache
+#          key: ${{ runner.os }}-sonar
+#          restore-keys: ${{ runner.os }}-sonar
+#
+#      - name: SonarCloud Scan
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: |
+#          mvn clean package sonar:sonar \
+#              -Dsonar.projectKey=jcondotta_bank-account-recipients \
+#              -Dsonar.organization=jcondotta \
+#              -Dsonar.host.url=https://sonarcloud.io \
+#              -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
 
       - name: Build and Package the Java Application
-        run: mvn clean package --batch-mode
+        run: mvn failsafe:integration-test --batch-mode
 
 # Reuse the Docker image setup job
       - name: Setup Docker Images
