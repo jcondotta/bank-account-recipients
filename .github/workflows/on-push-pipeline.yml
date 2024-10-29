@@ -31,6 +31,14 @@ jobs:
           java-version: 17
           cache: maven
 
+      - name: Start LocalStack Services for Integration Tests
+        run: |
+          echo "Starting LocalStack container..."
+          docker run -d --name localstack \
+            -p 127.0.0.1:4566:4566 \
+            -e SERVICES=dynamodb,ssm \
+            localstack/localstack:${{ env.LOCALSTACK_VERSION }}
+
 #      - name: Cache SonarCloud packages
 #        uses: actions/cache@v4
 #        with:
@@ -52,11 +60,6 @@ jobs:
         run: mvn failsafe:integration-test --batch-mode
 
 # Reuse the Docker image setup job
-      - name: Setup Docker Images
-        uses: ./.github/workflows/setup-docker-images.yml
-        with:
-          LOCALSTACK_VERSION: "3.7.0"
-          REDIS_VERSION: "6.2.6"
 #        run: mvn clean package --batch-mode sonar:sonar \
 #          -Dsonar.projectKey=jcondotta_bank-account-recipients \
 #          -Dsonar.organization=jcondotta \
