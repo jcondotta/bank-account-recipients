@@ -37,7 +37,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn package sonar:sonar \
+          mvn clean package sonar:sonar \
               -Dsonar.projectKey=jcondotta_bank-account-recipients \
               -Dsonar.organization=jcondotta \
               -Dsonar.host.url=https://sonarcloud.io \
