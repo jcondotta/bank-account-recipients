@@ -68,7 +68,8 @@ class DeleteRecipientServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenRecipientNameIsInvalid(String invalidRecipientName) {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
@@ -81,17 +82,6 @@ class DeleteRecipientServiceTest {
     void shouldThrowConstraintViolationException_whenRecipientNameExceeds50Characters() {
         final var veryLongRecipientName = "J".repeat(51);
         final var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
-        assertThat(exception.getConstraintViolations()).hasSize(1);
-
-        verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
-        var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);

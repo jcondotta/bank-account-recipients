@@ -17,7 +17,7 @@
         <sonar.projectKey>jcondotta_bank-account-recipients</sonar.projectKey>
         <sonar.organization>jcondotta</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco-merged.xml</sonar.coverage.jacoco.xmlReportPaths>
 
         <packaging>jar</packaging>
         <jdk.version>17</jdk.version>
@@ -265,19 +265,87 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>0.8.12</version>
                 <executions>
+                    <!-- Unit Test Coverage -->
                     <execution>
+                        <id>prepare-agent-ut</id>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco-ut.exec</destFile>
+                        </configuration>
                     </execution>
+
+                    <!-- Generate report for unit tests -->
                     <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
+                        <id>report-ut</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-ut.exec</dataFile>
+                            <outputDirectory>${project.build.directory}/site/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- Integration Test Coverage -->
+                    <execution>
+                        <id>prepare-agent-it</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+                        </configuration>
+                        <phase>pre-integration-test</phase>
+                    </execution>
+
+                    <execution>
+                        <id>report-it</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
+                            <outputDirectory>${project.build.directory}/site/jacoco-it</outputDirectory>
+                        </configuration>
+                        <phase>post-integration-test</phase>
+                    </execution>
+
+                    <execution>
+                        <id>post-integration-merge</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>**/*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/jacoco-aggregator.exec</destFile>
+                        </configuration>
+                    </execution>
+
+<!--                    &lt;!&ndash; Generate Final Report for SonarCloud &ndash;&gt;-->
+                    <execution>
+                        <id>generate-merged-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-aggregator.exec</dataFile>
+                            <outputDirectory>${project.build.directory}/site/jacoco/jacoco-merged</outputDirectory>
+                        </configuration>
+                        <phase>verify</phase>
                     </execution>
                 </executions>
             </plugin>

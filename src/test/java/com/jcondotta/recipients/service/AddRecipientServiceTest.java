@@ -147,18 +147,8 @@ class AddRecipientServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations()).hasSize(1);
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
+    void shouldThrowConstraintViolationException_whenRecipientNameIsInvalid(String invalidRecipientName) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));

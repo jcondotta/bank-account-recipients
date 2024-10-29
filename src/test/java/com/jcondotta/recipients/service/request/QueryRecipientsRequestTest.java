@@ -43,7 +43,7 @@ class QueryRecipientsRequestTest {
 
     @Test
     void shouldReturnValidQueryRecipientsRequest_whenNoQueryParamsIsProvided() {
-        var queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL);
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL);
 
         var expectedQueryParams = QueryParams.builder().build();
         assertThat(queryRecipientsRequest.queryParams()).isEqualTo(expectedQueryParams);
