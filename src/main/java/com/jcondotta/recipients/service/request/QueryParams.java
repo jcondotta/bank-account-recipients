@@ -6,6 +6,8 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import java.nio.charset.StandardCharsets;
@@ -19,12 +21,12 @@ public record QueryParams(
                 "the query will return recipients whose names start with the given value.",
                 example = "Jeff")
         Optional<
-                @Size(max = 50, message = "query.recipients.params.recipientName.tooLong")
-                @SecureInput(message = "query.recipients.params.recipientName.invalid")
+                @Size(max = 50, message = "query.params.recipientName.tooLong")
+                @SecureInput(message = "query.params.recipientName.invalid")
                 String> recipientName,
 
         @Schema(description = "The maximum number of results to return. Must be a positive integer.", example = "15")
-        Optional<@Max(value = 20, message = "query.recipients.params.limit.exceedsMaximum") Integer> limit,
+        Optional<@Max(value = 20, message = "query.params.limit.exceedsMaximum") Integer> limit,
 
         @Schema(description = "The last evaluated key used for pagination, " + "allowing the query to resume from where the previous one left off.")
         Optional<@Valid LastEvaluatedKey> lastEvaluatedKey
