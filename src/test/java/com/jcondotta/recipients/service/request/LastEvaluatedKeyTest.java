@@ -7,7 +7,6 @@ import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

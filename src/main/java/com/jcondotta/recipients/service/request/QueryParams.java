@@ -5,7 +5,9 @@ import com.jcondotta.recipients.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;

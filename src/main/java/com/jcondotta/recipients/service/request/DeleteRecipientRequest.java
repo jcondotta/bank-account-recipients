@@ -5,6 +5,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -22,7 +23,8 @@ public record DeleteRecipientRequest(
         @Schema(description = "The recipientName of the recipient to be deleted.",
                 example = "Jefferson Condotta",
                 requiredMode = RequiredMode.REQUIRED)
-        @SecureInput(message = "recipient.recipientName.invalid")
         @NotBlank(message = "recipient.recipientName.notBlank")
+        @Size(max = 50, message = "recipient.recipientName.tooLong")
+        @SecureInput(message = "recipient.recipientName.invalid")
         String recipientName) {
 }

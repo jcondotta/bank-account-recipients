@@ -33,6 +33,7 @@ class FetchRecipientServiceTest {
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
+
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
 
     @Mock
@@ -77,22 +78,23 @@ class FetchRecipientServiceTest {
         verifyNoMoreInteractions(recipientsCacheService, dynamoDbRecipientService);
     }
 
-    @ParameterizedTest
-    @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenQueryParamsRecipientNameIsMalicious(String invalidRecipientName) {
-        final var queryParams = QueryParams.builder().withRecipientName(invalidRecipientName).build();
+    @Test
+    void shouldNotThrowException_whenAllParamsAreProvided() {
+        var queryParams = QueryParams.builder()
+                .withRecipientName(RECIPIENT_NAME_JEFFERSON)
+                .withLimit(20)
+                .withLastEvaluatedKey(new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON))
+                .build();
+
         queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+        fetchRecipientService.findRecipients(queryRecipientsRequest);
 
-        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.recipientName.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
-                });
-
-        verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
+        assertThat(queryRecipientsRequest.bankAccountId()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL);
+        assertThat(queryRecipientsRequest.queryParams().recipientName()).isEqualTo(queryParams.recipientName());
+        assertThat(queryRecipientsRequest.queryParams().limit()).isEqualTo(queryParams.limit());
+        assertThat(queryRecipientsRequest.queryParams().lastEvaluatedKey())
+                .usingRecursiveAssertion()
+                .isEqualTo(queryParams.lastEvaluatedKey());
     }
 
     @Test
@@ -106,8 +108,43 @@ class FetchRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.recipientName.tooLong");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
+                    assertThat(violation.getMessage()).isEqualTo("query.params.recipientName.tooLong");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.recipientName");
+                });
+
+        verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenQueryParamsRecipientNameIsMalicious(String invalidRecipientName) {
+        final var queryParams = QueryParams.builder().withRecipientName(invalidRecipientName).build();
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
+        assertThat(exception.getConstraintViolations())
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("query.params.recipientName.invalid");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.recipientName");
+                });
+
+        verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenQueryParamsLimitIsBelow1() {
+        var queryParams = QueryParams.builder().withLimit(0).build();
+        queryRecipientsRequest = new QueryRecipientsRequest(BANK_ACCOUNT_ID_BRAZIL, queryParams);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> fetchRecipientService.findRecipients(queryRecipientsRequest));
+        assertThat(exception.getConstraintViolations())
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("query.params.limit.minimum");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.limit");
                 });
 
         verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
@@ -123,8 +160,8 @@ class FetchRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.limit.exceedsMaximum");
-                    assertThat(violation.getPropertyPath()).hasToString("limit");
+                    assertThat(violation.getMessage()).isEqualTo("query.params.limit.exceedsMaximum");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.limit");
                 });
 
         verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
@@ -140,8 +177,8 @@ class FetchRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.lastEvaluatedKey.bankAccountId.notNull");
-                    assertThat(violation.getPropertyPath()).hasToString("lastEvaluatedKey.bankAccountId");
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.bankAccountId.notNull");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.lastEvaluatedKey.bankAccountId");
                 });
 
         verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
@@ -158,8 +195,8 @@ class FetchRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.lastEvaluatedKey.recipientName.notBlank");
-                    assertThat(violation.getPropertyPath()).hasToString("lastEvaluatedKey.recipientName");
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.recipientName.notBlank");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.lastEvaluatedKey.recipientName");
                 });
 
         verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
@@ -176,8 +213,8 @@ class FetchRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.lastEvaluatedKey.recipientName.tooLong");
-                    assertThat(violation.getPropertyPath()).hasToString("lastEvaluatedKey.recipientName");
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.recipientName.tooLong");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.lastEvaluatedKey.recipientName");
                 });
 
         verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);
@@ -194,8 +231,8 @@ class FetchRecipientServiceTest {
                 .hasSize(1)
                 .first()
                 .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("query.recipients.params.lastEvaluatedKey.recipientName.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("lastEvaluatedKey.recipientName");
+                    assertThat(violation.getMessage()).isEqualTo("lastEvaluatedKey.recipientName.invalid");
+                    assertThat(violation.getPropertyPath()).hasToString("queryParams.lastEvaluatedKey.recipientName");
                 });
 
         verifyNoInteractions(recipientsCacheService, dynamoDbRecipientService);

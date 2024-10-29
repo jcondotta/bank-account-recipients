@@ -30,7 +30,7 @@ public class FetchRecipientService {
     public RecipientsDTO findRecipients(@NotNull QueryRecipientsRequest queryRecipientsRequest) {
         LOGGER.info("[BankAccountId={}] Fetching recipients with params: {}", queryRecipientsRequest.bankAccountId(), queryRecipientsRequest.queryParams());
 
-        var constraintViolations = validator.validate(queryRecipientsRequest.queryParams());
+        var constraintViolations = validator.validate(queryRecipientsRequest);
         if (!constraintViolations.isEmpty()) {
             LOGGER.warn("[BankAccountId={}] Constraint violations found: {}", queryRecipientsRequest.bankAccountId(), constraintViolations);
 
