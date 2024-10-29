@@ -7,8 +7,8 @@ public class SQLInjectionPattern implements ThreatInputPattern {
     private static final Pattern SQL_INJECTION_PATTERN = Pattern.compile(
             "(\\bOR\\b\\s+\\d+\\s*=\\s*\\d+)|" +               // SQL OR condition like "OR 1=1"
             "(\\bOR\\b\\s+'[^']*+'\\s*=\\s*'[^']*+')|" +       // SQL OR condition with string values
-            "(;.*?--)|" +                                      // SQL comment with semicolon
-            "(--.*?$)|" +                                      // SQL comment
+            "(;.*--)|" +                                      // SQL comment with semicolon
+            "(--.*$)|" +                                      // SQL comment
             "(\\bUNION\\b\\s+\\bSELECT\\b)|" +                 // SQL Union select
             "(WAITFOR\\s+DELAY)|" +                            // SQL Time delay attack
             "('.+--)",                                         // SQL comment with single quote
