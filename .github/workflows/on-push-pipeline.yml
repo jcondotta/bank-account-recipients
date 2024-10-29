@@ -13,8 +13,6 @@ jobs:
   build-package:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v3
@@ -26,12 +24,12 @@ jobs:
           java-version: 17
           cache: maven
 
-#      - name: Cache SonarCloud packages
-#        uses: actions/cache@v4
-#        with:
-#          path: ~/.sonar/cache
-#          key: ${{ runner.os }}-sonar
-#          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
       - name: SonarCloud Scan
         env:
@@ -43,7 +41,15 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
 
-#      - name: Build and Package the Java Application
+      - name: Build and Package the Java Application
+        run: mvn clean package --batch-mode
+
+# Reuse the Docker image setup job
+      - name: Setup Docker Images
+        uses: ./.github/workflows/setup-docker-images.yml
+        with:
+          LOCALSTACK_VERSION: "3.7.0"
+          REDIS_VERSION: "6.2.6"
 #        run: mvn clean package --batch-mode sonar:sonar \
 #          -Dsonar.projectKey=jcondotta_bank-account-recipients \
 #          -Dsonar.organization=jcondotta \

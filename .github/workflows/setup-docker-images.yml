@@ -1,0 +1,60 @@
+name: Setup Docker Images
+
+on:
+  workflow_call:
+    inputs:
+      LOCALSTACK_VERSION:
+        required: true
+        type: string
+        default: "latest"
+
+      REDIS_VERSION:
+        required: true
+        type: string
+        default: "latest"
+
+jobs:
+  setup-docker-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache LocalStack Docker image
+        id: cache-localstack
+        uses: actions/cache@v3
+        with:
+          path: ~/.docker-cache/localstack
+          key: ${{ runner.os }}-localstack-${{ inputs.LOCALSTACK_VERSION }}
+
+      - name: Load or Pull LocalStack Docker image
+        run: |
+          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
+            echo "Loading LocalStack Docker image from cache..."
+            docker load -i ~/.docker-cache/localstack/localstack.tar
+          else
+            echo "LocalStack image not found in cache, pulling from Docker Hub..."
+            docker pull localstack/localstack:${{ inputs.LOCALSTACK_VERSION }}
+            echo "Saving LocalStack image to cache..."
+          
+            mkdir -p ~/.docker-cache/localstack
+            docker save localstack/localstack:${{ inputs.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
+          fi
+
+      - name: Cache Redis Docker image
+        id: cache-redis
+        uses: actions/cache@v3
+        with:
+          path: ~/.docker-cache/redis
+          key: ${{ runner.os }}-redis-${{ inputs.REDIS_VERSION }}
+
+      - name: Load or Pull Redis Docker image
+        run: |
+          if [ -f ~/.docker-cache/redis/redis.tar ]; then
+            echo "Loading Redis Docker image from cache..."
+            docker load -i ~/.docker-cache/redis/redis.tar
+          else
+            echo "Redis image not found in cache, pulling from Docker Hub..."
+            docker pull redis:${{ inputs.REDIS_VERSION }}
+            echo "Saving Redis image to cache..."
+          
+            mkdir -p ~/.docker-cache/redis
+            docker save redis:${{ inputs.REDIS_VERSION }} -o ~/.docker-cache/redis/redis.tar
+          fi
