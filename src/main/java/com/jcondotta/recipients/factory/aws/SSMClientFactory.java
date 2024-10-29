@@ -38,7 +38,7 @@ public class SSMClientFactory {
     @Singleton
     @Replaces(SsmClient.class)
     @Requires(property = "aws.ssm.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
-    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("aws.ssm.endpoint") String ssmEndpoint){
+    public SsmClient ssmClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.ssm.endpoint}") String ssmEndpoint){
         LOGGER.info("Building SSMClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, ssmEndpoint);
 
         return SsmClient.builder()

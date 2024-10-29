@@ -15,7 +15,7 @@ public class SsmClientCreatedEventListener implements BeanCreatedEventListener<S
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SsmClientCreatedEventListener.class);
 
-    @Value("aws.ssm.parameters.jwt-signature-secret")
+    @Value("${aws.ssm.parameters.jwt-signature-secret.name}")
     String jwtSignatureSecretParameterName;
 
     @Override

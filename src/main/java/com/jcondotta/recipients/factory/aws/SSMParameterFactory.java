@@ -17,8 +17,8 @@ public class SSMParameterFactory {
 
     @Singleton
     @Named("jwtSignatureSecret")
-    @Requires(property = "aws.ssm.parameters.jwt-signature-secret")
-    public Parameter jwtSignatureSecretParameter(SsmClient ssmClient, @Value("aws.ssm.parameters.jwt-signature-secret") String jwtSignatureSecretParameterName){
+    @Requires(property = "aws.ssm.parameters.jwt-signature-secret.name")
+    public Parameter jwtSignatureSecretParameter(SsmClient ssmClient, @Value("${aws.ssm.parameters.jwt-signature-secret.name}") String jwtSignatureSecretParameterName){
 
         LOGGER.info("Fetching JWT signature secret from SSM parameter: {}", jwtSignatureSecretParameterName);
 
