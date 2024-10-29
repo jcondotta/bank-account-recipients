@@ -25,7 +25,12 @@ jobs:
           cache: maven
 
       - name: Build and Package the Java Application
-        run: mvn clean package --batch-mode
+        run: mvn clean package --batch-mode sonar:sonar \
+          -Dsonar.projectKey=jcondotta_bank-account-recipients \
+          -Dsonar.organization=jcondotta \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Upload Packaged Artifact
         uses: actions/upload-artifact@v3
