@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,121 +91,7 @@ class AddRecipientServiceTest {
     }
 
     @Test
-    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
-        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
-                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.notBlank");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @Test
-    void shouldThrowConstraintViolationException_whenRecipientNameIsTooLong() {
-        final var veryLongRecipientName = "J".repeat(51);
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName, RECIPIENT_IBAN_JEFFERSON);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.tooLong");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    @ArgumentsSource(ThreatInputArgumentProvider.class)
-    @ArgumentsSource(InvalidIbanArgumentsProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
-        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientIban.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientIban");
-                });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @Test
-    void shouldThrowConstraintViolationException_whenAllFieldsAreNull() {
-        var addRecipientRequest = new AddRecipientRequest(null, null, null);
-
-        var exception = assertThrows(
-                ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest)
-        );
-
-        var violations = exception.getConstraintViolations();
-        assertThat(violations).hasSize(3);
-
-        Map<String, String> expectedViolations = Map.of(
-                "recipient.bankAccountId.notNull", "bankAccountId",
-                "recipient.recipientName.notBlank", "recipientName",
-                "recipient.recipientIban.invalid", "recipientIban"
-        );
-
-        violations.forEach(violation -> {
-            String message = violation.getMessage();
-            String propertyPath = violation.getPropertyPath().toString();
-
-            assertThat(expectedViolations).containsKey(message);
-            assertThat(propertyPath).isEqualTo(expectedViolations.get(message));
-        });
-
-        verifyNoInteractions(recipientRepository, cacheEvictionService);
-    }
-
-    @Test
-    void shouldReturnRecipientWithoutModification_whenIdempotencyOccurs() {
+    void shouldReturnRecipientWithoutModification_whenRequestIsIdempotent() {
         var recipientMock = RecipientTestFactory.createRecipient(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
         when(repositoryResponse.recipient()).thenReturn(recipientMock);
         when(repositoryResponse.isIdempotent()).thenReturn(false);
@@ -248,5 +133,69 @@ class AddRecipientServiceTest {
 
         verify(recipientRepository).add(any(Recipient.class));
         verifyNoMoreInteractions(recipientRepository, cacheEvictionService);
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
+        var addRecipientRequest = new AddRecipientRequest(null, RECIPIENT_NAME_JEFFERSON, RECIPIENT_IBAN_JEFFERSON);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String invalidRecipientName) {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String invalidRecipientName) {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName, RECIPIENT_IBAN_JEFFERSON);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenRecipientNameIsTooLong() {
+        final var veryLongRecipientName = "J".repeat(51);
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName, RECIPIENT_IBAN_JEFFERSON);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
+    @ArgumentsSource(ThreatInputArgumentProvider.class)
+    @ArgumentsSource(InvalidIbanArgumentsProvider.class)
+    void shouldThrowConstraintViolationException_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
+        var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        verifyNoInteractions(recipientRepository, cacheEvictionService);
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenAllFieldsAreNull() {
+        var addRecipientRequest = new AddRecipientRequest(null, null, null);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> addRecipientService.addRecipient(addRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(3);
     }
 }

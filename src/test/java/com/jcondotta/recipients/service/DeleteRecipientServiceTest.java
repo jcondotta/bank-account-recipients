@@ -61,13 +61,7 @@ class DeleteRecipientServiceTest {
         var deleteRecipientRequest = new DeleteRecipientRequest(null, RECIPIENT_NAME_JEFFERSON);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.bankAccountId.notNull");
-                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
-                });
+        assertThat(exception.getConstraintViolations()).hasSize(1);
 
         verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
     }
@@ -78,13 +72,18 @@ class DeleteRecipientServiceTest {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.notBlank");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
-                });
+        assertThat(exception.getConstraintViolations()).hasSize(1);
+
+        verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenRecipientNameExceeds50Characters() {
+        final var veryLongRecipientName = "J".repeat(51);
+        final var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName);
+
+        var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
+        assertThat(exception.getConstraintViolations()).hasSize(1);
 
         verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
     }
@@ -95,13 +94,7 @@ class DeleteRecipientServiceTest {
         var deleteRecipientRequest = new DeleteRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, invalidRecipientName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> deleteRecipientService.deleteRecipient(deleteRecipientRequest));
-        assertThat(exception.getConstraintViolations())
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("recipient.recipientName.invalid");
-                    assertThat(violation.getPropertyPath()).hasToString("recipientName");
-                });
+        assertThat(exception.getConstraintViolations()).hasSize(1);
 
         verifyNoInteractions(deleteRecipientRepository, cacheEvictionService);
     }

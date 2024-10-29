@@ -5,7 +5,6 @@ import com.jcondotta.recipients.argument_provider.validation.security.ThreatInpu
 import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,18 +29,18 @@ class LastEvaluatedKeyTest {
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
 
     @Test
-    void shouldNotThrowException_whenLastEvaluatedKeyIsValid() {
+    void shouldNotDetectConstraintViolation_whenLastEvaluatedKeyIsValid() {
         final var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
-        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        var constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
         assertThat(constraintViolations).isEmpty();
     }
 
     @Test
-    void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
+    void shouldDetectConstraintViolation_whenBankAccountIdIsNull() {
         final var lastEvaluatedKey = new LastEvaluatedKey(null, RECIPIENT_NAME_JEFFERSON);
 
-        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        var constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
         assertThat(constraintViolations)
                 .hasSize(1)
                 .first()
@@ -54,10 +52,10 @@ class LastEvaluatedKeyTest {
 
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsBlank(String blankRecipientName) {
+    void shouldDetectConstraintViolation_whenRecipientNameIsBlank(String blankRecipientName) {
         final var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, blankRecipientName);
 
-        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        var constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
         assertThat(constraintViolations)
                 .hasSize(1)
                 .first()
@@ -68,11 +66,11 @@ class LastEvaluatedKeyTest {
     }
 
     @Test
-    void shouldThrowConstraintViolationException_whenRecipientNameExceeds50Characters() {
+    void shouldDetectConstraintViolation_whenRecipientNameExceeds50Characters() {
         final var veryLongRecipientName = "J".repeat(51);
         var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, veryLongRecipientName);
 
-        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        var constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
         assertThat(constraintViolations)
                 .hasSize(1)
                 .first()
@@ -84,10 +82,10 @@ class LastEvaluatedKeyTest {
 
     @ParameterizedTest
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenRecipientNameIsMalicious(String maliciousRecipientName) {
+    void shouldDetectConstraintViolation_whenRecipientNameIsMalicious(String maliciousRecipientName) {
         var lastEvaluatedKey = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, maliciousRecipientName);
 
-        Set<ConstraintViolation<LastEvaluatedKey>> constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
+        var constraintViolations = VALIDATOR.validate(lastEvaluatedKey);
         assertThat(constraintViolations)
                 .hasSize(1)
                 .first()
