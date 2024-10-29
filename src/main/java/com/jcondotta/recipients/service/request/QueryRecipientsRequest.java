@@ -2,6 +2,7 @@ package com.jcondotta.recipients.service.request;
 
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -19,6 +20,7 @@ public record QueryRecipientsRequest(
         UUID bankAccountId,
 
         @Schema(description = "Additional query parameters for pagination or sorting.")
+        @Valid
         QueryParams queryParams)
 {
         public QueryRecipientsRequest(UUID bankAccountId, QueryParams queryParams) {

@@ -31,8 +31,6 @@ class QueryParamsTest {
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String RECIPIENT_NAME_JEFFERSON = TestRecipient.JEFFERSON.getRecipientName();
-    private static final int DEFAULT_LIMIT = 15;
-    private static final LastEvaluatedKey LAST_EVALUATED_KEY = new LastEvaluatedKey(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON);
 
     private static final Validator VALIDATOR = ValidatorTestFactory.getValidator();
 
@@ -92,6 +90,20 @@ class QueryParamsTest {
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("query.params.recipientName.invalid");
                     assertThat(violation.getPropertyPath()).hasToString("recipientName");
+                });
+    }
+
+    @Test
+    void shouldThrowConstraintViolationException_whenLimitIsBelow1() {
+        var queryParams = QueryParams.builder().withLimit(0).build();
+
+        Set<ConstraintViolation<QueryParams>> constraintViolations = VALIDATOR.validate(queryParams);
+        assertThat(constraintViolations)
+                .hasSize(1)
+                .first()
+                .satisfies(violation -> {
+                    assertThat(violation.getMessage()).isEqualTo("query.params.limit.minimum");
+                    assertThat(violation.getPropertyPath()).hasToString("limit");
                 });
     }
 

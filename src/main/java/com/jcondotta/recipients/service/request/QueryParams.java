@@ -5,10 +5,7 @@ import com.jcondotta.recipients.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -26,7 +23,10 @@ public record QueryParams(
                 String> recipientName,
 
         @Schema(description = "The maximum number of results to return. Must be a positive integer.", example = "15")
-        Optional<@Max(value = 20, message = "query.params.limit.exceedsMaximum") Integer> limit,
+        Optional<
+                @Max(value = 20, message = "query.params.limit.exceedsMaximum")
+                @Min(value = 1, message = "query.params.limit.minimum")
+                Integer> limit,
 
         @Schema(description = "The last evaluated key used for pagination, " + "allowing the query to resume from where the previous one left off.")
         Optional<@Valid LastEvaluatedKey> lastEvaluatedKey
