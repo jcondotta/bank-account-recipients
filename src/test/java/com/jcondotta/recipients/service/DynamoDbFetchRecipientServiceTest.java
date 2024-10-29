@@ -70,9 +70,7 @@ class DynamoDbFetchRecipientServiceTest {
 
     @Test
     void shouldThrowConstraintViolationException_whenBankAccountIdIsNull() {
-        var exception = assertThrows(NullPointerException.class, () -> {
-            queryRecipientsRequest = new QueryRecipientsRequest(null);
-        });
+        var exception = assertThrows(NullPointerException.class, () -> queryRecipientsRequest = new QueryRecipientsRequest(null));
 
         assertThat(exception)
                 .satisfies(violation -> assertThat(violation.getMessage())
