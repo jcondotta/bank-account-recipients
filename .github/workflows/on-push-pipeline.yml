@@ -25,7 +25,7 @@ jobs:
 
       - name: Compile and Run Unit Tests
         run: |
-          mvn clean package -DskipTests=true --batch-mode
+          mvn clean package jacoco:report -Djacoco.destFile=target/jacoco-ut.exec --batch-mode
 
       - name: Upload Packaged Artifact
         uses: actions/upload-artifact@v3
@@ -109,8 +109,26 @@ jobs:
           docker run -d --name redis -p 6379:6379 redis:6.2.6
 
       - name: Run Integration Tests with JaCoCo
+          run: |
+          mvn failsafe:integration-test jacoco:report -Djacoco.destFile=target/jacoco-it.exec --batch-mode
+
+      - name: Merge JaCoCo Reports
         run: |
-          mvn failsafe:integration-test jacoco:report --batch-mode
+          mvn jacoco:merge \
+            -Djacoco.mergedDestFile=target/jacoco-merged.exec \
+            -Djacoco.execFiles=target/jacoco-ut.exec,target/jacoco-it.exec
+
+      - name: Generate Merged JaCoCo XML Report
+        run: |
+          mvn jacoco:report \
+            -DdataFile=target/jacoco-merged.exec \
+            -DoutputDirectory=target/site/jacoco-merged
+
+      - name: Upload Merged Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: merged-coverage
+          path: target/site/jacoco-merged/jacoco.xml
 
   # Phase 3: SonarCloud Analysis
   sonarcloud-analysis:
@@ -127,11 +145,11 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Download Packaged Artifact
+      - name: Download Merged Coverage Report
         uses: actions/download-artifact@v3
         with:
-          name: bank-account-recipients
-          path: target/
+          name: merged-coverage
+          path: target/site/jacoco-merged/
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
@@ -149,4 +167,4 @@ jobs:
               -Dsonar.organization=jcondotta \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-merged/jacoco.xml
