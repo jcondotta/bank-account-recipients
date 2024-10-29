@@ -37,12 +37,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn sonar:sonar \
+          mvn package sonar:sonar \
               -Dsonar.projectKey=jcondotta_bank-account-recipients \
               -Dsonar.organization=jcondotta \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-              -Dsonar.java.binaries=target/classes \
 
 #      - name: Build and Package the Java Application
 #        run: mvn clean package --batch-mode sonar:sonar \
