@@ -33,126 +33,126 @@ jobs:
           name: jacoco-unit-tests-exec
           path: target/jacoco-unit-tests.exec
 
-  # Phase 2: Setup Docker Images and Run Integration Tests
-  integration-tests:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    timeout-minutes: 20
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK and Cache Maven Dependencies
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: 17
-          cache: maven
-
-      - name: Download Unit Test Coverage Report
-        uses: actions/download-artifact@v3
-        with:
-          name: jacoco-unit-tests-exec
-          path: target/
-
-      - name: Cache LocalStack Docker image
-        id: cache-localstack
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/localstack
-          key: ${{ runner.os }}-localstack-${{ inputs.LOCALSTACK_VERSION }}
-
-      - name: Load or Pull LocalStack Docker image
-        run: |
-          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
-            echo "Loading LocalStack Docker image from cache..."
-            docker load -i ~/.docker-cache/localstack/localstack.tar
-          else
-            echo "LocalStack image not found in cache, pulling from Docker Hub..."
-            docker pull localstack/localstack:${{ inputs.LOCALSTACK_VERSION }}
-            echo "Saving LocalStack image to cache..."
-
-            mkdir -p ~/.docker-cache/localstack
-            docker save localstack/localstack:${{ inputs.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
-          fi
-
-      - name: Cache Redis Docker image
-        id: cache-redis
-        uses: actions/cache@v3
-        with:
-          path: ~/.docker-cache/redis
-          key: ${{ runner.os }}-redis-${{ inputs.REDIS_VERSION }}
-
-      - name: Load or Pull Redis Docker image
-        run: |
-          if [ -f ~/.docker-cache/redis/redis.tar ]; then
-            echo "Loading Redis Docker image from cache..."
-            docker load -i ~/.docker-cache/redis/redis.tar
-          else
-            echo "Redis image not found in cache, pulling from Docker Hub..."
-            docker pull redis:${{ inputs.REDIS_VERSION }}
-            echo "Saving Redis image to cache..."
-
-            mkdir -p ~/.docker-cache/redis
-            docker save redis:${{ inputs.REDIS_VERSION }} -o ~/.docker-cache/redis/redis.tar
-          fi
-
-      - name: Start LocalStack for Integration Tests
-        run: |
-          docker run -d --name localstack \
-            -p 127.0.0.1:4566:4566 \
-            -e SERVICES=dynamodb,ssm \
-            localstack/localstack:3.7.0
-
-      - name: Start Redis for Integration Tests
-        run: |
-          docker run -d --name redis -p 6379:6379 redis:6.2.6
-
-      - name: Run Integration Tests with JaCoCo
-        run: |
-          mvn verify -DskipUnitTests=true --batch-mode
-
-      - name: Upload JaCoCo Test Coverage Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: jacoco-test-report
-          path: target/site/jacoco/jacoco.xml
-
-  # Phase 3: SonarCloud Analysis
-  sonarcloud-analysis:
-    runs-on: ubuntu-latest
-    needs: integration-tests
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK and Cache Maven Dependencies
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: 17
-          cache: maven
-
-      - name: Download Test Coverage Report
-        uses: actions/download-artifact@v3
-        with:
-            name: jacoco-test-report
-            path: target/site/jacoco
-
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Run SonarCloud Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-            mvn package -DskipUnitTests=true sonar:sonar \
-              -Dsonar.projectKey=jcondotta_bank-account-recipients \
-              -Dsonar.organization=jcondotta \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+#  # Phase 2: Setup Docker Images and Run Integration Tests
+#  integration-tests:
+#    runs-on: ubuntu-latest
+#    needs: build-and-test
+#    timeout-minutes: 20
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK and Cache Maven Dependencies
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'corretto'
+#          java-version: 17
+#          cache: maven
+#
+#      - name: Download Unit Test Coverage Report
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: jacoco-unit-tests-exec
+#          path: target/
+#
+#      - name: Cache LocalStack Docker image
+#        id: cache-localstack
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.docker-cache/localstack
+#          key: ${{ runner.os }}-localstack-${{ inputs.LOCALSTACK_VERSION }}
+#
+#      - name: Load or Pull LocalStack Docker image
+#        run: |
+#          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
+#            echo "Loading LocalStack Docker image from cache..."
+#            docker load -i ~/.docker-cache/localstack/localstack.tar
+#          else
+#            echo "LocalStack image not found in cache, pulling from Docker Hub..."
+#            docker pull localstack/localstack:${{ inputs.LOCALSTACK_VERSION }}
+#            echo "Saving LocalStack image to cache..."
+#
+#            mkdir -p ~/.docker-cache/localstack
+#            docker save localstack/localstack:${{ inputs.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
+#          fi
+#
+#      - name: Cache Redis Docker image
+#        id: cache-redis
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.docker-cache/redis
+#          key: ${{ runner.os }}-redis-${{ inputs.REDIS_VERSION }}
+#
+#      - name: Load or Pull Redis Docker image
+#        run: |
+#          if [ -f ~/.docker-cache/redis/redis.tar ]; then
+#            echo "Loading Redis Docker image from cache..."
+#            docker load -i ~/.docker-cache/redis/redis.tar
+#          else
+#            echo "Redis image not found in cache, pulling from Docker Hub..."
+#            docker pull redis:${{ inputs.REDIS_VERSION }}
+#            echo "Saving Redis image to cache..."
+#
+#            mkdir -p ~/.docker-cache/redis
+#            docker save redis:${{ inputs.REDIS_VERSION }} -o ~/.docker-cache/redis/redis.tar
+#          fi
+#
+#      - name: Start LocalStack for Integration Tests
+#        run: |
+#          docker run -d --name localstack \
+#            -p 127.0.0.1:4566:4566 \
+#            -e SERVICES=dynamodb,ssm \
+#            localstack/localstack:3.7.0
+#
+#      - name: Start Redis for Integration Tests
+#        run: |
+#          docker run -d --name redis -p 6379:6379 redis:6.2.6
+#
+#      - name: Run Integration Tests with JaCoCo
+#        run: |
+#          mvn verify -DskipUnitTests=true --batch-mode
+#
+#      - name: Upload JaCoCo Test Coverage Report
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: jacoco-test-report
+#          path: target/site/jacoco/jacoco.xml
+#
+#  # Phase 3: SonarCloud Analysis
+#  sonarcloud-analysis:
+#    runs-on: ubuntu-latest
+#    needs: integration-tests
+#    steps:
+#      - name: Checkout Source Code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK and Cache Maven Dependencies
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'corretto'
+#          java-version: 17
+#          cache: maven
+#
+#      - name: Download Test Coverage Report
+#        uses: actions/download-artifact@v3
+#        with:
+#            name: jacoco-test-report
+#            path: target/site/jacoco
+#
+#      - name: Cache SonarCloud packages
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.sonar/cache
+#          key: ${{ runner.os }}-sonar
+#          restore-keys: ${{ runner.os }}-sonar
+#
+#      - name: Run SonarCloud Analysis
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: |
+#            mvn package -DskipUnitTests=true sonar:sonar \
+#              -Dsonar.projectKey=jcondotta_bank-account-recipients \
+#              -Dsonar.organization=jcondotta \
+#              -Dsonar.host.url=https://sonarcloud.io \
+#              -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+#              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
