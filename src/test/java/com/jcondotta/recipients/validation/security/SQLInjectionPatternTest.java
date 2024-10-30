@@ -3,7 +3,7 @@ package com.jcondotta.recipients.validation.security;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SQLInjectionPatternTest {
+class SQLInjectionPatternTest {
 
     private final SQLInjectionPattern sqlInjectionPattern = new SQLInjectionPattern();
 

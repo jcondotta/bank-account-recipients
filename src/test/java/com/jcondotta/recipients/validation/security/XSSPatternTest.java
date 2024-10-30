@@ -2,11 +2,8 @@ package com.jcondotta.recipients.validation.security;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import java.util.regex.Pattern;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class XSSPatternTest {
+class XSSPatternTest {
 
     private final XSSPattern xssPattern = new XSSPattern();
 
