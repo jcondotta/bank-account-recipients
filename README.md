@@ -1,6 +1,6 @@
 # Recipients Project v.1.0
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jcondotta_bank-account-recipients&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jcondotta_bank-account-recipients)
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=jcondotta_bank-account-recipients)](https://sonarcloud.io/summary/new_code?id=jcondotta_bank-account-recipients)  
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=jcondotta_bank-account-recipients&metric=coverage)](https://sonarcloud.io/summary/new_code?id=jcondotta_bank-account-recipients)
 
 This project is part of a microservice architecture responsible for managing bank account recipients. The service provides RESTful APIs for creating, fetching, and deleting recipient information. The system leverages various AWS services and modern software development practices to ensure scalability, security, and maintainability.
