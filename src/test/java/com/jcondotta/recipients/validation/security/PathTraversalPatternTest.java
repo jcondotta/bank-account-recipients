@@ -1,40 +1,65 @@
 package com.jcondotta.recipients.validation.security;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class PathTraversalPatternTest {
 
     private final PathTraversalPattern pathTraversalPattern = new PathTraversalPattern();
 
-    static Stream<Arguments> provideMaliciousInputs() {
-        return Stream.of(
-                Arguments.of("../../etc/passwd", true),
-                Arguments.of("%2e%2e%2fetc/passwd", true),
-                Arguments.of("%252e%252e%252fetc/passwd", true),
-                Arguments.of("..\\windows\\system32", true),
-                Arguments.of("%2e%2e%5cwindows%5csystem32", true),
-                Arguments.of("%252e%252e%255cwindows%255csystem32", true),
-                Arguments.of("/home/user/documents", false) // Safe input
-        );
+    @Test
+    void shouldDetectConstraintViolation_whenInputContainsRelativePathTraversal() {
+        String maliciousInput = "../../etc/passwd";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect path traversal with relative path")
+                .isTrue();
     }
 
-    @ParameterizedTest
-    @MethodSource("provideMaliciousInputs")
-    void shouldDetectPathTraversal(String input, boolean expected) {
-        if (expected) {
-            assertTrue(pathTraversalPattern.containsPattern(input));
-        }
-        else {
-            assertFalse(pathTraversalPattern.containsPattern(input));
-        }
+    @Test
+    void shouldDetectConstraintViolation_whenInputContainsEncodedPathTraversal() {
+        String maliciousInput = "%2e%2e%2fetc/passwd";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect encoded path traversal")
+                .isTrue();
+    }
+
+    @Test
+    void shouldDetectConstraintViolation_whenInputContainsDoubleEncodedPathTraversal() {
+        String maliciousInput = "%252e%252e%252fetc/passwd";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect double-encoded path traversal")
+                .isTrue();
+    }
+
+    @Test
+    void shouldDetectConstraintViolation_whenInputContainsWindowsPathTraversal() {
+        String maliciousInput = "..\\windows\\system32";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect Windows path traversal")
+                .isTrue();
+    }
+
+    @Test
+    void shouldDetectConstraintViolation_whenInputContainsEncodedWindowsPathTraversal() {
+        String maliciousInput = "%2e%2e%5cwindows%5csystem32";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect encoded Windows path traversal")
+                .isTrue();
+    }
+
+    @Test
+    void shouldDetectConstraintViolation_whenInputContainsDoubleEncodedWindowsPathTraversal() {
+        String maliciousInput = "%252e%252e%255cwindows%255csystem32";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect double-encoded Windows path traversal")
+                .isTrue();
+    }
+
+    @Test
+    void shouldNotDetectConstraintViolation_whenInputIsSafePath() {
+        String safeInput = "/home/user/documents";
+        Assertions.assertThat(pathTraversalPattern.containsPattern(safeInput))
+                .withFailMessage("Expected not to detect path traversal in safe path")
+                .isFalse();
     }
 }
-
-

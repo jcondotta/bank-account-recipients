@@ -2,8 +2,8 @@ package com.jcondotta.recipients.service.request;
 
 import com.jcondotta.recipients.argument_provider.validation.BlankAndNonPrintableCharactersArgumentProvider;
 import com.jcondotta.recipients.argument_provider.validation.iban.EdgeCaseIbanArgumentsProvider;
-import com.jcondotta.recipients.argument_provider.validation.iban.InvalidIbanArgumentsProvider;
 import com.jcondotta.recipients.argument_provider.validation.security.ThreatInputArgumentProvider;
+import com.jcondotta.recipients.argument_provider.validation.security.XSSArgumentProvider;
 import com.jcondotta.recipients.factory.ValidatorTestFactory;
 import com.jcondotta.recipients.helper.TestBankAccount;
 import com.jcondotta.recipients.helper.TestRecipient;
@@ -96,7 +96,7 @@ class AddRecipientRequestTest {
     @ParameterizedTest
     @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
     @ArgumentsSource(ThreatInputArgumentProvider.class)
-    @ArgumentsSource(InvalidIbanArgumentsProvider.class)
+    @ArgumentsSource(XSSArgumentProvider.class)
     void shouldDetectConstraintViolation_whenRecipientIbanIsInvalid(String invalidRecipientIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, invalidRecipientIban);
 

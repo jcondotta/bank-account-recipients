@@ -1,29 +1,49 @@
 package com.jcondotta.recipients.validation.security;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LDAPInjectionPatternTest {
 
     private final LDAPInjectionPattern ldapInjectionPattern = new LDAPInjectionPattern();
 
     @Test
-    void shouldDetectLDAPInjection() {
+    void shouldDetectLDAPInjection_whenInputContainsWildcardPassword() {
         String maliciousInput = "(&(uid=admin)(password=*))";
-        assertTrue(ldapInjectionPattern.containsPattern(maliciousInput));
+        Assertions.assertThat(ldapInjectionPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect LDAP injection with wildcard password")
+                .isTrue();
     }
 
     @Test
-    void shouldDetectLDAPInjectionWithAdminAccess() {
+    void shouldDetectLDAPInjection_whenInputContainsORCondition() {
         String maliciousInput = "admin)(|(uid=*))";
-        assertTrue(ldapInjectionPattern.containsPattern(maliciousInput));
+        Assertions.assertThat(ldapInjectionPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect LDAP injection with OR condition")
+                .isTrue();
     }
 
     @Test
-    void shouldNotDetectNonLDAPInjection() {
+    void shouldDetectLDAPInjection_whenInputContainsANDCondition() {
+        String maliciousInput = "(&(objectClass=*)(uid=*))";
+        Assertions.assertThat(ldapInjectionPattern.containsPattern(maliciousInput))
+                .withFailMessage("Expected to detect LDAP injection with AND condition")
+                .isTrue();
+    }
+
+    @Test
+    void shouldNotDetectLDAPInjection_whenInputIsSafe() {
         String safeInput = "uid=user";
-        assertFalse(ldapInjectionPattern.containsPattern(safeInput));
+        Assertions.assertThat(ldapInjectionPattern.containsPattern(safeInput))
+                .withFailMessage("Expected not to detect LDAP injection in safe input")
+                .isFalse();
+    }
+
+    @Test
+    void shouldNotDetectLDAPInjection_whenInputContainsSimpleFilter() {
+        String safeInput = "(cn=John Doe)";
+        Assertions.assertThat(ldapInjectionPattern.containsPattern(safeInput))
+                .withFailMessage("Expected not to detect LDAP injection in a simple filter")
+                .isFalse();
     }
 }
