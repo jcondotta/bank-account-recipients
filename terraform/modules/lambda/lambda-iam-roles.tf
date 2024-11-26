@@ -51,6 +51,15 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "Effect": "Allow",
           "Action": "ssm:GetParameter",
           "Resource": var.jwt_signature_secret_arn
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ec2:CreateNetworkInterface",
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:DeleteNetworkInterface"
+          ],
+          "Resource": "*"
         }
       ]
     }

@@ -20,15 +20,13 @@ data "aws_caller_identity" "current" {
 
 }
 
-#module "ecs-fargate" {
-#  source = "./modules/ecs-fargate"
-#
-#  aws_region  = var.aws_region
-#  environment = var.environment
-#  tags        = merge(var.tags, { "environment" = var.environment })
-#
-#  ecs_cluster_name = "recipients-cluster-${var.environment}"
-#}
+module "vpc" {
+  source = "./modules/vpc"
+
+  aws_region  = var.aws_region
+  environment = var.environment
+  tags        = merge(var.tags, { "environment" = var.environment })
+}
 
 module "ssm" {
   source = "./modules/ssm"
@@ -77,14 +75,14 @@ module "lambda" {
   jwt_signature_secret_name = module.ssm.jwt_signature_secret_name
 }
 
-module "apigateway" {
-  source = "./modules/apigateway"
-
-  aws_region  = var.aws_region
-  environment = var.environment
-  tags        = merge(var.tags, { "environment" = var.environment })
-
-  lambda_function_arn  = module.lambda.lambda_function_arn
-  lambda_function_name = module.lambda.lambda_function_name
-  lambda_invoke_uri    = module.lambda.lambda_invoke_uri
-}
+#module "apigateway" {
+#  source = "./modules/apigateway"
+#
+#  aws_region  = var.aws_region
+#  environment = var.environment
+#  tags        = merge(var.tags, { "environment" = var.environment })
+#
+#  lambda_function_arn  = module.lambda.lambda_function_arn
+#  lambda_function_name = module.lambda.lambda_function_name
+#  lambda_invoke_uri    = module.lambda.lambda_invoke_uri
+#}

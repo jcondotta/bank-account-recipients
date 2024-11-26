@@ -53,7 +53,8 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 Map.entry("AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion()),
                 Map.entry("AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString()),
                 Map.entry("AWS_SSM_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM).toString()),
-                Map.entry("REDIS_URI", REDIS_CONTAINER.getRedisURI())
+                Map.entry("REDIS_HOST", REDIS_CONTAINER.getRedisHost()),
+                Map.entry("REDIS_PORT", String.valueOf(REDIS_CONTAINER.getRedisPort()))
         );
     }
 
@@ -66,8 +67,10 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
                 .append(String.format("  SSM Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SSM)));
 
-        LOGGER.info(sbConfig.toString());
+        sbConfig.append("\nRedis container configuration:\n")
+                .append(String.format("  Host: %s%n", REDIS_CONTAINER.getRedisHost()))
+                .append(String.format("  Port: %s%n", REDIS_CONTAINER.getRedisPort()));
 
-        LOGGER.info(String.format("  Redis URI: %s%n", REDIS_CONTAINER.getRedisURI()));
+        LOGGER.info(sbConfig.toString());
     }
 }

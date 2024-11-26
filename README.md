@@ -52,7 +52,7 @@ This project is part of a microservice architecture responsible for managing ban
 
 ## Project Architecture
 
-![Recipients Project Architecture](recipients-architecture.png)
+![Recipients Project Architecture](architecture/recipients-architecture.png)
 
 ## Prerequisites
 

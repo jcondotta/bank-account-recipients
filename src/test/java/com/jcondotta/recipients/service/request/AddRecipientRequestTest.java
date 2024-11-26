@@ -27,7 +27,7 @@ class AddRecipientRequestTest {
 
     @ParameterizedTest
     @ArgumentsSource(EdgeCaseIbanArgumentsProvider.class)
-    void shouldDetectConstraintViolation_whenRequestIsValid(String validIban) {
+    void shouldNotDetectConstraintViolation_whenRequestIsValid(String validIban) {
         var addRecipientRequest = new AddRecipientRequest(BANK_ACCOUNT_ID_BRAZIL, RECIPIENT_NAME_JEFFERSON, validIban);
 
         var constraintViolations = VALIDATOR.validate(addRecipientRequest);
