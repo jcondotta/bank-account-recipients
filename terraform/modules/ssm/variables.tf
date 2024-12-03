@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "The AWS region where resources will be deployed."
+  description = "The aws region where resources will be deployed."
   type        = string
 }
 
@@ -11,13 +11,11 @@ variable "environment" {
 variable "jwt_signature_secret_name" {
   description = "The name of the SSM parameter for JWT signature secret"
   type        = string
-  default     = "/jwt/signature/secret"
 }
 
 variable "jwt_signature_secret_value" {
   description = "The secure JWT secret value stored in the SSM parameter"
   type        = string
-  default     = "Spu4zgf3IR8yB9aZLxohdkXK9Dp8XHk7U5E91xqBdG3dfZnbnDQ/+HVghBrTGPfMtM18bxK5nt7ZrH8eXKkWeg=="
 }
 
 variable "jwt_signature_secret_description" {

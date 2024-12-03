@@ -49,7 +49,11 @@ resource "aws_iam_role_policy" "lambda_policy" {
         },
         {
           "Effect": "Allow",
-          "Action": "ssm:GetParameter",
+          "Action": [
+            "ssm:GetParameter",
+            "ssm:GetParameters",
+            "ssm:GetParameterHistory"
+          ],
           "Resource": var.jwt_signature_secret_arn
         },
         {

@@ -9,10 +9,19 @@ resource "aws_lambda_function" "recipients_lambda" {
   timeout       = var.lambda_timeout
   architectures = ["arm64"]
 
+  # Configure VPC settings
+  vpc_config {
+    subnet_ids         = var.subnet_ids
+    security_group_ids = [var.lambda_security_group_id]
+  }
+
   environment {
     variables = merge({
       AWS_DYNAMODB_RECIPIENTS_TABLE_NAME = var.dynamodb_table_name
-      AWS_SSM_JWT_SIGNATURE_SECRET_NAME = var.jwt_signature_secret_name},
+      AWS_SSM_JWT_SIGNATURE_SECRET_NAME = var.jwt_signature_secret_name,
+      REDIS_HOST = var.redis_host,
+      REDIS_PORT = var.redis_port
+    },
       var.lambda_environment_variables
     )
   }

@@ -95,6 +95,26 @@ variable "jwt_signature_secret_name" {
   type        = string
 }
 
+variable "subnet_ids" {
+  description = "List of subnet IDs to use for the ElastiCache Subnet Group"
+  type        = list(string)
+}
+
+variable "lambda_security_group_id" {
+  description = "Security group ID for Lambda"
+  type        = string
+}
+
+variable "redis_host" {
+  description = "The Redis cluster endpoint"
+  type        = string
+}
+
+variable "redis_port" {
+  description = "The Redis cluster port"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags applied to all resources for organization and cost tracking across environments and projects."
   type        = map(string)

@@ -1,13 +1,13 @@
 # Define the POST method for /login
 resource "aws_api_gateway_method" "post_login" {
-  rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id   = aws_api_gateway_rest_api.this.id
   resource_id   = aws_api_gateway_resource.login.id
   http_method   = "POST"
   authorization = "NONE"  # No authentication required for login
 }
 
 resource "aws_api_gateway_integration" "post_login_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id             = aws_api_gateway_rest_api.this.id
   resource_id             = aws_api_gateway_resource.login.id
   http_method             = aws_api_gateway_method.post_login.http_method
   integration_http_method = "POST"
@@ -17,7 +17,7 @@ resource "aws_api_gateway_integration" "post_login_integration" {
 
 # Define the POST method for /api/v1/recipients
 resource "aws_api_gateway_method" "post_recipients" {
-  rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id   = aws_api_gateway_rest_api.this.id
   resource_id   = aws_api_gateway_resource.recipients.id
   http_method   = "POST"
   authorization = "NONE"
@@ -25,7 +25,7 @@ resource "aws_api_gateway_method" "post_recipients" {
 
 # POST method integration with Lambda function
 resource "aws_api_gateway_integration" "post_recipients_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id             = aws_api_gateway_rest_api.this.id
   resource_id             = aws_api_gateway_resource.recipients.id
   http_method             = aws_api_gateway_method.post_recipients.http_method
   integration_http_method = "POST"
@@ -35,7 +35,7 @@ resource "aws_api_gateway_integration" "post_recipients_integration" {
 
 # Define the GET method for /api/v1/recipients/bank-account-id/{bank-account-id}
 resource "aws_api_gateway_method" "get_bank_account_recipients" {
-  rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id   = aws_api_gateway_rest_api.this.id
   resource_id   = aws_api_gateway_resource.bank_account_id_param.id
   http_method   = "GET"
   authorization = "NONE"
@@ -48,7 +48,7 @@ resource "aws_api_gateway_method" "get_bank_account_recipients" {
 
 # GET method integration with Lambda function
 resource "aws_api_gateway_integration" "get_bank_account_recipients_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id             = aws_api_gateway_rest_api.this.id
   resource_id             = aws_api_gateway_resource.bank_account_id_param.id
   http_method             = aws_api_gateway_method.get_bank_account_recipients.http_method
   integration_http_method = "POST"
@@ -63,7 +63,7 @@ resource "aws_api_gateway_integration" "get_bank_account_recipients_integration"
 
 # Define the DELETE method for /api/v1/recipients/bank-account-id/{bank-account-id}/recipient-name/{recipient-name}
 resource "aws_api_gateway_method" "delete_recipients" {
-  rest_api_id   = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id   = aws_api_gateway_rest_api.this.id
   resource_id   = aws_api_gateway_resource.recipient_name_param.id
   http_method   = "DELETE"
   authorization = "NONE"
@@ -77,7 +77,7 @@ resource "aws_api_gateway_method" "delete_recipients" {
 
 # DELETE method integration with Lambda function
 resource "aws_api_gateway_integration" "delete_recipients_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.recipients_api.id
+  rest_api_id             = aws_api_gateway_rest_api.this.id
   resource_id             = aws_api_gateway_resource.recipient_name_param.id
   http_method             = aws_api_gateway_method.delete_recipients.http_method
   integration_http_method = "POST"
